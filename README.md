@@ -22,6 +22,17 @@ npx convex dev
 
 Open the local URL shown by Vite+ and use landscape orientation for the intended display layout.
 
+## Deploy
+
+Publish the frontend to [pit.frc581.com](https://pit.frc581.com):
+
+```sh
+vp run deploy
+```
+
+Wrangler must be authenticated to the Team 581 Cloudflare account. The command deploys the `pit-display` Worker and
+attaches the custom domain.
+
 ## Install on iPad
 
 Open the deployed site in Safari, tap **Share**, then choose **Add to Home Screen**. The installed app launches in

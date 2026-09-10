@@ -1,0 +1,16 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "pit-display",
+	"account_id": "8bb70056a503857d02b48fc5db648f61",
+	"compatibility_date": "2026-09-10",
+	"assets": {
+		"directory": "./dist",
+		"not_found_handling": "single-page-application",
+	},
+	"routes": [
+		{
+			"pattern": "pit.frc581.com",
+			"custom_domain": true,
+		},
+	],
+}
