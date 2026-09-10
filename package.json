@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "vp dev",
 		"build": "tsc -b && vp build",
-		"deploy": "vp run build && wrangler deploy",
+		"deploy": "wrangler deploy && convex deploy",
 		"lint": "vp lint",
 		"openapi-ts": "openapi-ts",
 		"preview": "vp preview",
