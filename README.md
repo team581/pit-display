@@ -2,7 +2,7 @@
 
 An iPad-friendly dashboard for keeping the pit crew aware of the team's current match, queue timing, alliance color, and upcoming partners.
 
-The display reads realtime event snapshots from Convex. FRC Nexus sends full event updates to `/frc-nexus/webhook`; the webhook ignores events that do not include Team 581, and Convex reactively updates the dashboard from the newest relevant snapshot.
+The display reads a dashboard-specific model from Convex. FRC Nexus sends full event updates to `/frc-nexus/webhook`; ingestion trims them to the current field match and the configured team's remaining matches, then a reactive Convex query shapes the newest snapshot for the UI. The browser only formats timestamps for its local time zone.
 
 ## Development
 
@@ -55,10 +55,13 @@ To pull an event immediately instead of waiting for its next webhook update:
 pnpm convex run frcNexus:pullEventStatus '{"eventKey":"demo9705"}'
 ```
 
+For local demo-event testing, set `DEMO_MODE` in `src/team.ts` to `true`. Demo mode uses Team 100; development deployments should leave it enabled.
+
 ## Validation
 
 ```sh
 vp check
+vp test
 vp exec knip
 vp run build
 ```

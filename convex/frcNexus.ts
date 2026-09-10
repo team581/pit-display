@@ -65,12 +65,12 @@ export const processEventStatus = internalMutation({
 	args: {
 		eventKey: v.string(),
 		dataAsOfTime: v.number(),
-		nowQueuing: v.optional(v.string()),
+		teamIsPresent: v.boolean(),
 		matches: v.array(NexusMatch),
 	},
 	returns: v.null(),
 	handler: async (ctx, args) => {
-		if (!includesTeam(args.matches)) return null;
+		if (!args.teamIsPresent) return null;
 
 		const existing = await ctx.db
 			.query('eventStatuses')
@@ -81,7 +81,7 @@ export const processEventStatus = internalMutation({
 		const snapshot = {
 			dataAsOfTime: args.dataAsOfTime,
 			receivedAt: Date.now(),
-			nowQueuing: args.nowQueuing,
+			nowQueuing: undefined,
 			matches: args.matches,
 		};
 		if (existing) {

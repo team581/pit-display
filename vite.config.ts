@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react';
+import { unplugin as stylex } from '@stylexjs/unplugin';
 import { defineConfig, lazyPlugins } from 'vite-plus';
 import { VitePWA } from 'vite-plugin-pwa';
 
@@ -38,6 +39,7 @@ export default defineConfig({
 		],
 	},
 	plugins: lazyPlugins(() => [
+		...(process.env.VITEST ? [] : [stylex.vite()]),
 		react(),
 		VitePWA({
 			registerType: 'autoUpdate',
