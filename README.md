@@ -17,7 +17,7 @@ vp dev
 In a second terminal, run the Convex function watcher:
 
 ```sh
-npx convex dev
+pnpm convex dev
 ```
 
 Open the local URL shown by Vite+ and use landscape orientation for the intended display layout.
@@ -52,7 +52,7 @@ Configure the same shared token as `NEXUS_WEBHOOK_TOKEN` in the Convex deploymen
 To pull an event immediately instead of waiting for its next webhook update:
 
 ```sh
-npx convex run frcNexus:pullEventStatus '{"eventKey":"demo9705"}'
+pnpm convex run frcNexus:pullEventStatus '{"eventKey":"demo9705"}'
 ```
 
 ## Validation
