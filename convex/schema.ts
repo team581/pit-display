@@ -34,7 +34,5 @@ export default defineSchema({
 		receivedAt: v.number(),
 		nowQueuing: v.optional(v.string()),
 		matches: v.array(NexusMatch),
-	})
-		.index('by_eventKey', ['eventKey'])
-		.index('by_dataAsOfTime', ['dataAsOfTime']),
+	}).index('by_dataAsOfTime', ['dataAsOfTime']),
 });

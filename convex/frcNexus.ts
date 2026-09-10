@@ -72,11 +72,8 @@ export const processEventStatus = internalMutation({
 	handler: async (ctx, args) => {
 		if (!args.teamIsPresent) return null;
 
-		const existing = await ctx.db
-			.query('eventStatuses')
-			.withIndex('by_eventKey', (q) => q.eq('eventKey', args.eventKey))
-			.unique();
-		if (existing && existing.dataAsOfTime >= args.dataAsOfTime) return null;
+		const activeEvent = await ctx.db.query('eventStatuses').withIndex('by_dataAsOfTime').order('desc').first();
+		if (activeEvent && activeEvent.dataAsOfTime >= args.dataAsOfTime) return null;
 
 		const snapshot = {
 			dataAsOfTime: args.dataAsOfTime,
@@ -84,9 +81,10 @@ export const processEventStatus = internalMutation({
 			nowQueuing: undefined,
 			matches: args.matches,
 		};
-		if (existing) {
-			await ctx.db.patch(existing._id, snapshot);
+		if (activeEvent?.eventKey === args.eventKey) {
+			await ctx.db.patch(activeEvent._id, snapshot);
 		} else {
+			if (activeEvent) await ctx.db.delete(activeEvent._id);
 			await ctx.db.insert('eventStatuses', { eventKey: args.eventKey, ...snapshot });
 		}
 		return null;
