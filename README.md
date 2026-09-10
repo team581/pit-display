@@ -22,6 +22,12 @@ npx convex dev
 
 Open the local URL shown by Vite+ and use landscape orientation for the intended display layout.
 
+## Install on iPad
+
+Open the deployed site in Safari, tap **Share**, then choose **Add to Home Screen**. The installed app launches in
+landscape as a standalone display and keeps the frontend available offline; live match data still requires a network
+connection.
+
 ## FRC Nexus webhook
 
 Register this URL as a **Live event status** webhook in FRC Nexus:

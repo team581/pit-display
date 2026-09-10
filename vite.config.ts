@@ -1,5 +1,6 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig, lazyPlugins } from 'vite-plus';
+import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -35,5 +36,26 @@ export default defineConfig({
 			},
 		],
 	},
-	plugins: lazyPlugins(() => [react()]),
+	plugins: lazyPlugins(() => [
+		react(),
+		VitePWA({
+			registerType: 'autoUpdate',
+			includeAssets: ['team-581.svg'],
+			pwaAssets: {
+				config: true,
+			},
+			manifest: {
+				id: '/',
+				name: 'Team 581 Pit Display',
+				short_name: 'Pit Display',
+				description: "Team 581's live match and queue dashboard.",
+				start_url: '/',
+				scope: '/',
+				display: 'standalone',
+				orientation: 'landscape',
+				background_color: '#303030',
+				theme_color: '#282828',
+			},
+		}),
+	]),
 });
