@@ -67,7 +67,7 @@ const TIME_KEYS = [
 ] as const;
 
 function withoutNullTeams(teams: (string | null)[] | null | undefined): string[] {
-	return teams?.filter((team): team is string => team !== null) ?? [];
+	return teams?.filter((team) => team !== null) ?? [];
 }
 
 function withoutNullTimes(times: Match['times']): MatchTimes {
