@@ -1,4 +1,5 @@
 import { v } from 'convex/values';
+import { TEAM_NUMBER, TEAM_NUMBER_STRING } from '../src/team';
 import { query } from './_generated/server';
 import { MatchStatus, MatchTimes } from './schema';
 
@@ -11,7 +12,7 @@ const dashboardMatch = v.object({
 });
 
 export const get = query({
-	args: { teamNumber: v.number() },
+	args: {},
 	returns: v.nullable(
 		v.object({
 			teamNumber: v.number(),
@@ -21,13 +22,8 @@ export const get = query({
 			teamMatches: v.array(dashboardMatch),
 		}),
 	),
-	handler: async (ctx, args) => {
-		if (!Number.isInteger(args.teamNumber) || args.teamNumber < 1 || args.teamNumber > 99_999) return null;
-		const teamNumber = String(args.teamNumber);
-		const recentStatuses = await ctx.db.query('eventStatuses').withIndex('by_dataAsOfTime').order('desc').take(10);
-		const status = recentStatuses.find((eventStatus) =>
-			eventStatus.matches.some((match) => match.redTeams.includes(teamNumber) || match.blueTeams.includes(teamNumber)),
-		);
+	handler: async (ctx) => {
+		const status = await ctx.db.query('eventStatuses').withIndex('by_dataAsOfTime').order('desc').first();
 		if (!status) return null;
 		let currentMatchIndex = -1;
 		for (let index = status.matches.length - 1; index >= 0; index--) {
@@ -38,13 +34,13 @@ export const get = query({
 		}
 
 		return {
-			teamNumber: args.teamNumber,
+			teamNumber: TEAM_NUMBER,
 			eventKey: status.eventKey,
 			updatedAt: status.receivedAt,
 			currentMatch: status.matches[currentMatchIndex] ?? null,
 			teamMatches: status.matches
 				.slice(currentMatchIndex + 1)
-				.filter((match) => match.redTeams.includes(teamNumber) || match.blueTeams.includes(teamNumber)),
+				.filter((match) => match.redTeams.includes(TEAM_NUMBER_STRING) || match.blueTeams.includes(TEAM_NUMBER_STRING)),
 		};
 	},
 });

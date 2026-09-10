@@ -2,7 +2,7 @@
 
 An iPad-friendly dashboard for keeping the pit crew aware of the team's current match, queue timing, alliance color, and upcoming partners.
 
-The display reads realtime event snapshots from Convex. FRC Nexus sends full event updates to `/frc-nexus/webhook`; Convex keeps the newest snapshot for each event and reactively updates the dashboard.
+The display reads realtime event snapshots from Convex. FRC Nexus sends full event updates to `/frc-nexus/webhook`; the webhook ignores events that do not include Team 581, and Convex reactively updates the dashboard from the newest relevant snapshot.
 
 ## Development
 

@@ -4,12 +4,19 @@ import { env } from '../src/env';
 import { extractEventStatus } from '../src/frc-nexus/extract-event-status';
 import { FrcNexus } from '../src/frc-nexus/generated/sdk.gen';
 import { zEventStatus } from '../src/frc-nexus/generated/zod.gen';
+import { TEAM_NUMBER_STRING } from '../src/team';
 import { internal } from './_generated/api';
 import { internalAction, internalMutation } from './_generated/server';
 import { app } from './lib/hono';
 import { NexusMatch } from './schema';
 
 const frcNexus = new FrcNexus();
+
+function includesTeam(matches: { redTeams?: (string | null)[] | null; blueTeams?: (string | null)[] | null }[]) {
+	return matches.some(
+		(match) => match.redTeams?.includes(TEAM_NUMBER_STRING) || match.blueTeams?.includes(TEAM_NUMBER_STRING),
+	);
+}
 
 const webhookRoute = createRoute({
 	method: 'post',
@@ -29,7 +36,10 @@ const webhookRoute = createRoute({
 app.openapi(webhookRoute, async (c) => {
 	if (c.req.header('Nexus-Token') !== env.NEXUS_WEBHOOK_TOKEN) return c.text('Unauthorized', 401);
 
-	const eventStatus = extractEventStatus(c.req.valid('json'));
+	const data = c.req.valid('json');
+	if (!data.matches || !includesTeam(data.matches)) return c.text('OK', 200);
+
+	const eventStatus = extractEventStatus(data);
 	if (eventStatus) await c.env.runMutation(internal.frcNexus.processEventStatus, eventStatus);
 	return c.text('OK', 200);
 });
@@ -60,6 +70,8 @@ export const processEventStatus = internalMutation({
 	},
 	returns: v.null(),
 	handler: async (ctx, args) => {
+		if (!includesTeam(args.matches)) return null;
+
 		const existing = await ctx.db
 			.query('eventStatuses')
 			.withIndex('by_eventKey', (q) => q.eq('eventKey', args.eventKey))
