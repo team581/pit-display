@@ -8,12 +8,13 @@ export default defineConfig({
 		'*': 'vp check --fix',
 	},
 	fmt: {
-		ignorePatterns: ['convex/_generated/**'],
+		ignorePatterns: ['convex/_generated/**', 'src/frc-nexus/generated/**'],
 		printWidth: 120,
 		singleQuote: true,
 		useTabs: true,
 	},
 	lint: {
+		ignorePatterns: ['convex/_generated/**', 'src/frc-nexus/generated/**'],
 		plugins: ['react', 'typescript', 'oxc'],
 		rules: {
 			'react/rules-of-hooks': 'error',

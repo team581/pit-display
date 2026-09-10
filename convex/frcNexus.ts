@@ -1,11 +1,15 @@
 import { createRoute, z } from '@hono/zod-openapi';
 import { v } from 'convex/values';
 import { env } from '../src/env';
-import { extractEventStatus, zEventStatus } from '../src/frc-nexus/schema';
+import { extractEventStatus } from '../src/frc-nexus/extract-event-status';
+import { FrcNexus } from '../src/frc-nexus/generated/sdk.gen';
+import { zEventStatus } from '../src/frc-nexus/generated/zod.gen';
 import { internal } from './_generated/api';
 import { internalAction, internalMutation } from './_generated/server';
 import { app } from './lib/hono';
 import { NexusMatch } from './schema';
+
+const frcNexus = new FrcNexus();
 
 const webhookRoute = createRoute({
 	method: 'post',
@@ -34,12 +38,8 @@ export const pullEventStatus = internalAction({
 	args: { eventKey: v.string() },
 	returns: v.object({ eventKey: v.string(), dataAsOfTime: v.number(), matchCount: v.number() }),
 	handler: async (ctx, args) => {
-		const response = await fetch(`https://frc.nexus/api/v1/event/${encodeURIComponent(args.eventKey)}`, {
-			headers: { 'Nexus-Api-Key': env.NEXUS_API_KEY },
-		});
-		if (!response.ok) throw new Error(`FRC Nexus returned ${response.status} ${response.statusText}`);
-
-		const eventStatus = extractEventStatus(zEventStatus.parse(await response.json()));
+		const data = await frcNexus.pullLiveEventStatus({ path: { eventKey: args.eventKey } });
+		const eventStatus = extractEventStatus(data);
 		if (!eventStatus) throw new Error('FRC Nexus returned an incomplete event status');
 
 		await ctx.runMutation(internal.frcNexus.processEventStatus, eventStatus);

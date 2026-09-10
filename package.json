@@ -8,6 +8,7 @@
 		"build": "tsc -b && vp build",
 		"deploy": "vp run build && wrangler deploy",
 		"lint": "vp lint",
+		"openapi-ts": "openapi-ts",
 		"preview": "vp preview",
 		"prepare": "vp config"
 	},
@@ -23,6 +24,7 @@
 		"zod": "4.5.4"
 	},
 	"devDependencies": {
+		"@hey-api/openapi-ts": "0.99.0",
 		"@types/node": "24.13.3",
 		"@types/react": "19.2.18",
 		"@types/react-dom": "19.2.7",
