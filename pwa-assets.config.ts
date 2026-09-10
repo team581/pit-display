@@ -7,7 +7,7 @@ export default defineConfig({
 		...minimal2023Preset,
 		maskable: {
 			...minimal2023Preset.maskable,
-			padding: 0.3,
+			padding: 0.4,
 			resizeOptions: {
 				background: appIconBackground,
 			},
