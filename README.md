@@ -2,7 +2,7 @@
 
 An iPad-friendly dashboard for keeping the pit crew aware of the team's current match, queue timing, alliance color, and upcoming partners.
 
-The display reads a dashboard-specific model from Convex. FRC Nexus sends full event updates to `/frc-nexus/webhook`; ingestion trims them to the current field match and the configured team's remaining matches, then a reactive Convex query shapes the newest snapshot for the UI. The browser only formats timestamps for its local time zone.
+The display reads a dashboard-specific model from Convex. FRC Nexus sends full event updates to `/frc-nexus/webhook`; ingestion trims them to the current field match and the configured team's remaining matches, then a reactive Convex query shapes the active event snapshot for the UI. When an update arrives for a new event, its snapshot atomically replaces the previous event's data. The browser only formats timestamps for its local time zone.
 
 ## Development
 
@@ -11,16 +11,11 @@ The project uses Node 26, pnpm 12, React, TypeScript, and Vite+.
 ```sh
 mise install
 vp install
-vp dev
+vp run dev
 ```
 
-In a second terminal, run the Convex function watcher:
-
-```sh
-pnpm convex dev
-```
-
-Open the local URL shown by Vite+ and use landscape orientation for the intended display layout.
+This starts the Convex function watcher and frontend together. Open the Portless URL shown in the terminal and use
+landscape orientation for the intended display layout.
 
 ## Deploy
 
