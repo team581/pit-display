@@ -1,64 +1,71 @@
 import react from '@vitejs/plugin-react';
 import { unplugin as stylex } from '@stylexjs/unplugin';
-import { defineConfig, lazyPlugins } from 'vite-plus';
+import { cleanEnv, url } from 'envalid';
+import { defineConfig, lazyPlugins, loadEnv } from 'vite-plus';
 import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
-export default defineConfig({
-	staged: {
-		'*': 'vp check --fix',
-	},
-	fmt: {
-		ignorePatterns: ['convex/_generated/**', 'src/frc-nexus/generated/**'],
-		printWidth: 120,
-		singleQuote: true,
-		useTabs: true,
-	},
-	lint: {
-		ignorePatterns: ['convex/_generated/**', 'src/frc-nexus/generated/**'],
-		plugins: ['react', 'typescript', 'oxc'],
-		rules: {
-			'react/rules-of-hooks': 'error',
-			'react/only-export-components': [
-				'warn',
+export default defineConfig(({ command, mode }) => {
+	if (command === 'build') {
+		cleanEnv(loadEnv(mode, process.cwd()), { VITE_CONVEX_URL: url() });
+	}
+
+	return {
+		staged: {
+			'*': 'vp check --fix',
+		},
+		fmt: {
+			ignorePatterns: ['convex/_generated/**', 'src/frc-nexus/generated/**'],
+			printWidth: 120,
+			singleQuote: true,
+			useTabs: true,
+		},
+		lint: {
+			ignorePatterns: ['convex/_generated/**', 'src/frc-nexus/generated/**'],
+			plugins: ['react', 'typescript', 'oxc'],
+			rules: {
+				'react/rules-of-hooks': 'error',
+				'react/only-export-components': [
+					'warn',
+					{
+						allowConstantExport: true,
+					},
+				],
+				'vite-plus/prefer-vite-plus-imports': 'error',
+			},
+			options: {
+				typeAware: true,
+				typeCheck: true,
+			},
+			jsPlugins: [
 				{
-					allowConstantExport: true,
+					name: 'vite-plus',
+					specifier: 'vite-plus/oxlint-plugin',
 				},
 			],
-			'vite-plus/prefer-vite-plus-imports': 'error',
 		},
-		options: {
-			typeAware: true,
-			typeCheck: true,
-		},
-		jsPlugins: [
-			{
-				name: 'vite-plus',
-				specifier: 'vite-plus/oxlint-plugin',
-			},
-		],
-	},
-	plugins: lazyPlugins(() => [
-		...(process.env.VITEST ? [] : [stylex.vite()]),
-		react(),
-		VitePWA({
-			registerType: 'autoUpdate',
-			includeAssets: ['team-581.svg'],
-			pwaAssets: {
-				config: true,
-			},
-			manifest: {
-				id: '/',
-				name: 'Team 581 Pit Display',
-				short_name: 'Pit Display',
-				description: "Team 581's live match and queue dashboard.",
-				start_url: '/',
-				scope: '/',
-				display: 'standalone',
-				orientation: 'landscape',
-				background_color: '#303030',
-				theme_color: '#282828',
-			},
-		}),
-	]),
+		plugins: lazyPlugins(() => [
+			...(process.env.VITEST ? [] : [stylex.vite()]),
+			react(),
+			VitePWA({
+				registerType: 'autoUpdate',
+				includeAssets: ['team-581.svg'],
+				pwaAssets: {
+					config: true,
+				},
+				manifest: {
+					id: '/',
+					name: 'Team 581 Pit Display',
+					short_name: 'Pit Display',
+					description: "Team 581's live match and queue dashboard.",
+					start_url: '/',
+					scope: '/',
+					display: 'standalone',
+					orientation: 'landscape',
+					background_color: '#303030',
+					theme_color: '#282828',
+				},
+			}),
+		]),
+	};
 });

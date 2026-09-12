@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"build": "tsc -b && vp build",
-		"deploy": "wrangler deploy && convex deploy",
+		"deploy": "convex deploy --cmd 'vp run build' --cmd-url-env-var-name VITE_CONVEX_URL && wrangler deploy",
 		"dev": "pnpm run \"/^dev:.*/\"",
 		"dev:backend": "convex dev",
 		"dev:frontend": "portless pit.frc581.com vp dev",
