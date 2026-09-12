@@ -11,7 +11,7 @@ const matchType = v.union(
 
 export const dashboardData = v.object({
 	updatedAt: v.number(),
-	currentMatch: v.object({ displayLabel: v.string(), state: v.string() }),
+	currentMatch: v.nullable(v.object({ displayLabel: v.string(), state: v.string() })),
 	nextMatch: v.object({
 		displayLabel: v.string(),
 		scheduledTime: v.nullable(v.number()),
@@ -107,9 +107,8 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 	}
 
 	const currentMatch = status.matches[currentMatchIndex];
-	if (!currentMatch) return null;
-	const parsedCurrentMatch = parseMatchLabel(currentMatch.label);
-	if (!parsedCurrentMatch) return null;
+	const parsedCurrentMatch = currentMatch ? parseMatchLabel(currentMatch.label) : null;
+	if (currentMatch && !parsedCurrentMatch) return null;
 
 	const teamMatches = status.matches
 		.slice(currentMatchIndex + 1)
@@ -128,8 +127,7 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 		if (teams.length !== 3 || teams.some((team) => !Number.isInteger(team))) return [];
 
 		const previousMatch = teamMatches[index - 1] ?? currentMatch;
-		const previousParsedMatch = parseMatchLabel(previousMatch.label);
-		if (!previousParsedMatch) return [];
+		const previousParsedMatch = previousMatch ? parseMatchLabel(previousMatch.label) : null;
 		const queueTime = match.times.actualQueueTime ?? match.times.estimatedQueueTime;
 
 		return [
@@ -140,7 +138,10 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 				scheduledTime: match.times.scheduledStartTime ?? matchStart(match) ?? null,
 				status: match.status === 'On deck' ? 'on-deck' : match.status === 'Now queuing' ? 'queueing' : 'scheduled',
 				queueingAt: queueTime === undefined ? null : queueTime - 20 * 60_000,
-				turnaroundWarning: turnaroundWarningForMatch(match, parsedMatch, previousMatch, previousParsedMatch),
+				turnaroundWarning:
+					previousMatch && previousParsedMatch
+						? turnaroundWarningForMatch(match, parsedMatch, previousMatch, previousParsedMatch)
+						: null,
 				alliance,
 				teams,
 			},
@@ -149,7 +150,10 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 
 	return {
 		updatedAt: status.receivedAt,
-		currentMatch: { displayLabel: parsedCurrentMatch.displayLabel, state: currentMatch.status },
+		currentMatch:
+			currentMatch && parsedCurrentMatch
+				? { displayLabel: parsedCurrentMatch.displayLabel, state: currentMatch.status }
+				: null,
 		nextMatch: {
 			displayLabel: parsedNextMatch.displayLabel,
 			scheduledTime: nextMatch.times.scheduledStartTime ?? matchStart(nextMatch) ?? null,

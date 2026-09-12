@@ -81,7 +81,36 @@ describe('createDashboardData', () => {
 		});
 	});
 
-	it('returns null until both an on-field match and a following team match exist', () => {
+	it('builds the display model before the event starts', () => {
+		const dashboard = createDashboardData({
+			receivedAt: now - 5_000,
+			matches: [
+				match('Qualification 3', {
+					redTeams: ['581', '254', '1678'],
+					times: {
+						estimatedQueueTime: now + 5 * minute,
+						estimatedOnDeckTime: now + 10 * minute,
+						estimatedStartTime: now + 15 * minute,
+					},
+				}),
+				match('Qualification 8', {
+					blueTeams: ['581', '1323', '971'],
+					times: { estimatedStartTime: now + 60 * minute },
+				}),
+			],
+		});
+
+		expect(dashboard).toMatchObject({
+			currentMatch: null,
+			nextMatch: { displayLabel: 'Q3', scheduledTime: now + 15 * minute },
+			upcomingMatches: [
+				{ displayLabel: 'Q3', turnaroundWarning: null },
+				{ displayLabel: 'Q8', turnaroundWarning: null },
+			],
+		});
+	});
+
+	it('returns null until a team match exists', () => {
 		expect(createDashboardData({ receivedAt: now, matches: [] })).toBeNull();
 		expect(
 			createDashboardData({ receivedAt: now, matches: [match('Qualification 10', { status: 'On field' })] }),

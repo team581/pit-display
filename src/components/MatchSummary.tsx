@@ -20,8 +20,10 @@ export function MatchSummary({
 					<h2 {...stylex.props(styles.heading)}>On field</h2>
 				</div>
 				<div {...stylex.props(styles.cardBody)}>
-					<strong {...stylex.props(styles.matchNumber)}>{currentMatch.displayLabel}</strong>
-					<div {...stylex.props(styles.matchDetail, styles.fieldState)}>{currentMatch.state}</div>
+					<strong {...stylex.props(styles.matchNumber)}>{currentMatch?.displayLabel ?? '—'}</strong>
+					<div {...stylex.props(styles.matchDetail, styles.fieldState)}>
+						{currentMatch?.state ?? 'Event not started'}
+					</div>
 				</div>
 			</article>
 
