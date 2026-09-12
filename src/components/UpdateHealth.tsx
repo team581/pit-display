@@ -1,29 +1,47 @@
 import * as stylex from '@stylexjs/stylex';
 import type { ReactNode } from 'react';
+import { formatRelativeTime } from '../format-time';
 import { styles } from './UpdateHealth.stylex';
 
 export function UpdateHealth({
+	connection,
 	receivedAt,
 	now,
 	children,
 }: {
+	connection: 'connected' | 'connecting' | 'reconnecting';
 	receivedAt?: number;
 	now: number;
 	children?: ReactNode;
 }) {
-	const secondsAgo = receivedAt === undefined ? null : Math.max(0, Math.floor((now - receivedAt) / 1000));
-	const health = secondsAgo === null || secondsAgo >= 30 ? 'stale' : secondsAgo < 10 ? 'fresh' : 'delayed';
+	const updateAge = receivedAt === undefined ? null : formatRelativeTime(receivedAt, now, 'in ');
+	const label =
+		connection === 'connected' ? (
+			updateAge === null ? (
+				<>Live · {children}</>
+			) : (
+				`Live · event data updated ${updateAge}`
+			)
+		) : connection === 'reconnecting' ? (
+			'Reconnecting'
+		) : (
+			children
+		);
 
 	return (
 		<div
 			{...stylex.props(
 				styles.container,
-				health === 'fresh' ? styles.fresh : health === 'delayed' ? styles.delayed : styles.stale,
+				connection === 'connected'
+					? styles.connected
+					: connection === 'connecting'
+						? styles.connecting
+						: styles.reconnecting,
 			)}
 			role="status"
 		>
 			<span {...stylex.props(styles.dot)} />
-			<span>{secondsAgo === null ? children : `Updated ${secondsAgo}s ago`}</span>
+			<span>{label}</span>
 		</div>
 	);
 }

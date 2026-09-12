@@ -27,9 +27,9 @@ export const styles = stylex.create({
 		fontWeight: 750,
 		fontVariantNumeric: 'tabular-nums',
 	},
-	fresh: { color: '#51cf78' },
-	delayed: { color: colors.gold },
-	stale: { color: '#ff6b6b' },
+	connected: { color: '#51cf78' },
+	connecting: { color: colors.gold },
+	reconnecting: { color: '#ff6b6b' },
 	dot: {
 		width: spacing.md,
 		height: spacing.md,

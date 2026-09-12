@@ -1,6 +1,6 @@
 import '@fontsource-variable/source-sans-3';
 import * as stylex from '@stylexjs/stylex';
-import { useQuery } from 'convex/react';
+import { useConvexConnectionState, useQuery } from 'convex/react';
 import { useEffect, useState } from 'react';
 import { api } from '../convex/_generated/api';
 import { styles } from './App.stylex';
@@ -13,6 +13,7 @@ import { TEAM_NUMBER } from './team';
 function App() {
 	const [now, setNow] = useState(Date.now);
 	const dashboard = useQuery(api.dashboard.get);
+	const { hasEverConnected, isWebSocketConnected } = useConvexConnectionState();
 
 	useEffect(() => {
 		const interval = window.setInterval(() => setNow(Date.now()), 1000);
@@ -23,7 +24,11 @@ function App() {
 		<main {...stylex.props(styles.dashboard)}>
 			<header {...stylex.props(styles.topbar)}>
 				<TeamIdentity />
-				<UpdateHealth receivedAt={dashboard?.updatedAt} now={now}>
+				<UpdateHealth
+					connection={isWebSocketConnected ? 'connected' : hasEverConnected ? 'reconnecting' : 'connecting'}
+					receivedAt={dashboard?.updatedAt}
+					now={now}
+				>
 					{dashboard === undefined ? 'Connecting' : 'No event data'}
 				</UpdateHealth>
 			</header>
