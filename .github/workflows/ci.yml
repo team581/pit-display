@@ -9,6 +9,8 @@ jobs:
     name: Build and test
     timeout-minutes: 5
     runs-on: ubuntu-latest
+    env:
+      VITE_CONVEX_URL: https://stoic-mouse-746.convex.cloud
     steps:
       - uses: actions/checkout@v7
       - uses: voidzero-dev/setup-vp@v1.19.0
@@ -17,5 +19,3 @@ jobs:
       - run: vp check
       - run: vp exec knip
       - run: vp build
-        env:
-          VITE_CONVEX_URL: https://stoic-mouse-746.convex.cloud
