@@ -1,5 +1,5 @@
-import type { EventStatus, Match } from './generated/types.gen';
 import { TEAM_NUMBER_STRING } from '../team';
+import type { EventStatus, Match } from './generated/types.gen';
 
 function withoutNullTeams(teams: (string | null)[] | null | undefined): string[] {
 	return teams?.filter((team) => team !== null) ?? [];

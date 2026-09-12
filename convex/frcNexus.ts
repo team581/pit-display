@@ -1,12 +1,12 @@
 import { createRoute, z } from '@hono/zod-openapi';
 import { v } from 'convex/values';
-import { env } from '../src/env';
 import { extractEventStatus } from '../src/frc-nexus/extract-event-status';
 import { FrcNexus } from '../src/frc-nexus/generated/sdk.gen';
 import { zEventStatus } from '../src/frc-nexus/generated/zod.gen';
 import { TEAM_NUMBER_STRING } from '../src/team';
 import { internal } from './_generated/api';
 import { internalAction, internalMutation } from './_generated/server';
+import { env } from './env';
 import { app } from './lib/hono';
 import { NexusMatch } from './schema';
 
@@ -48,7 +48,10 @@ export const pullEventStatus = internalAction({
 	args: { eventKey: v.string() },
 	returns: v.object({ eventKey: v.string(), dataAsOfTime: v.number(), matchCount: v.number() }),
 	handler: async (ctx, args) => {
-		const data = await frcNexus.pullLiveEventStatus({ path: { eventKey: args.eventKey } });
+		const data = await frcNexus.pullLiveEventStatus({
+			auth: env.NEXUS_API_KEY,
+			path: { eventKey: args.eventKey },
+		});
 		const eventStatus = extractEventStatus(data);
 		if (!eventStatus) throw new Error('FRC Nexus returned an incomplete event status');
 
