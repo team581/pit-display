@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
-import { colors } from './theme.stylex';
+import { colors, spacing } from './theme.stylex';
 
 const portrait = '@media (max-width: 850px), (orientation: portrait)';
 const narrow = '@media (max-width: 620px)';
@@ -16,38 +16,38 @@ export const styles = stylex.create({
 	},
 	topbar: {
 		display: 'flex',
-		height: 'clamp(70px, 9.25vh, 95px)',
+		height: '5rem',
 		alignItems: 'center',
 		justifyContent: 'space-between',
-		paddingBlock: '8px',
+		paddingBlock: spacing.sm,
 		paddingInline: {
-			default: 'clamp(22px, 3vw, 46px)',
-			[narrow]: '18px',
+			default: spacing['2xl'],
+			[narrow]: spacing.lg,
 		},
 		backgroundColor: colors.charcoal,
 		borderBottomColor: colors.orange,
 		borderBottomStyle: 'solid',
-		borderBottomWidth: '5px',
+		borderBottomWidth: '4px',
 	},
 	dashboardContent: {
 		display: 'flex',
 		flexDirection: 'column',
-		gap: 'clamp(14px, 2.2vh, 24px)',
-		padding: 'clamp(14px, 2.1vh, 22px)',
+		gap: spacing.lg,
+		padding: spacing.lg,
 	},
 	emptyState: {
 		display: 'grid',
-		minHeight: 'calc(100dvh - 6rem)',
+		minHeight: 'calc(100svh - 5rem)',
 		placeContent: 'center',
-		padding: '2rem',
+		padding: spacing['2xl'],
 		textAlign: 'center',
 	},
 	emptyStateHeading: {
 		margin: 0,
-		fontSize: 'clamp(2rem, 5vw, 4rem)',
+		fontSize: { default: '4rem', [portrait]: '3rem', [narrow]: '2rem' },
 	},
 	emptyStateText: {
-		marginBlockStart: '0.5rem',
+		marginBlockStart: spacing.sm,
 		marginBlockEnd: 0,
 		color: colors.muted,
 		fontSize: '1.25rem',

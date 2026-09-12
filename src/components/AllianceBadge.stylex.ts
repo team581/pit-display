@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
-import { colors } from '../theme.stylex';
+import { colors, spacing } from '../theme.stylex';
 
 const narrow = '@media (max-width: 620px)';
 
@@ -7,13 +7,13 @@ export const styles = stylex.create({
 	container: {
 		display: 'flex',
 		minWidth: 0,
-		minHeight: 'clamp(58px, 6.8vh, 70px)',
+		minHeight: '4rem',
 		alignItems: 'center',
 		overflow: 'hidden',
 		borderWidth: '2px',
 		borderStyle: 'solid',
 		borderColor: colors.line,
-		borderRadius: '10px',
+		borderRadius: spacing.sm,
 		gridColumn: {
 			[narrow]: '1 / -1',
 		},
@@ -25,18 +25,18 @@ export const styles = stylex.create({
 		width: '100%',
 		gridTemplateColumns: 'repeat(3, 1fr)',
 		alignItems: 'center',
-		gap: '4px',
-		paddingInline: 'clamp(10px, 1.4vw, 22px)',
+		gap: spacing.xs,
+		paddingInline: spacing.lg,
 	},
 	team: {
 		color: 'white',
-		fontSize: 'clamp(1rem, 1.9vw, 1.55rem)',
+		fontSize: '1.5rem',
 		textAlign: 'center',
 	},
 	ourTeam: {
 		textDecorationLine: 'underline',
 		textDecorationColor: colors.gold,
 		textDecorationThickness: '3px',
-		textUnderlineOffset: '7px',
+		textUnderlineOffset: spacing.sm,
 	},
 });

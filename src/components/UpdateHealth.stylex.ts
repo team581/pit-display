@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
-import { colors } from '../theme.stylex';
+import { colors, spacing } from '../theme.stylex';
 
 const narrow = '@media (max-width: 620px)';
 
@@ -7,23 +7,23 @@ export const styles = stylex.create({
 	container: {
 		display: 'flex',
 		minWidth: {
-			default: '176px',
+			default: '11rem',
 			[narrow]: 0,
 		},
 		alignItems: 'center',
 		justifyContent: 'center',
-		gap: '10px',
-		paddingBlock: '10px',
+		gap: spacing.sm,
+		paddingBlock: spacing.sm,
 		paddingInline: {
-			default: '16px',
-			[narrow]: '11px',
+			default: spacing.lg,
+			[narrow]: spacing.md,
 		},
 		borderWidth: '2px',
 		borderStyle: 'solid',
 		borderColor: 'currentColor',
-		borderRadius: '10px',
+		borderRadius: spacing.sm,
 		backgroundColor: '#1f1f1f',
-		fontSize: 'clamp(0.85rem, 1.4vw, 1.05rem)',
+		fontSize: '1rem',
 		fontWeight: 750,
 		fontVariantNumeric: 'tabular-nums',
 	},
@@ -31,8 +31,8 @@ export const styles = stylex.create({
 	delayed: { color: colors.gold },
 	stale: { color: '#ff6b6b' },
 	dot: {
-		width: '11px',
-		height: '11px',
+		width: spacing.md,
+		height: spacing.md,
 		borderRadius: '50%',
 		backgroundColor: 'currentColor',
 	},

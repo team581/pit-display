@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
-import { colors } from '../theme.stylex';
+import { colors, spacing } from '../theme.stylex';
 
 const portrait = '@media (max-width: 850px), (orientation: portrait)';
 const narrow = '@media (max-width: 620px)';
@@ -10,25 +10,25 @@ export const styles = stylex.create({
 		borderWidth: '2px',
 		borderStyle: 'solid',
 		borderColor: colors.line,
-		borderRadius: '12px',
+		borderRadius: spacing.md,
 		backgroundColor: colors.surface,
 	},
 	header: {
 		display: 'flex',
-		height: 'clamp(54px, 7vh, 70px)',
+		height: '4rem',
 		alignItems: 'center',
-		paddingInline: 'clamp(20px, 2.4vw, 36px)',
+		paddingInline: spacing.xl,
 		backgroundColor: colors.surfaceRaised,
 	},
 	heading: {
 		margin: 0,
-		fontSize: 'clamp(1.2rem, 2.2vw, 2rem)',
+		fontSize: '1.75rem',
 		fontWeight: 850,
-		letterSpacing: '0.025em',
+		letterSpacing: '0.02em',
 		textTransform: 'uppercase',
 	},
 	rows: {
-		maxHeight: 'clamp(234px, 33.9vh, 348px)',
+		maxHeight: '16rem',
 		overflowY: 'auto',
 		overscrollBehavior: 'contain',
 		scrollbarColor: `${colors.orange} #252525`,
@@ -36,33 +36,33 @@ export const styles = stylex.create({
 	},
 	matchRow: {
 		display: 'grid',
-		minHeight: 'clamp(78px, 11.3vh, 116px)',
+		minHeight: '6rem',
 		gridTemplateColumns: {
-			default: 'minmax(82px, 0.65fr) minmax(150px, 1.05fr) minmax(190px, 1.4fr) minmax(320px, 2.4fr)',
-			[portrait]: '74px 1fr 1.4fr',
-			[narrow]: '58px 1fr',
+			default: 'minmax(5rem, 0.65fr) minmax(9rem, 1fr) minmax(12rem, 1.4fr) minmax(20rem, 2.4fr)',
+			[portrait]: '5rem 1fr 1.4fr',
+			[narrow]: '4rem 1fr',
 		},
 		alignItems: 'center',
-		columnGap: { default: 'clamp(12px, 2vw, 30px)', [narrow]: '14px' },
-		rowGap: { default: 'clamp(12px, 2vw, 30px)', [narrow]: '8px' },
-		paddingBlock: { default: '8px', [narrow]: '14px' },
-		paddingInline: { default: 'clamp(20px, 3.2vw, 48px)', [narrow]: '14px' },
+		columnGap: { default: spacing.xl, [narrow]: spacing.md },
+		rowGap: { default: spacing.lg, [narrow]: spacing.sm },
+		paddingBlock: { default: spacing.sm, [narrow]: spacing.md },
+		paddingInline: { default: spacing['2xl'], [narrow]: spacing.md },
 		borderTopWidth: '1px',
 		borderTopStyle: 'solid',
 		borderTopColor: colors.line,
 	},
 	matchNumber: {
-		fontSize: 'clamp(3rem, 5vw, 4.35rem)',
+		fontSize: '4rem',
 		fontWeight: 900,
 		fontVariationSettings: "'wdth' 92",
 		lineHeight: 1,
 	},
 	matchTime: { display: 'flex', flexDirection: 'column', lineHeight: 1.12 },
-	relativeTime: { fontSize: 'clamp(1.05rem, 2vw, 1.65rem)' },
+	relativeTime: { fontSize: '1.5rem' },
 	scheduledTime: {
-		marginTop: '5px',
+		marginTop: spacing.xs,
 		color: 'white',
-		fontSize: 'clamp(1.05rem, 1.75vw, 1.4rem)',
+		fontSize: '1.25rem',
 		fontWeight: 800,
 	},
 });
