@@ -9,7 +9,6 @@
  */
 
 import type * as dashboard from "../dashboard.js";
-import type * as env from "../env.js";
 import type * as frcNexus from "../frcNexus.js";
 import type * as http from "../http.js";
 import type * as lib_dashboard from "../lib/dashboard.js";
@@ -23,7 +22,6 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   dashboard: typeof dashboard;
-  env: typeof env;
   frcNexus: typeof frcNexus;
   http: typeof http;
   "lib/dashboard": typeof lib_dashboard;

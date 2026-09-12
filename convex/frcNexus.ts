@@ -5,8 +5,7 @@ import { FrcNexus } from '../src/frc-nexus/generated/sdk.gen';
 import { zEventStatus } from '../src/frc-nexus/generated/zod.gen';
 import { TEAM_NUMBER_STRING } from '../src/team';
 import { internal } from './_generated/api';
-import { internalAction, internalMutation } from './_generated/server';
-import { env } from './env';
+import { env, internalAction, internalMutation } from './_generated/server';
 import { app } from './lib/hono';
 import { NexusMatch } from './schema';
 
