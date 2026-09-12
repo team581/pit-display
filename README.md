@@ -50,8 +50,6 @@ To pull an event immediately instead of waiting for its next webhook update:
 pnpm convex run frcNexus:pullEventStatus '{"eventKey":"demo9705"}'
 ```
 
-For local demo-event testing, set `DEMO_MODE` in `src/team.ts` to `true`. Demo mode uses Team 100; development deployments should leave it enabled.
-
 ## Validation
 
 ```sh
