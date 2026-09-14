@@ -23,7 +23,6 @@ function withoutNullTimes(times: Match['times']) {
 		...(times?.scheduledStartTime != null ? { scheduledStartTime: times.scheduledStartTime } : {}),
 		...(times?.estimatedQueueTime != null ? { estimatedQueueTime: times.estimatedQueueTime } : {}),
 		...(times?.estimatedOnDeckTime != null ? { estimatedOnDeckTime: times.estimatedOnDeckTime } : {}),
-		...(times?.estimatedOnFieldTime != null ? { estimatedOnFieldTime: times.estimatedOnFieldTime } : {}),
 		...(times?.estimatedStartTime != null ? { estimatedStartTime: times.estimatedStartTime } : {}),
 		...(times?.actualQueueTime != null ? { actualQueueTime: times.actualQueueTime } : {}),
 		...(times?.actualOnDeckTime != null ? { actualOnDeckTime: times.actualOnDeckTime } : {}),

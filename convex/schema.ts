@@ -12,7 +12,6 @@ export const MatchTimes = v.object({
 	scheduledStartTime: v.optional(v.number()),
 	estimatedQueueTime: v.optional(v.number()),
 	estimatedOnDeckTime: v.optional(v.number()),
-	estimatedOnFieldTime: v.optional(v.number()),
 	estimatedStartTime: v.optional(v.number()),
 	actualQueueTime: v.optional(v.number()),
 	actualOnDeckTime: v.optional(v.number()),

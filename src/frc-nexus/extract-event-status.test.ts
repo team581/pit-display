@@ -48,7 +48,7 @@ describe('extractEventStatus', () => {
 					status: 'Queuing soon',
 					redTeams: ['1', '2', '3'],
 					blueTeams: ['581', '5', '6'],
-					times: { scheduledStartTime: 200, estimatedOnFieldTime: 190, actualOnFieldTime: 195 },
+					times: { scheduledStartTime: 200, actualOnFieldTime: 195 },
 				},
 			],
 		});
