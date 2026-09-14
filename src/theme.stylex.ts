@@ -3,9 +3,8 @@ import * as stylex from '@stylexjs/stylex';
 export const colors = stylex.defineVars({
 	maroon: '#591616',
 	orange: '#e86d38',
-	orangeDark: '#c9462d',
 	gold: '#fabc3c',
-	charcoal: '#1a1111',
+	onAccent: '#171717',
 	surface: '#271d1d',
 	surfaceRaised: '#322827',
 	background: '#171717',
