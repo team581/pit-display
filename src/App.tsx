@@ -1,4 +1,3 @@
-import '@fontsource-variable/source-sans-3';
 import * as stylex from '@stylexjs/stylex';
 import { useConvexConnectionState, useQuery } from 'convex/react';
 import { useEffect, useState } from 'react';
@@ -8,6 +7,7 @@ import { MatchSchedule } from './components/MatchSchedule';
 import { MatchSummary } from './components/MatchSummary';
 import { TeamIdentity } from './components/TeamIdentity';
 import { UpdateHealth } from './components/UpdateHealth';
+import type { Dashboard as DashboardData } from './dashboard';
 import { TEAM_NUMBER } from './team';
 
 function App() {
@@ -20,11 +20,27 @@ function App() {
 		return () => window.clearInterval(interval);
 	}, []);
 
+	return <Dashboard dashboard={dashboard} connected={isWebSocketConnected} now={now} />;
+}
+
+export function AppFallback() {
+	return <Dashboard dashboard={undefined} connected={false} now={0} />;
+}
+
+function Dashboard({
+	dashboard,
+	connected,
+	now,
+}: {
+	dashboard: DashboardData | null | undefined;
+	connected: boolean;
+	now: number;
+}) {
 	return (
 		<main {...stylex.props(styles.dashboard)}>
 			<header {...stylex.props(styles.topbar)}>
 				<TeamIdentity />
-				<UpdateHealth connected={isWebSocketConnected} receivedAt={dashboard?.updatedAt} now={now} />
+				<UpdateHealth connected={connected} receivedAt={dashboard?.updatedAt} now={now} />
 			</header>
 
 			{dashboard ? (

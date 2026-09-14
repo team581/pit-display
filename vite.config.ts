@@ -1,8 +1,8 @@
 import react from '@vitejs/plugin-react';
 import { unplugin as stylex } from '@stylexjs/unplugin';
+import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import { cleanEnv, url } from 'envalid';
 import { defineConfig, lazyPlugins, loadEnv } from 'vite-plus';
-import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
@@ -15,13 +15,13 @@ export default defineConfig(({ command, mode }) => {
 			'*': 'vp check --fix',
 		},
 		fmt: {
-			ignorePatterns: ['convex/_generated/**', 'src/frc-nexus/generated/**'],
+			ignorePatterns: ['.wrangler/**', 'convex/_generated/**', 'src/frc-nexus/generated/**', 'src/routeTree.gen.ts'],
 			printWidth: 120,
 			singleQuote: true,
 			useTabs: true,
 		},
 		lint: {
-			ignorePatterns: ['convex/_generated/**', 'src/frc-nexus/generated/**'],
+			ignorePatterns: ['.wrangler/**', 'convex/_generated/**', 'src/frc-nexus/generated/**', 'src/routeTree.gen.ts'],
 			plugins: ['react', 'typescript', 'oxc'],
 			rules: {
 				'react/rules-of-hooks': 'error',
@@ -45,31 +45,15 @@ export default defineConfig(({ command, mode }) => {
 			],
 		},
 		plugins: lazyPlugins(() => [
-			...(process.env.VITEST ? [] : [stylex.vite()]),
+			...(process.env.VITEST
+				? []
+				: [
+						tanstackStart({
+							prerender: { enabled: true },
+						}),
+						stylex.vite(),
+					]),
 			react(),
-			VitePWA({
-				registerType: 'autoUpdate',
-				workbox: {
-					clientsClaim: true,
-					skipWaiting: true,
-				},
-				includeAssets: ['team-581.svg'],
-				pwaAssets: {
-					config: true,
-				},
-				manifest: {
-					id: '/',
-					name: 'Team 581 Pit Display',
-					short_name: 'Pit Display',
-					description: "Team 581's live match and queue dashboard.",
-					start_url: '/',
-					scope: '/',
-					display: 'standalone',
-					orientation: 'landscape',
-					background_color: '#171717',
-					theme_color: '#591616',
-				},
-			}),
 		]),
 	};
 });

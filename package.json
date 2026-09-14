@@ -4,7 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"build": "tsc -b && vp build",
+		"build": "vp build && node scripts/build-pwa.ts && tsc -b",
 		"deploy": "convex deploy --cmd 'vp run build' --cmd-url-env-var-name VITE_CONVEX_URL && wrangler deploy",
 		"dev": "pnpm run \"/^dev:.*/\"",
 		"dev:backend": "convex dev",
@@ -18,6 +18,8 @@
 		"@fontsource-variable/source-sans-3": "5.3.0",
 		"@hono/zod-openapi": "1.6.3",
 		"@stylexjs/stylex": "0.19.0",
+		"@tanstack/react-router": "^1.170.35",
+		"@tanstack/react-start": "^1.168.52",
 		"convex": "^1.45.0",
 		"convex-helpers": "0.1.124",
 		"envalid": "8.2.0",
@@ -40,8 +42,8 @@
 		"portless": "0.15.6",
 		"typescript": "7.0.2",
 		"vite": "catalog:",
-		"vite-plugin-pwa": "1.3.0",
 		"vite-plus": "catalog:",
+		"workbox-build": "^7.4.1",
 		"wrangler": "^4.130.0"
 	},
 	"devEngines": {

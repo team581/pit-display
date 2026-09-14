@@ -12,8 +12,7 @@
 	box-sizing: border-box;
 }
 html,
-body,
-#root {
+body {
 	min-width: 320px;
 	min-height: 100%;
 	margin: 0;

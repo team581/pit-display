@@ -1,0 +1,18 @@
+{
+	"id": "/",
+	"name": "Team 581 Pit Display",
+	"short_name": "Pit Display",
+	"description": "Team 581's live match and queue dashboard.",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"orientation": "landscape",
+	"background_color": "#171717",
+	"theme_color": "#591616",
+	"icons": [
+		{ "src": "/pwa-64x64.png", "sizes": "64x64", "type": "image/png" },
+		{ "src": "/pwa-192x192.png", "sizes": "192x192", "type": "image/png" },
+		{ "src": "/pwa-512x512.png", "sizes": "512x512", "type": "image/png" },
+		{ "src": "/maskable-icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+	]
+}

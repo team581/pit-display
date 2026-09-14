@@ -6,7 +6,7 @@ The display reads a dashboard-specific model from Convex. FRC Nexus sends full e
 
 ## Development
 
-The project uses Node 26, pnpm 12, React, TypeScript, and Vite+.
+The project uses Node 26, pnpm 12, React, TanStack Start, TypeScript, and Vite+.
 
 ```sh
 mise install
@@ -25,8 +25,8 @@ Publish the frontend to [pit.frc581.com](https://pit.frc581.com):
 vp run deploy
 ```
 
-Wrangler must be authenticated to the Team 581 Cloudflare account. The command deploys the `pit-display` Worker and
-attaches the custom domain.
+Wrangler must be authenticated to the Team 581 Cloudflare account. The command deploys the prerendered `pit-display`
+site and attaches the custom domain.
 
 ## Install on iPad
 

@@ -4,7 +4,7 @@
 	"account_id": "8bb70056a503857d02b48fc5db648f61",
 	"compatibility_date": "2026-09-10",
 	"assets": {
-		"directory": "./dist",
+		"directory": "./dist/client",
 		"not_found_handling": "single-page-application",
 	},
 	"routes": [
