@@ -31,6 +31,7 @@ export const styles = stylex.create({
 		borderInlineEndStyle: 'solid',
 		borderInlineEndColor: colors.line,
 	},
+	noNextCard: { gridColumn: { default: 'span 2', [portrait]: 'auto' } },
 	cardHeader: {
 		display: 'flex',
 		height: '4rem',
@@ -58,6 +59,7 @@ export const styles = stylex.create({
 		paddingBlockEnd: spacing.lg,
 		backgroundColor: colors.surface,
 	},
+	noNextMessage: { maxWidth: '26rem', fontSize: '3rem', lineHeight: 1.05, textAlign: 'center' },
 	matchNumberArea: {
 		display: 'flex',
 		minHeight: 0,

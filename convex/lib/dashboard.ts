@@ -12,17 +12,19 @@ const matchType = v.union(
 export const dashboardData = v.object({
 	updatedAt: v.number(),
 	currentMatch: v.nullable(v.object({ displayLabel: v.string(), startedAt: v.nullable(v.number()) })),
-	nextMatch: v.object({
-		displayLabel: v.string(),
-		startTime: v.nullable(v.number()),
-		milestones: v.array(
-			v.object({
-				label: v.string(),
-				time: v.nullable(v.number()),
-				isActual: v.boolean(),
-			}),
-		),
-	}),
+	nextMatch: v.nullable(
+		v.object({
+			displayLabel: v.string(),
+			startTime: v.nullable(v.number()),
+			milestones: v.array(
+				v.object({
+					label: v.string(),
+					time: v.nullable(v.number()),
+					isActual: v.boolean(),
+				}),
+			),
+		}),
+	),
 	upcomingMatches: v.array(
 		v.object({
 			key: v.string(),
@@ -85,7 +87,7 @@ function milestone(
 	label: string,
 	estimated: number | undefined,
 	actual: number | undefined,
-): DashboardData['nextMatch']['milestones'][number] {
+): NonNullable<DashboardData['nextMatch']>['milestones'][number] {
 	const time = actual ?? estimated ?? null;
 	return { label, time, isActual: actual !== undefined };
 }
@@ -128,9 +130,8 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 
 	const teamMatches = status.matches.slice(currentMatchIndex + 1).filter(includesTeam);
 	const nextMatch = teamMatches[0];
-	if (!nextMatch) return null;
-	const parsedNextMatch = parseMatchLabel(nextMatch.label);
-	if (!parsedNextMatch) return null;
+	const parsedNextMatch = nextMatch ? parseMatchLabel(nextMatch.label) : null;
+	if (nextMatch && !parsedNextMatch) return null;
 
 	const upcomingMatches = teamMatches.flatMap((match, index): DashboardData['upcomingMatches'] => {
 		const parsedMatch = parseMatchLabel(match.label);
@@ -168,15 +169,18 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 						startedAt: currentMatch.times.actualOnFieldTime ?? matchStart(currentMatch) ?? null,
 					}
 				: null,
-		nextMatch: {
-			displayLabel: parsedNextMatch.displayLabel,
-			startTime: matchStart(nextMatch) ?? null,
-			milestones: [
-				milestone('Queued', nextMatch.times.estimatedQueueTime, nextMatch.times.actualQueueTime),
-				milestone('On deck', nextMatch.times.estimatedOnDeckTime, nextMatch.times.actualOnDeckTime),
-				milestone('Match start', matchStart(nextMatch), undefined),
-			],
-		},
+		nextMatch:
+			nextMatch && parsedNextMatch
+				? {
+						displayLabel: parsedNextMatch.displayLabel,
+						startTime: matchStart(nextMatch) ?? null,
+						milestones: [
+							milestone('Queued', nextMatch.times.estimatedQueueTime, nextMatch.times.actualQueueTime),
+							milestone('On deck', nextMatch.times.estimatedOnDeckTime, nextMatch.times.actualOnDeckTime),
+							milestone('Match start', matchStart(nextMatch), undefined),
+						],
+					}
+				: null,
 		upcomingMatches,
 	};
 }

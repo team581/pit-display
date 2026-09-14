@@ -138,10 +138,21 @@ describe('createDashboardData', () => {
 		});
 	});
 
-	it('returns null until a team match exists', () => {
-		expect(createDashboardData({ receivedAt: now, matches: [] })).toBeNull();
+	it('keeps displaying event state when no Team 581 matches remain', () => {
+		expect(createDashboardData({ receivedAt: now, matches: [] })).toMatchObject({
+			currentMatch: null,
+			nextMatch: null,
+			upcomingMatches: [],
+		});
 		expect(
-			createDashboardData({ receivedAt: now, matches: [match('Qualification 10', { status: 'On field' })] }),
-		).toBeNull();
+			createDashboardData({
+				receivedAt: now,
+				matches: [match('Qualification 10', { status: 'On field', redTeams: ['581', '2', '3'] })],
+			}),
+		).toMatchObject({
+			currentMatch: { displayLabel: 'Q10' },
+			nextMatch: null,
+			upcomingMatches: [],
+		});
 	});
 });

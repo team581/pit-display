@@ -14,8 +14,8 @@ export function MatchSummary({
 	nextMatch: Dashboard['nextMatch'];
 	now: number;
 }) {
-	const activeTimingIndex = activeTimingMilestoneIndex(nextMatch.milestones);
-	const nextQueueProgress = queueProgress(currentMatch?.startedAt, nextMatch.milestones[0]?.time, now);
+	const activeTimingIndex = nextMatch ? activeTimingMilestoneIndex(nextMatch.milestones) : -1;
+	const nextQueueProgress = queueProgress(currentMatch?.startedAt, nextMatch?.milestones[0]?.time, now);
 	const queueWindowComplete = nextQueueProgress === 1;
 
 	return (
@@ -28,56 +28,71 @@ export function MatchSummary({
 					<div {...stylex.props(styles.matchNumberArea)}>
 						<strong {...stylex.props(styles.matchNumber)}>{currentMatch?.displayLabel ?? '—'}</strong>
 					</div>
-					<div
-						{...stylex.props(styles.matchDetail, styles.matchProgress)}
-						aria-label={`Progress until ${nextMatch.displayLabel} queues: ${Math.round(nextQueueProgress * 100)}%`}
-						role="progressbar"
-						aria-valuemin={0}
-						aria-valuemax={100}
-						aria-valuenow={Math.round(nextQueueProgress * 100)}
-					>
-						<div {...stylex.props(styles.matchProgressFill)} style={{ width: `${nextQueueProgress * 100}%` }} />
-						{queueWindowComplete && (
-							<strong {...stylex.props(styles.matchStartValue, styles.matchProgressMessage)}>Ending soon</strong>
-						)}
-					</div>
+					{nextMatch && (
+						<div
+							{...stylex.props(styles.matchDetail, styles.matchProgress)}
+							aria-label={`Progress until ${nextMatch.displayLabel} queues: ${Math.round(nextQueueProgress * 100)}%`}
+							role="progressbar"
+							aria-valuemin={0}
+							aria-valuemax={100}
+							aria-valuenow={Math.round(nextQueueProgress * 100)}
+						>
+							<div {...stylex.props(styles.matchProgressFill)} style={{ width: `${nextQueueProgress * 100}%` }} />
+							{queueWindowComplete && (
+								<strong {...stylex.props(styles.matchStartValue, styles.matchProgressMessage)}>Ending soon</strong>
+							)}
+						</div>
+					)}
 				</div>
 			</article>
 
-			<article {...stylex.props(styles.card, styles.nextCard)}>
-				<div {...stylex.props(styles.cardHeader)}>
-					<h2 {...stylex.props(styles.heading)}>Next match</h2>
-				</div>
-				<div {...stylex.props(styles.cardBody)}>
-					<div {...stylex.props(styles.matchNumberArea)}>
-						<strong {...stylex.props(styles.matchNumber)}>{nextMatch.displayLabel}</strong>
-					</div>
-					<div {...stylex.props(styles.matchDetail, styles.matchStartTime)}>
-						<strong {...stylex.props(styles.matchStartValue)}>Starts {formatClock(nextMatch.startTime)}</strong>
-					</div>
-				</div>
-			</article>
-
-			<article {...stylex.props(styles.card)}>
-				<div {...stylex.props(styles.cardHeader)}>
-					<h2 {...stylex.props(styles.heading)}>Timing</h2>
-				</div>
-				<div {...stylex.props(styles.cardBody, styles.timingBody)}>
-					{nextMatch.milestones.map((milestone, index) => {
-						const isActive = index === activeTimingIndex;
-						return (
-							<div {...stylex.props(styles.timingRow, isActive && styles.timingActive)} key={milestone.label}>
-								<span {...stylex.props(styles.timingLabel, isActive && styles.timingLabelActive)}>
-									{milestone.label}
-								</span>
-								<strong {...stylex.props(styles.timingValue)}>
-									{formatRelativeTime(milestone.time, now, 'in ', 'seconds')}
-								</strong>
+			{nextMatch ? (
+				<>
+					<article {...stylex.props(styles.card, styles.nextCard)}>
+						<div {...stylex.props(styles.cardHeader)}>
+							<h2 {...stylex.props(styles.heading)}>Next match</h2>
+						</div>
+						<div {...stylex.props(styles.cardBody)}>
+							<div {...stylex.props(styles.matchNumberArea)}>
+								<strong {...stylex.props(styles.matchNumber)}>{nextMatch.displayLabel}</strong>
 							</div>
-						);
-					})}
-				</div>
-			</article>
+							<div {...stylex.props(styles.matchDetail, styles.matchStartTime)}>
+								<strong {...stylex.props(styles.matchStartValue)}>Starts {formatClock(nextMatch.startTime)}</strong>
+							</div>
+						</div>
+					</article>
+
+					<article {...stylex.props(styles.card)}>
+						<div {...stylex.props(styles.cardHeader)}>
+							<h2 {...stylex.props(styles.heading)}>Timing</h2>
+						</div>
+						<div {...stylex.props(styles.cardBody, styles.timingBody)}>
+							{nextMatch.milestones.map((milestone, index) => {
+								const isActive = index === activeTimingIndex;
+								return (
+									<div {...stylex.props(styles.timingRow, isActive && styles.timingActive)} key={milestone.label}>
+										<span {...stylex.props(styles.timingLabel, isActive && styles.timingLabelActive)}>
+											{milestone.label}
+										</span>
+										<strong {...stylex.props(styles.timingValue)}>
+											{formatRelativeTime(milestone.time, now, 'in ', 'seconds')}
+										</strong>
+									</div>
+								);
+							})}
+						</div>
+					</article>
+				</>
+			) : (
+				<article {...stylex.props(styles.card, styles.noNextCard)}>
+					<div {...stylex.props(styles.cardHeader)}>
+						<h2 {...stylex.props(styles.heading)}>Next match</h2>
+					</div>
+					<div {...stylex.props(styles.cardBody)}>
+						<strong {...stylex.props(styles.noNextMessage)}>No more matches scheduled</strong>
+					</div>
+				</article>
+			)}
 		</section>
 	);
 }
