@@ -49,6 +49,10 @@ export default defineConfig(({ command, mode }) => {
 			react(),
 			VitePWA({
 				registerType: 'autoUpdate',
+				workbox: {
+					clientsClaim: true,
+					skipWaiting: true,
+				},
 				includeAssets: ['team-581.svg'],
 				pwaAssets: {
 					config: true,
