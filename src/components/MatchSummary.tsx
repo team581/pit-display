@@ -22,7 +22,7 @@ export function MatchSummary({
 		<section {...stylex.props(styles.grid)} aria-label="Match summary">
 			<article {...stylex.props(styles.card, styles.currentCard)}>
 				<div {...stylex.props(styles.cardHeader)}>
-					<h2 {...stylex.props(styles.heading)}>{currentMatch?.state ?? 'Event not started'}</h2>
+					<h2 {...stylex.props(styles.heading)}>On field</h2>
 				</div>
 				<div {...stylex.props(styles.cardBody)}>
 					<div {...stylex.props(styles.matchNumberArea)}>

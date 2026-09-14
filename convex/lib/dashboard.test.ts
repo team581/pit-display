@@ -45,7 +45,7 @@ describe('createDashboardData', () => {
 
 		expect(dashboard).toMatchObject({
 			updatedAt: now - 5_000,
-			currentMatch: { displayLabel: 'Q10', state: 'On field', startedAt: now - minute },
+			currentMatch: { displayLabel: 'Q10', startedAt: now - minute },
 			nextMatch: {
 				displayLabel: 'Q12',
 				startTime: now + 15 * minute,

@@ -11,9 +11,7 @@ const matchType = v.union(
 
 export const dashboardData = v.object({
 	updatedAt: v.number(),
-	currentMatch: v.nullable(
-		v.object({ displayLabel: v.string(), state: v.string(), startedAt: v.nullable(v.number()) }),
-	),
+	currentMatch: v.nullable(v.object({ displayLabel: v.string(), startedAt: v.nullable(v.number()) })),
 	nextMatch: v.object({
 		displayLabel: v.string(),
 		startTime: v.nullable(v.number()),
@@ -167,7 +165,6 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 			currentMatch && parsedCurrentMatch
 				? {
 						displayLabel: parsedCurrentMatch.displayLabel,
-						state: currentMatch.status,
 						startedAt: currentMatch.times.actualOnFieldTime ?? matchStart(currentMatch) ?? null,
 					}
 				: null,
