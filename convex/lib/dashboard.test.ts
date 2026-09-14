@@ -109,7 +109,23 @@ describe('createDashboardData', () => {
 			],
 		});
 
-		expect(dashboard?.upcomingMatches.map(({ warning }) => warning)).toEqual([null, '3 match turnaround']);
+		expect(dashboard?.upcomingMatches.map(({ warning }) => warning)).toEqual([null, '2 match turnaround']);
+	});
+
+	it('reports zero matches of turnaround for back-to-back matches', () => {
+		const dashboard = createDashboardData({
+			eventKey: '2026test',
+			receivedAt: now,
+			matches: [
+				match('Qualification 50', {
+					status: 'On field',
+					redTeams: ['581', '2', '3'],
+				}),
+				match('Qualification 51', { blueTeams: ['581', '5', '6'] }),
+			],
+		});
+
+		expect(dashboard?.upcomingMatches[0]?.warning).toBe('Back to back');
 	});
 
 	it('builds the display model before the event starts', () => {

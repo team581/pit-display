@@ -102,8 +102,9 @@ function turnaroundWarningForMatch(
 	}
 
 	if (parsedMatch.type === previousParsedMatch.type) {
-		const matchesApart = parsedMatch.number - previousParsedMatch.number;
-		if (matchesApart > 0 && matchesApart <= 4) return `${matchesApart} match turnaround`;
+		const matchesBetween = parsedMatch.number - previousParsedMatch.number - 1;
+		if (matchesBetween === 0) return 'Back to back';
+		if (matchesBetween > 0 && matchesBetween < 4) return `${matchesBetween} match turnaround`;
 	}
 
 	return null;
