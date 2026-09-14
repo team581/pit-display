@@ -16,7 +16,7 @@ export const dashboardData = v.object({
 	),
 	nextMatch: v.object({
 		displayLabel: v.string(),
-		scheduledTime: v.nullable(v.number()),
+		startTime: v.nullable(v.number()),
 		milestones: v.array(
 			v.object({
 				label: v.string(),
@@ -30,7 +30,6 @@ export const dashboardData = v.object({
 			key: v.string(),
 			displayLabel: v.string(),
 			startTime: v.nullable(v.number()),
-			scheduledTime: v.nullable(v.number()),
 			warning: v.nullable(v.string()),
 			alliance: v.union(v.literal('blue'), v.literal('red')),
 			teams: v.array(v.number()),
@@ -151,7 +150,6 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 				key: match.label,
 				displayLabel: parsedMatch.displayLabel,
 				startTime: matchStart(match) ?? null,
-				scheduledTime: match.times.scheduledStartTime ?? matchStart(match) ?? null,
 				warning: match.afterBreak
 					? breakWarning(match.afterBreak)
 					: previousMatch && previousParsedMatch
@@ -170,16 +168,16 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 				? {
 						displayLabel: parsedCurrentMatch.displayLabel,
 						state: currentMatch.status,
-						startedAt: currentMatch.times.actualOnFieldTime ?? currentMatch.times.estimatedStartTime ?? null,
+						startedAt: currentMatch.times.actualOnFieldTime ?? matchStart(currentMatch) ?? null,
 					}
 				: null,
 		nextMatch: {
 			displayLabel: parsedNextMatch.displayLabel,
-			scheduledTime: nextMatch.times.scheduledStartTime ?? matchStart(nextMatch) ?? null,
+			startTime: matchStart(nextMatch) ?? null,
 			milestones: [
 				milestone('Queued', nextMatch.times.estimatedQueueTime, nextMatch.times.actualQueueTime),
 				milestone('On deck', nextMatch.times.estimatedOnDeckTime, nextMatch.times.actualOnDeckTime),
-				milestone('Match start', nextMatch.times.estimatedStartTime, undefined),
+				milestone('Match start', matchStart(nextMatch), undefined),
 			],
 		},
 		upcomingMatches,

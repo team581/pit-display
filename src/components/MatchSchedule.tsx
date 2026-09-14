@@ -19,7 +19,7 @@ export function MatchSchedule({ matches, now }: { matches: Dashboard['upcomingMa
 						<strong {...stylex.props(styles.matchNumber)}>{match.displayLabel}</strong>
 						<div {...stylex.props(styles.matchTime)}>
 							<strong {...stylex.props(styles.startTime)}>
-								Starts {formatClock(match.scheduledTime)} ({formatRelativeTime(match.startTime, now, '')})
+								Starts {formatClock(match.startTime)} ({formatRelativeTime(match.startTime, now, '')})
 							</strong>
 						</div>
 						{match.warning && <MatchWarning warning={match.warning} />}

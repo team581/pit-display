@@ -30,8 +30,8 @@ describe('createDashboardData', () => {
 				match('Qualification 12', {
 					redTeams: ['581', '254', '1678'],
 					times: {
-						scheduledStartTime: now + 15 * minute,
-						estimatedQueueTime: now + 25 * minute,
+						scheduledStartTime: now + 30 * minute,
+						estimatedQueueTime: now + 5 * minute,
 						estimatedOnDeckTime: now + 10 * minute,
 						estimatedStartTime: now + 15 * minute,
 					},
@@ -48,9 +48,9 @@ describe('createDashboardData', () => {
 			currentMatch: { displayLabel: 'Q10', state: 'On field', startedAt: now - minute },
 			nextMatch: {
 				displayLabel: 'Q12',
-				scheduledTime: now + 15 * minute,
+				startTime: now + 15 * minute,
 				milestones: [
-					{ label: 'Queued', time: now + 25 * minute, isActual: false },
+					{ label: 'Queued', time: now + 5 * minute, isActual: false },
 					{ label: 'On deck', time: now + 10 * minute, isActual: false },
 					{ label: 'Match start', time: now + 15 * minute, isActual: false },
 				],
@@ -60,7 +60,6 @@ describe('createDashboardData', () => {
 					key: 'Qualification 12',
 					displayLabel: 'Q12',
 					startTime: now + 15 * minute,
-					scheduledTime: now + 15 * minute,
 					warning: null,
 					alliance: 'red',
 					teams: [581, 254, 1678],
@@ -131,7 +130,7 @@ describe('createDashboardData', () => {
 
 		expect(dashboard).toMatchObject({
 			currentMatch: null,
-			nextMatch: { displayLabel: 'Q3', scheduledTime: now + 15 * minute },
+			nextMatch: { displayLabel: 'Q3', startTime: now + 15 * minute },
 			upcomingMatches: [
 				{ displayLabel: 'Q3', warning: '3rd match after the start of the day' },
 				{ displayLabel: 'Q8', warning: null },

@@ -53,7 +53,7 @@ export function MatchSummary({
 						<strong {...stylex.props(styles.matchNumber)}>{nextMatch.displayLabel}</strong>
 					</div>
 					<div {...stylex.props(styles.matchDetail, styles.matchStartTime)}>
-						<strong {...stylex.props(styles.matchStartValue)}>Starts {formatClock(nextMatch.scheduledTime)}</strong>
+						<strong {...stylex.props(styles.matchStartValue)}>Starts {formatClock(nextMatch.startTime)}</strong>
 					</div>
 				</div>
 			</article>
