@@ -5,7 +5,7 @@ import { styles } from './TeamIdentity.stylex';
 export function TeamIdentity() {
 	return (
 		<div {...stylex.props(styles.container)}>
-			<img {...stylex.props(styles.logo)} src="/team-581.svg" alt="Team 581 logo" />
+			<img {...stylex.props(styles.logo)} src="/team-581.svg" alt="" />
 			<strong {...stylex.props(styles.teamNumber)}>Team {TEAM_NUMBER}</strong>
 		</div>
 	);
