@@ -39,7 +39,7 @@ function App() {
 					</h1>
 					<p {...stylex.props(styles.emptyStateText)}>
 						{dashboard === undefined
-							? 'Waiting for the realtime subscription.'
+							? 'Waiting for the server.'
 							: 'Waiting for Team 581 data from an active Nexus event.'}
 					</p>
 				</section>
