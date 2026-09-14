@@ -13,7 +13,7 @@ import { TEAM_NUMBER } from './team';
 function App() {
 	const [now, setNow] = useState(Date.now);
 	const dashboard = useQuery(api.dashboard.get);
-	const { hasEverConnected, isWebSocketConnected } = useConvexConnectionState();
+	const { isWebSocketConnected } = useConvexConnectionState();
 
 	useEffect(() => {
 		const interval = window.setInterval(() => setNow(Date.now()), 1000);
@@ -24,13 +24,7 @@ function App() {
 		<main {...stylex.props(styles.dashboard)}>
 			<header {...stylex.props(styles.topbar)}>
 				<TeamIdentity />
-				<UpdateHealth
-					connection={isWebSocketConnected ? 'connected' : hasEverConnected ? 'reconnecting' : 'connecting'}
-					receivedAt={dashboard?.updatedAt}
-					now={now}
-				>
-					{dashboard === undefined ? 'Connecting' : 'No event data'}
-				</UpdateHealth>
+				<UpdateHealth connected={isWebSocketConnected} receivedAt={dashboard?.updatedAt} now={now} />
 			</header>
 
 			{dashboard ? (

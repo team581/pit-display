@@ -1,7 +1,8 @@
 import * as stylex from '@stylexjs/stylex';
 import type { Dashboard } from '../dashboard';
-import { milestoneState } from '../dashboard-time';
+import { activeTimingMilestoneIndex } from '../dashboard-time';
 import { formatClock, formatRelativeTime } from '../format-time';
+import { queueProgress } from '../match-progress';
 import { styles } from './MatchSummary.stylex';
 
 export function MatchSummary({
@@ -13,53 +14,65 @@ export function MatchSummary({
 	nextMatch: Dashboard['nextMatch'];
 	now: number;
 }) {
+	const activeTimingIndex = activeTimingMilestoneIndex(nextMatch.milestones);
+	const nextQueueProgress = queueProgress(currentMatch?.startedAt, nextMatch.milestones[0]?.time, now);
+	const queueWindowComplete = nextQueueProgress === 1;
+
 	return (
 		<section {...stylex.props(styles.grid)} aria-label="Match summary">
 			<article {...stylex.props(styles.card, styles.currentCard)}>
-				<div {...stylex.props(styles.cardHeader, styles.currentHeader)}>
-					<h2 {...stylex.props(styles.heading)}>On field</h2>
+				<div {...stylex.props(styles.cardHeader)}>
+					<h2 {...stylex.props(styles.heading)}>{currentMatch?.state ?? 'Event not started'}</h2>
 				</div>
 				<div {...stylex.props(styles.cardBody)}>
-					<strong {...stylex.props(styles.matchNumber)}>{currentMatch?.displayLabel ?? '—'}</strong>
-					<div {...stylex.props(styles.matchDetail, styles.fieldState)}>
-						{currentMatch?.state ?? 'Event not started'}
+					<div {...stylex.props(styles.matchNumberArea)}>
+						<strong {...stylex.props(styles.matchNumber)}>{currentMatch?.displayLabel ?? '—'}</strong>
+					</div>
+					<div
+						{...stylex.props(styles.matchDetail, styles.matchProgress)}
+						aria-label={`Progress until ${nextMatch.displayLabel} queues: ${Math.round(nextQueueProgress * 100)}%`}
+						role="progressbar"
+						aria-valuemin={0}
+						aria-valuemax={100}
+						aria-valuenow={Math.round(nextQueueProgress * 100)}
+					>
+						<div {...stylex.props(styles.matchProgressFill)} style={{ width: `${nextQueueProgress * 100}%` }} />
+						{queueWindowComplete && (
+							<strong {...stylex.props(styles.matchStartValue, styles.matchProgressMessage)}>Ending soon</strong>
+						)}
 					</div>
 				</div>
 			</article>
 
 			<article {...stylex.props(styles.card, styles.nextCard)}>
-				<div {...stylex.props(styles.cardHeader, styles.nextHeader)}>
+				<div {...stylex.props(styles.cardHeader)}>
 					<h2 {...stylex.props(styles.heading)}>Next match</h2>
 				</div>
 				<div {...stylex.props(styles.cardBody)}>
-					<strong {...stylex.props(styles.matchNumber)}>{nextMatch.displayLabel}</strong>
+					<div {...stylex.props(styles.matchNumberArea)}>
+						<strong {...stylex.props(styles.matchNumber)}>{nextMatch.displayLabel}</strong>
+					</div>
 					<div {...stylex.props(styles.matchDetail, styles.matchStartTime)}>
-						<span {...stylex.props(styles.matchStartLabel)}>Scheduled</span>
-						<strong {...stylex.props(styles.matchStartValue)}>{formatClock(nextMatch.scheduledTime)}</strong>
+						<strong {...stylex.props(styles.matchStartValue)}>Starts {formatClock(nextMatch.scheduledTime)}</strong>
 					</div>
 				</div>
 			</article>
 
-			<article {...stylex.props(styles.card, styles.timingCard)}>
-				<div {...stylex.props(styles.cardHeader, styles.timingHeader)}>
-					<h2 {...stylex.props(styles.heading)}>Next match timing</h2>
+			<article {...stylex.props(styles.card)}>
+				<div {...stylex.props(styles.cardHeader)}>
+					<h2 {...stylex.props(styles.heading)}>Timing</h2>
 				</div>
 				<div {...stylex.props(styles.cardBody, styles.timingBody)}>
-					{nextMatch.milestones.map((milestone) => {
-						const state = milestoneState(milestone, now);
+					{nextMatch.milestones.map((milestone, index) => {
+						const isActive = index === activeTimingIndex;
 						return (
-							<div
-								{...stylex.props(
-									styles.timingRow,
-									state === 'past' && styles.timingPast,
-									state === 'soon' && styles.timingSoon,
-								)}
-								key={milestone.label}
-							>
-								<span {...stylex.props(styles.timingLabel, state === 'soon' && styles.timingLabelSoon)}>
+							<div {...stylex.props(styles.timingRow, isActive && styles.timingActive)} key={milestone.label}>
+								<span {...stylex.props(styles.timingLabel, isActive && styles.timingLabelActive)}>
 									{milestone.label}
 								</span>
-								<strong {...stylex.props(styles.timingValue)}>{formatRelativeTime(milestone.time, now, 'in ')}</strong>
+								<strong {...stylex.props(styles.timingValue)}>
+									{formatRelativeTime(milestone.time, now, 'in ', 'seconds')}
+								</strong>
 							</div>
 						);
 					})}

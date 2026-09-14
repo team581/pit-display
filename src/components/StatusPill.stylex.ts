@@ -13,19 +13,17 @@ export const styles = stylex.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		borderRadius: spacing.sm,
-		backgroundColor: '#4b4b4b',
+		backgroundColor: colors.surfaceRaised,
 		fontSize: '1rem',
 		fontWeight: 850,
 		letterSpacing: '0.03em',
-		textTransform: 'uppercase',
-	},
-	queueing: {
-		backgroundColor: colors.gold,
-		color: '#171717',
 	},
 	warning: {
+		justifySelf: 'center',
+		paddingInline: spacing.lg,
 		backgroundColor: colors.orange,
 		color: '#171717',
+		whiteSpace: 'nowrap',
 	},
 	placeholder: { minHeight: '1px' },
 });

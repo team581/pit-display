@@ -6,7 +6,7 @@ export function TeamIdentity() {
 	return (
 		<div {...stylex.props(styles.container)}>
 			<img {...stylex.props(styles.logo)} src="/team-581.svg" alt="Team 581 logo" />
-			<strong {...stylex.props(styles.teamNumber)}>{TEAM_NUMBER}</strong>
+			<strong {...stylex.props(styles.teamNumber)}>Team {TEAM_NUMBER}</strong>
 		</div>
 	);
 }

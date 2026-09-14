@@ -25,7 +25,7 @@ describe('createDashboardData', () => {
 			matches: [
 				match('Qualification 10', {
 					status: 'On field',
-					times: { scheduledStartTime: now, estimatedStartTime: now },
+					times: { scheduledStartTime: now, estimatedStartTime: now, actualOnFieldTime: now - minute },
 				}),
 				match('Qualification 12', {
 					redTeams: ['581', '254', '1678'],
@@ -45,7 +45,7 @@ describe('createDashboardData', () => {
 
 		expect(dashboard).toMatchObject({
 			updatedAt: now - 5_000,
-			currentMatch: { displayLabel: 'Q10', state: 'On field' },
+			currentMatch: { displayLabel: 'Q10', state: 'On field', startedAt: now - minute },
 			nextMatch: {
 				displayLabel: 'Q12',
 				scheduledTime: now + 15 * minute,
@@ -62,8 +62,7 @@ describe('createDashboardData', () => {
 					startTime: now + 15 * minute,
 					scheduledTime: now + 15 * minute,
 					status: 'scheduled',
-					queueingAt: now + 5 * minute,
-					turnaroundWarning: 'Tight · 15 min',
+					turnaroundWarning: null,
 					alliance: 'red',
 					teams: [581, 254, 1678],
 				},
@@ -72,7 +71,6 @@ describe('createDashboardData', () => {
 					displayLabel: 'Q18',
 					startTime: now + 75 * minute,
 					status: 'scheduled',
-					queueingAt: null,
 					turnaroundWarning: null,
 					alliance: 'blue',
 					teams: [581, 1323, 971],
@@ -81,12 +79,32 @@ describe('createDashboardData', () => {
 		});
 	});
 
+	it('only warns about turnaround after another Team 581 match', () => {
+		const dashboard = createDashboardData({
+			receivedAt: now,
+			matches: [
+				match('Qualification 10', {
+					status: 'On field',
+					redTeams: ['581', '2', '3'],
+					times: { estimatedStartTime: now },
+				}),
+				match('Qualification 12', {
+					blueTeams: ['581', '5', '6'],
+					times: { estimatedStartTime: now + 15 * minute },
+				}),
+			],
+		});
+
+		expect(dashboard?.upcomingMatches[0]?.turnaroundWarning).toBe('15 min turnaround');
+	});
+
 	it('builds the display model before the event starts', () => {
 		const dashboard = createDashboardData({
 			receivedAt: now - 5_000,
 			matches: [
 				match('Qualification 3', {
 					redTeams: ['581', '254', '1678'],
+					afterBreak: { breakLabel: 'the start of the day', position: 3 },
 					times: {
 						estimatedQueueTime: now + 5 * minute,
 						estimatedOnDeckTime: now + 10 * minute,
@@ -104,7 +122,7 @@ describe('createDashboardData', () => {
 			currentMatch: null,
 			nextMatch: { displayLabel: 'Q3', scheduledTime: now + 15 * minute },
 			upcomingMatches: [
-				{ displayLabel: 'Q3', turnaroundWarning: null },
+				{ displayLabel: 'Q3', turnaroundWarning: '3rd match after the start of the day' },
 				{ displayLabel: 'Q8', turnaroundWarning: null },
 			],
 		});

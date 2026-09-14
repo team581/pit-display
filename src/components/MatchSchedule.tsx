@@ -18,10 +18,11 @@ export function MatchSchedule({ matches, now }: { matches: Dashboard['upcomingMa
 					<article {...stylex.props(styles.matchRow)} key={match.key}>
 						<strong {...stylex.props(styles.matchNumber)}>{match.displayLabel}</strong>
 						<div {...stylex.props(styles.matchTime)}>
-							<strong {...stylex.props(styles.relativeTime)}>{formatRelativeTime(match.startTime, now, '~')}</strong>
-							<span {...stylex.props(styles.scheduledTime)}>{formatClock(match.scheduledTime)}</span>
+							<strong {...stylex.props(styles.startTime)}>
+								Starts at {formatClock(match.scheduledTime)} ({formatRelativeTime(match.startTime, now, '')})
+							</strong>
 						</div>
-						<StatusPill match={match} now={now} />
+						<StatusPill match={match} />
 						<AllianceBadge alliance={match.alliance} teams={match.teams} />
 					</article>
 				))}

@@ -1,46 +1,17 @@
 import * as stylex from '@stylexjs/stylex';
-import type { ReactNode } from 'react';
-import { formatRelativeTime } from '../format-time';
+import { TriangleAlert } from 'lucide-react';
+import { updateHealthState } from '../update-health';
 import { styles } from './UpdateHealth.stylex';
 
-export function UpdateHealth({
-	connection,
-	receivedAt,
-	now,
-	children,
-}: {
-	connection: 'connected' | 'connecting' | 'reconnecting';
-	receivedAt?: number;
-	now: number;
-	children?: ReactNode;
-}) {
-	const updateAge = receivedAt === undefined ? null : formatRelativeTime(receivedAt, now, 'in ');
-	const label =
-		connection === 'connected' ? (
-			updateAge === null ? (
-				<>Live · {children}</>
-			) : (
-				`Live · event data updated ${updateAge}`
-			)
-		) : connection === 'reconnecting' ? (
-			'Reconnecting'
-		) : (
-			children
-		);
+export function UpdateHealth({ connected, receivedAt, now }: { connected: boolean; receivedAt?: number; now: number }) {
+	const { label, hasProblem } = updateHealthState(connected, receivedAt, now);
 
 	return (
 		<div
-			{...stylex.props(
-				styles.container,
-				connection === 'connected'
-					? styles.connected
-					: connection === 'connecting'
-						? styles.connecting
-						: styles.reconnecting,
-			)}
-			role="status"
+			{...stylex.props(styles.container, hasProblem ? styles.problem : styles.healthy)}
+			role={hasProblem ? 'alert' : 'status'}
 		>
-			<span {...stylex.props(styles.dot)} />
+			{hasProblem && <TriangleAlert {...stylex.props(styles.icon)} aria-hidden="true" strokeWidth={3} />}
 			<span>{label}</span>
 		</div>
 	);

@@ -25,6 +25,7 @@ export const NexusMatch = v.object({
 	redTeams: v.array(v.string()),
 	blueTeams: v.array(v.string()),
 	times: MatchTimes,
+	afterBreak: v.optional(v.object({ breakLabel: v.string(), position: v.number() })),
 });
 
 export default defineSchema({
