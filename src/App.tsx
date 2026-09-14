@@ -35,7 +35,7 @@ function App() {
 			) : (
 				<section {...stylex.props(styles.emptyState)}>
 					<h1 {...stylex.props(styles.emptyStateHeading)}>
-						{dashboard === undefined ? 'Connecting to Convex' : `No current event data for Team ${TEAM_NUMBER}`}
+						{dashboard === undefined ? 'Connecting to backend' : `No current event data for Team ${TEAM_NUMBER}`}
 					</h1>
 					<p {...stylex.props(styles.emptyStateText)}>
 						{dashboard === undefined
