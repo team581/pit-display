@@ -3,7 +3,7 @@ import type { Dashboard } from '../dashboard';
 import { formatClock, formatRelativeTime } from '../format-time';
 import { AllianceBadge } from './AllianceBadge';
 import { styles } from './MatchSchedule.stylex';
-import { StatusPill } from './StatusPill';
+import { MatchWarning } from './MatchWarning';
 
 export function MatchSchedule({ matches, now }: { matches: Dashboard['upcomingMatches']; now: number }) {
 	return (
@@ -22,7 +22,7 @@ export function MatchSchedule({ matches, now }: { matches: Dashboard['upcomingMa
 								Starts {formatClock(match.scheduledTime)} ({formatRelativeTime(match.startTime, now, '')})
 							</strong>
 						</div>
-						<StatusPill match={match} />
+						{match.warning && <MatchWarning warning={match.warning} />}
 						<AllianceBadge alliance={match.alliance} teams={match.teams} />
 					</article>
 				))}

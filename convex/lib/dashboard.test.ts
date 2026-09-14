@@ -61,8 +61,7 @@ describe('createDashboardData', () => {
 					displayLabel: 'Q12',
 					startTime: now + 15 * minute,
 					scheduledTime: now + 15 * minute,
-					status: 'scheduled',
-					turnaroundWarning: null,
+					warning: null,
 					alliance: 'red',
 					teams: [581, 254, 1678],
 				},
@@ -70,8 +69,7 @@ describe('createDashboardData', () => {
 					key: 'Qualification 18',
 					displayLabel: 'Q18',
 					startTime: now + 75 * minute,
-					status: 'scheduled',
-					turnaroundWarning: null,
+					warning: null,
 					alliance: 'blue',
 					teams: [581, 1323, 971],
 				},
@@ -79,7 +77,7 @@ describe('createDashboardData', () => {
 		});
 	});
 
-	it('only warns about turnaround after another Team 581 match', () => {
+	it('warns about a short turnaround after another Team 581 match', () => {
 		const dashboard = createDashboardData({
 			receivedAt: now,
 			matches: [
@@ -95,7 +93,20 @@ describe('createDashboardData', () => {
 			],
 		});
 
-		expect(dashboard?.upcomingMatches[0]?.turnaroundWarning).toBe('15 min turnaround');
+		expect(dashboard?.upcomingMatches[0]?.warning).toBe('15 min turnaround');
+	});
+
+	it('does not treat the current field match as ours when calculating turnaround', () => {
+		const dashboard = createDashboardData({
+			receivedAt: now,
+			matches: [
+				match('Qualification 35', { status: 'On field' }),
+				match('Qualification 36', { blueTeams: ['581', '5', '6'] }),
+				match('Qualification 39', { redTeams: ['581', '2', '3'] }),
+			],
+		});
+
+		expect(dashboard?.upcomingMatches.map(({ warning }) => warning)).toEqual([null, '3 match turnaround']);
 	});
 
 	it('builds the display model before the event starts', () => {
@@ -122,8 +133,8 @@ describe('createDashboardData', () => {
 			currentMatch: null,
 			nextMatch: { displayLabel: 'Q3', scheduledTime: now + 15 * minute },
 			upcomingMatches: [
-				{ displayLabel: 'Q3', turnaroundWarning: '3rd match after the start of the day' },
-				{ displayLabel: 'Q8', turnaroundWarning: null },
+				{ displayLabel: 'Q3', warning: '3rd match after the start of the day' },
+				{ displayLabel: 'Q8', warning: null },
 			],
 		});
 	});

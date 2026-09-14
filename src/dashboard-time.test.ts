@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { activeTimingMilestoneIndex, statusPill } from './dashboard-time';
+import { activeTimingMilestoneIndex } from './dashboard-time';
 
 const minute = 60_000;
 
@@ -15,13 +15,5 @@ describe('dashboard time state', () => {
 		expect(activeTimingMilestoneIndex(milestones)).toBe(0);
 		milestones[1]!.isActual = true;
 		expect(activeTimingMilestoneIndex(milestones)).toBe(1);
-	});
-
-	it('shows confirmed statuses and turnaround warnings', () => {
-		expect(statusPill({ status: 'scheduled', turnaroundWarning: '3 match turnaround' })).toEqual({
-			label: '3 match turnaround',
-			tone: 'warning',
-		});
-		expect(statusPill({ status: 'queueing', turnaroundWarning: null })).toBeNull();
 	});
 });

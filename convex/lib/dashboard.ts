@@ -31,8 +31,7 @@ export const dashboardData = v.object({
 			displayLabel: v.string(),
 			startTime: v.nullable(v.number()),
 			scheduledTime: v.nullable(v.number()),
-			status: v.union(v.literal('on-deck'), v.literal('queueing'), v.literal('scheduled')),
-			turnaroundWarning: v.nullable(v.string()),
+			warning: v.nullable(v.string()),
 			alliance: v.union(v.literal('blue'), v.literal('red')),
 			teams: v.array(v.number()),
 		}),
@@ -153,8 +152,7 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 				displayLabel: parsedMatch.displayLabel,
 				startTime: matchStart(match) ?? null,
 				scheduledTime: match.times.scheduledStartTime ?? matchStart(match) ?? null,
-				status: match.status === 'On deck' ? 'on-deck' : match.status === 'Now queuing' ? 'queueing' : 'scheduled',
-				turnaroundWarning: match.afterBreak
+				warning: match.afterBreak
 					? breakWarning(match.afterBreak)
 					: previousMatch && previousParsedMatch
 						? turnaroundWarningForMatch(match, parsedMatch, previousMatch, previousParsedMatch)

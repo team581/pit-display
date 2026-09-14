@@ -12,6 +12,7 @@ export const styles = stylex.create({
 		overflow: 'hidden',
 		borderRadius: spacing.sm,
 		gridColumn: {
+			default: '4',
 			[narrow]: '1 / -1',
 		},
 	},
