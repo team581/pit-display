@@ -80,7 +80,6 @@ export const processEventStatus = internalMutation({
 		const snapshot = {
 			dataAsOfTime: args.dataAsOfTime,
 			receivedAt: Date.now(),
-			nowQueuing: undefined,
 			matches: args.matches,
 		};
 		if (activeEvent?.eventKey === args.eventKey) {
