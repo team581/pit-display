@@ -1,6 +1,7 @@
 import * as stylex from '@stylexjs/stylex';
 
 export const colors = stylex.defineVars({
+	maroon: '#591616',
 	orange: '#e86d38',
 	orangeDark: '#c9462d',
 	gold: '#fabc3c',

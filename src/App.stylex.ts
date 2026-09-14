@@ -24,7 +24,7 @@ export const styles = stylex.create({
 			default: spacing['2xl'],
 			[narrow]: spacing.lg,
 		},
-		backgroundColor: '#591616',
+		backgroundColor: colors.maroon,
 		borderBottomColor: colors.line,
 		borderBottomStyle: 'solid',
 		borderBottomWidth: '1px',
