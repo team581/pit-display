@@ -20,19 +20,6 @@ export const styles = stylex.create({
 		backgroundColor: colors.surface,
 		gridColumn: '1 / -1',
 	},
-	header: {
-		display: 'flex',
-		height: '4rem',
-		alignItems: 'center',
-		paddingInline: spacing.xl,
-		backgroundColor: colors.surfaceRaised,
-	},
-	heading: {
-		margin: 0,
-		fontSize: '1.75rem',
-		fontWeight: 850,
-		letterSpacing: '0.02em',
-	},
 	rows: {
 		minHeight: 0,
 		maxHeight: { default: 'none', [portrait]: '16rem' },

@@ -21,32 +21,12 @@ export const styles = stylex.create({
 		borderRadius: { default: 0, [portrait]: spacing.md },
 		backgroundColor: colors.surface,
 	},
-	currentCard: {
-		borderInlineEndWidth: { default: '1px', [portrait]: 0 },
-		borderInlineEndStyle: 'solid',
-		borderInlineEndColor: colors.line,
-	},
-	nextCard: {
+	dividedCard: {
 		borderInlineEndWidth: { default: '1px', [portrait]: 0 },
 		borderInlineEndStyle: 'solid',
 		borderInlineEndColor: colors.line,
 	},
 	noNextCard: { gridColumn: { default: 'span 2', [portrait]: 'auto' } },
-	cardHeader: {
-		display: 'flex',
-		height: '4rem',
-		flex: '0 0 auto',
-		alignItems: 'center',
-		paddingInline: spacing.xl,
-		backgroundColor: colors.surfaceRaised,
-		color: colors.text,
-	},
-	heading: {
-		margin: 0,
-		fontSize: '1.75rem',
-		fontWeight: 850,
-		letterSpacing: '0.02em',
-	},
 	cardBody: {
 		display: 'flex',
 		minHeight: 0,
@@ -57,7 +37,6 @@ export const styles = stylex.create({
 		gap: spacing.lg,
 		paddingInline: spacing.lg,
 		paddingBlockEnd: spacing.lg,
-		backgroundColor: colors.surface,
 	},
 	noNextMessage: { maxWidth: '26rem', fontSize: '3rem', lineHeight: 1.05, textAlign: 'center' },
 	matchNumberArea: {
@@ -85,9 +64,8 @@ export const styles = stylex.create({
 	},
 	matchStartTime: {
 		backgroundColor: colors.surfaceRaised,
-		color: colors.text,
 	},
-	matchStartValue: { color: colors.text, fontSize: { default: '3rem', [portrait]: '2rem' } },
+	matchStartValue: { fontSize: { default: '3rem', [portrait]: '2rem' } },
 	matchProgress: {
 		position: 'relative',
 		overflow: 'hidden',
@@ -122,7 +100,7 @@ export const styles = stylex.create({
 		borderRadius: spacing.sm,
 		backgroundColor: colors.surfaceRaised,
 	},
-	timingActive: { borderColor: colors.gold, backgroundColor: colors.gold, color: '#171717' },
+	timingActive: { borderColor: colors.gold, backgroundColor: colors.gold, color: colors.onAccent },
 	timingLabel: {
 		color: colors.muted,
 		fontSize: '1.35rem',
@@ -130,6 +108,6 @@ export const styles = stylex.create({
 		letterSpacing: '0.035em',
 		whiteSpace: 'nowrap',
 	},
-	timingLabelActive: { color: '#171717' },
+	timingLabelActive: { color: colors.onAccent },
 	timingValue: { fontSize: '1.75rem', whiteSpace: 'nowrap' },
 });

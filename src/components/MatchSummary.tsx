@@ -4,6 +4,7 @@ import { activeTimingMilestoneIndex } from '../dashboard-time';
 import { formatClock, formatRelativeTime } from '../format-time';
 import { queueProgress } from '../match-progress';
 import { styles } from './MatchSummary.stylex';
+import { panelStyles } from './Panel.stylex';
 
 export function MatchSummary({
 	currentMatch,
@@ -20,9 +21,9 @@ export function MatchSummary({
 
 	return (
 		<section {...stylex.props(styles.grid)} aria-label="Match summary">
-			<article {...stylex.props(styles.card, styles.currentCard)}>
-				<div {...stylex.props(styles.cardHeader)}>
-					<h2 {...stylex.props(styles.heading)}>On field</h2>
+			<article {...stylex.props(styles.card, styles.dividedCard)}>
+				<div {...stylex.props(panelStyles.header)}>
+					<h2 {...stylex.props(panelStyles.heading)}>On field</h2>
 				</div>
 				<div {...stylex.props(styles.cardBody)}>
 					<div {...stylex.props(styles.matchNumberArea)}>
@@ -48,9 +49,9 @@ export function MatchSummary({
 
 			{nextMatch ? (
 				<>
-					<article {...stylex.props(styles.card, styles.nextCard)}>
-						<div {...stylex.props(styles.cardHeader)}>
-							<h2 {...stylex.props(styles.heading)}>Next match</h2>
+					<article {...stylex.props(styles.card, styles.dividedCard)}>
+						<div {...stylex.props(panelStyles.header)}>
+							<h2 {...stylex.props(panelStyles.heading)}>Next match</h2>
 						</div>
 						<div {...stylex.props(styles.cardBody)}>
 							<div {...stylex.props(styles.matchNumberArea)}>
@@ -63,8 +64,8 @@ export function MatchSummary({
 					</article>
 
 					<article {...stylex.props(styles.card)}>
-						<div {...stylex.props(styles.cardHeader)}>
-							<h2 {...stylex.props(styles.heading)}>Timing</h2>
+						<div {...stylex.props(panelStyles.header)}>
+							<h2 {...stylex.props(panelStyles.heading)}>Timing</h2>
 						</div>
 						<div {...stylex.props(styles.cardBody, styles.timingBody)}>
 							{nextMatch.milestones.map((milestone, index) => {
@@ -85,8 +86,8 @@ export function MatchSummary({
 				</>
 			) : (
 				<article {...stylex.props(styles.card, styles.noNextCard)}>
-					<div {...stylex.props(styles.cardHeader)}>
-						<h2 {...stylex.props(styles.heading)}>Next match</h2>
+					<div {...stylex.props(panelStyles.header)}>
+						<h2 {...stylex.props(panelStyles.heading)}>Next match</h2>
 					</div>
 					<div {...stylex.props(styles.cardBody)}>
 						<strong {...stylex.props(styles.noNextMessage)}>No more matches scheduled</strong>

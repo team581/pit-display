@@ -4,12 +4,13 @@ import { formatClock, formatRelativeTime } from '../format-time';
 import { AllianceBadge } from './AllianceBadge';
 import { styles } from './MatchSchedule.stylex';
 import { MatchWarning } from './MatchWarning';
+import { panelStyles } from './Panel.stylex';
 
 export function MatchSchedule({ matches, now }: { matches: Dashboard['upcomingMatches']; now: number }) {
 	return (
 		<section {...stylex.props(styles.schedule)} aria-labelledby="schedule-heading">
-			<div {...stylex.props(styles.header)}>
-				<h2 {...stylex.props(styles.heading)} id="schedule-heading">
+			<div {...stylex.props(panelStyles.header)}>
+				<h2 {...stylex.props(panelStyles.heading)} id="schedule-heading">
 					Next matches
 				</h2>
 			</div>
