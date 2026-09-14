@@ -8,5 +8,7 @@ describe('match progress', () => {
 		expect(queueProgress(0, 10_000, 11_000)).toBe(1);
 		expect(queueProgress(null, 10_000, 5_000)).toBe(0);
 		expect(queueProgress(0, null, 5_000)).toBe(0);
+		expect(queueProgress(10_000, 10_000, 9_000)).toBe(0);
+		expect(queueProgress(10_000, 5_000, 6_000)).toBe(1);
 	});
 });
