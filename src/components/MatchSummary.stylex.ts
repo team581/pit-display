@@ -80,7 +80,7 @@ export const styles = stylex.create({
 		transitionDuration: '1s',
 		transitionTimingFunction: 'linear',
 	},
-	matchProgressMessage: { position: 'relative' },
+	matchProgressMessage: { position: 'relative', color: colors.onAccent },
 	timingBody: {
 		alignItems: 'stretch',
 		gap: spacing.sm,
