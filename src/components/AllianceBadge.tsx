@@ -1,9 +1,14 @@
 import * as stylex from '@stylexjs/stylex';
 import type { UpcomingMatch } from '../dashboard';
+import { nexusTeamUrl } from '../nexus';
 import { TEAM_NUMBER } from '../team';
 import { styles } from './AllianceBadge.stylex';
 
-export function AllianceBadge({ alliance, teams }: Pick<UpcomingMatch, 'alliance' | 'teams'>) {
+export function AllianceBadge({
+	alliance,
+	eventKey,
+	teams,
+}: Pick<UpcomingMatch, 'alliance' | 'teams'> & { eventKey: string }) {
 	return (
 		<div
 			{...stylex.props(styles.container, alliance === 'red' ? styles.red : styles.blue)}
@@ -11,9 +16,15 @@ export function AllianceBadge({ alliance, teams }: Pick<UpcomingMatch, 'alliance
 		>
 			<div {...stylex.props(styles.teams)}>
 				{teams.map((team) => (
-					<strong {...stylex.props(styles.team, team === TEAM_NUMBER && styles.ourTeam)} key={team}>
+					<a
+						{...stylex.props(styles.team, team === TEAM_NUMBER && styles.ourTeam)}
+						href={nexusTeamUrl(eventKey, team)}
+						key={team}
+						rel="noreferrer"
+						target="_blank"
+					>
 						{team}
-					</strong>
+					</a>
 				))}
 			</div>
 		</div>

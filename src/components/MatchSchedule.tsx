@@ -6,7 +6,15 @@ import { styles } from './MatchSchedule.stylex';
 import { MatchWarning } from './MatchWarning';
 import { panelStyles } from './Panel.stylex';
 
-export function MatchSchedule({ matches, now }: { matches: Dashboard['upcomingMatches']; now: number }) {
+export function MatchSchedule({
+	eventKey,
+	matches,
+	now,
+}: {
+	eventKey: Dashboard['eventKey'];
+	matches: Dashboard['upcomingMatches'];
+	now: number;
+}) {
 	return (
 		<section {...stylex.props(styles.schedule)} aria-labelledby="schedule-heading">
 			<div {...stylex.props(panelStyles.header)}>
@@ -24,7 +32,7 @@ export function MatchSchedule({ matches, now }: { matches: Dashboard['upcomingMa
 							</strong>
 						</div>
 						{match.warning && <MatchWarning warning={match.warning} />}
-						<AllianceBadge alliance={match.alliance} teams={match.teams} />
+						<AllianceBadge alliance={match.alliance} eventKey={eventKey} teams={match.teams} />
 					</article>
 				))}
 			</div>

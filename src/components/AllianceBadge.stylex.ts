@@ -30,7 +30,9 @@ export const styles = stylex.create({
 		justifyContent: 'center',
 		color: 'white',
 		fontSize: { default: '2rem', [narrow]: '1.75rem' },
+		fontWeight: 800,
 		textAlign: 'center',
+		textDecoration: 'none',
 	},
 	ourTeam: {
 		backgroundColor: 'rgb(255 255 255 / 10%)',

@@ -21,6 +21,7 @@ function match(label: string, overrides: Partial<NexusMatch> = {}): NexusMatch {
 describe('createDashboardData', () => {
 	it('builds the display model from a trimmed Nexus snapshot', () => {
 		const dashboard = createDashboardData({
+			eventKey: 'demo9705',
 			receivedAt: now - 5_000,
 			matches: [
 				match('Qualification 10', {
@@ -44,6 +45,7 @@ describe('createDashboardData', () => {
 		});
 
 		expect(dashboard).toMatchObject({
+			eventKey: 'demo9705',
 			updatedAt: now - 5_000,
 			currentMatch: { displayLabel: 'Q10', startedAt: now - minute },
 			nextMatch: {
@@ -78,6 +80,7 @@ describe('createDashboardData', () => {
 
 	it('warns about a short turnaround after another Team 581 match', () => {
 		const dashboard = createDashboardData({
+			eventKey: '2026test',
 			receivedAt: now,
 			matches: [
 				match('Qualification 10', {
@@ -97,6 +100,7 @@ describe('createDashboardData', () => {
 
 	it('does not treat the current field match as ours when calculating turnaround', () => {
 		const dashboard = createDashboardData({
+			eventKey: '2026test',
 			receivedAt: now,
 			matches: [
 				match('Qualification 35', { status: 'On field' }),
@@ -110,6 +114,7 @@ describe('createDashboardData', () => {
 
 	it('builds the display model before the event starts', () => {
 		const dashboard = createDashboardData({
+			eventKey: '2026test',
 			receivedAt: now - 5_000,
 			matches: [
 				match('Qualification 3', {
@@ -139,13 +144,14 @@ describe('createDashboardData', () => {
 	});
 
 	it('keeps displaying event state when no Team 581 matches remain', () => {
-		expect(createDashboardData({ receivedAt: now, matches: [] })).toMatchObject({
+		expect(createDashboardData({ eventKey: '2026test', receivedAt: now, matches: [] })).toMatchObject({
 			currentMatch: null,
 			nextMatch: null,
 			upcomingMatches: [],
 		});
 		expect(
 			createDashboardData({
+				eventKey: '2026test',
 				receivedAt: now,
 				matches: [match('Qualification 10', { status: 'On field', redTeams: ['581', '2', '3'] })],
 			}),

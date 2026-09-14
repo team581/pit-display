@@ -30,7 +30,7 @@ function App() {
 			{dashboard ? (
 				<div {...stylex.props(styles.dashboardContent)}>
 					<MatchSummary currentMatch={dashboard.currentMatch} nextMatch={dashboard.nextMatch} now={now} />
-					<MatchSchedule matches={dashboard.upcomingMatches} now={now} />
+					<MatchSchedule eventKey={dashboard.eventKey} matches={dashboard.upcomingMatches} now={now} />
 				</div>
 			) : (
 				<section {...stylex.props(styles.emptyState)}>

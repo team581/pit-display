@@ -3,6 +3,7 @@ import { TEAM_NUMBER_STRING } from '../../src/team';
 import type { Doc } from '../_generated/dataModel';
 
 export const dashboardData = v.object({
+	eventKey: v.string(),
 	updatedAt: v.number(),
 	currentMatch: v.nullable(v.object({ displayLabel: v.string(), startedAt: v.nullable(v.number()) })),
 	nextMatch: v.nullable(
@@ -32,7 +33,7 @@ export const dashboardData = v.object({
 
 export type DashboardData = Infer<typeof dashboardData>;
 type NexusMatch = Doc<'eventStatuses'>['matches'][number];
-type EventStatusSnapshot = Pick<Doc<'eventStatuses'>, 'matches' | 'receivedAt'>;
+type EventStatusSnapshot = Pick<Doc<'eventStatuses'>, 'eventKey' | 'matches' | 'receivedAt'>;
 type MatchType = 'elimination' | 'final' | 'practice' | 'qualification';
 type ParsedMatch = { number: number; type: MatchType; displayLabel: string };
 
@@ -154,6 +155,7 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 	});
 
 	return {
+		eventKey: status.eventKey,
 		updatedAt: status.receivedAt,
 		currentMatch:
 			currentMatch && parsedCurrentMatch
