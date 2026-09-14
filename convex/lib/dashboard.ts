@@ -2,13 +2,6 @@ import { v, type Infer } from 'convex/values';
 import { TEAM_NUMBER_STRING } from '../../src/team';
 import type { Doc } from '../_generated/dataModel';
 
-const matchType = v.union(
-	v.literal('elimination'),
-	v.literal('final'),
-	v.literal('practice'),
-	v.literal('qualification'),
-);
-
 export const dashboardData = v.object({
 	updatedAt: v.number(),
 	currentMatch: v.nullable(v.object({ displayLabel: v.string(), startedAt: v.nullable(v.number()) })),
@@ -40,7 +33,7 @@ export const dashboardData = v.object({
 export type DashboardData = Infer<typeof dashboardData>;
 type NexusMatch = Doc<'eventStatuses'>['matches'][number];
 type EventStatusSnapshot = Pick<Doc<'eventStatuses'>, 'matches' | 'receivedAt'>;
-type MatchType = Infer<typeof matchType>;
+type MatchType = 'elimination' | 'final' | 'practice' | 'qualification';
 type ParsedMatch = { number: number; type: MatchType; displayLabel: string };
 
 const ordinalPluralRules = new Intl.PluralRules('en', { type: 'ordinal' });
