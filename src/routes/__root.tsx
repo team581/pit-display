@@ -1,9 +1,10 @@
-import { createRootRoute } from '@tanstack/react-router';
+import type { QueryClient } from '@tanstack/react-query';
+import { createRootRouteWithContext } from '@tanstack/react-router';
 import fontCss from '@fontsource-variable/source-sans-3?url';
 import { RootDocument } from '../components/RootDocument';
 import appCss from '../index.css?url';
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
 	head: () => ({
 		meta: [
 			{ charSet: 'utf-8' },

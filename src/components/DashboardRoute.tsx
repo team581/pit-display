@@ -1,18 +1,9 @@
-import { ClientOnly } from '@tanstack/react-router';
-import { ConvexProvider, ConvexReactClient } from 'convex/react';
-import { useEffect, useState } from 'react';
-import App, { AppFallback } from '../App';
+import { useLoaderData } from '@tanstack/react-router';
+import { useEffect } from 'react';
+import App from '../App';
 
 export function DashboardRoute() {
-	return (
-		<ClientOnly fallback={<AppFallback />}>
-			<ClientApp />
-		</ClientOnly>
-	);
-}
-
-function ClientApp() {
-	const [convex] = useState(() => new ConvexReactClient(import.meta.env.VITE_CONVEX_URL));
+	const { loadedAt } = useLoaderData({ from: '/' });
 
 	useEffect(() => {
 		if (import.meta.hot && !document.querySelector('[data-stylex-dev-runtime]')) {
@@ -26,9 +17,5 @@ function ClientApp() {
 		if (!import.meta.hot && 'serviceWorker' in navigator) void navigator.serviceWorker.register('/sw.js');
 	}, []);
 
-	return (
-		<ConvexProvider client={convex}>
-			<App />
-		</ConvexProvider>
-	);
+	return <App loadedAt={loadedAt} />;
 }

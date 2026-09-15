@@ -1,5 +1,8 @@
 import * as stylex from '@stylexjs/stylex';
-import { useConvexConnectionState, useQuery } from 'convex/react';
+import { convexQuery } from '@convex-dev/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { ClientOnly } from '@tanstack/react-router';
+import { useConvexConnectionState } from 'convex/react';
 import { useEffect, useState } from 'react';
 import { api } from '../convex/_generated/api';
 import { styles } from './App.stylex';
@@ -10,37 +13,31 @@ import { UpdateHealth } from './components/UpdateHealth';
 import type { Dashboard as DashboardData } from './dashboard';
 import { TEAM_NUMBER } from './team';
 
-function App() {
-	const [now, setNow] = useState(Date.now);
-	const dashboard = useQuery(api.dashboard.get);
-	const { isWebSocketConnected } = useConvexConnectionState();
+function App({ loadedAt }: { loadedAt: number }) {
+	const [now, setNow] = useState(loadedAt);
+	const { data: dashboard } = useSuspenseQuery(convexQuery(api.dashboard.get, {}));
 
 	useEffect(() => {
-		const interval = window.setInterval(() => setNow(Date.now()), 1000);
-		return () => window.clearInterval(interval);
+		const updateNow = () => setNow(Date.now());
+		const timeout = window.setTimeout(updateNow);
+		const interval = window.setInterval(updateNow, 1000);
+		return () => {
+			window.clearTimeout(timeout);
+			window.clearInterval(interval);
+		};
 	}, []);
 
-	return <Dashboard dashboard={dashboard} connected={isWebSocketConnected} now={now} />;
+	return <Dashboard dashboard={dashboard} now={now} />;
 }
 
-export function AppFallback() {
-	return <Dashboard dashboard={undefined} connected={false} now={0} />;
-}
-
-function Dashboard({
-	dashboard,
-	connected,
-	now,
-}: {
-	dashboard: DashboardData | null | undefined;
-	connected: boolean;
-	now: number;
-}) {
+function Dashboard({ dashboard, now }: { dashboard: DashboardData | null | undefined; now: number }) {
 	return (
 		<main {...stylex.props(styles.dashboard)}>
 			<header {...stylex.props(styles.topbar)}>
 				<TeamIdentity />
-				<UpdateHealth connected={connected} receivedAt={dashboard?.updatedAt} now={now} />
+				<ClientOnly fallback={<UpdateHealth connected={false} receivedAt={dashboard?.updatedAt} now={now} />}>
+					<LiveUpdateHealth receivedAt={dashboard?.updatedAt} now={now} />
+				</ClientOnly>
 			</header>
 
 			{dashboard ? (
@@ -62,6 +59,11 @@ function Dashboard({
 			)}
 		</main>
 	);
+}
+
+function LiveUpdateHealth({ receivedAt, now }: { receivedAt?: number; now: number }) {
+	const { isWebSocketConnected } = useConvexConnectionState();
+	return <UpdateHealth connected={isWebSocketConnected} receivedAt={receivedAt} now={now} />;
 }
 
 export default App;
