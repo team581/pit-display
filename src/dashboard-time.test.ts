@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { activeTimingMilestoneIndex } from './dashboard-time';
+import { activeTimingMilestoneIndex, formatTimingMilestoneTime } from './dashboard-time';
 
 const minute = 60_000;
 
@@ -15,5 +15,15 @@ describe('dashboard time state', () => {
 		expect(activeTimingMilestoneIndex(milestones)).toBe(0);
 		milestones[1]!.isActual = true;
 		expect(activeTimingMilestoneIndex(milestones)).toBe(1);
+	});
+
+	it('shows overdue estimates as soon until the milestone actually happens', () => {
+		const milestone = { label: 'Queued', time: 5 * minute, isActual: false };
+		expect(formatTimingMilestoneTime(milestone, 4 * minute)).toBe('in 1 min 0 sec');
+		expect(formatTimingMilestoneTime(milestone, 5 * minute)).toBe('Soon');
+		expect(formatTimingMilestoneTime(milestone, 6 * minute)).toBe('Soon');
+
+		milestone.isActual = true;
+		expect(formatTimingMilestoneTime(milestone, 6 * minute)).toBe('1 min 0 sec ago');
 	});
 });

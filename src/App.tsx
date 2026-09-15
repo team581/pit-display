@@ -4,6 +4,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { ClientOnly } from '@tanstack/react-router';
 import { useConvexConnectionState } from 'convex/react';
 import { useEffect, useState } from 'react';
+import { TextMorph } from 'torph/react';
 import { api } from '../convex/_generated/api';
 import { styles } from './App.stylex';
 import { MatchSchedule } from './components/MatchSchedule';
@@ -47,14 +48,14 @@ function Dashboard({ dashboard, now }: { dashboard: DashboardData | null | undef
 				</div>
 			) : (
 				<section {...stylex.props(styles.emptyState)}>
-					<h1 {...stylex.props(styles.emptyStateHeading)}>
+					<TextMorph as="h1" {...stylex.props(styles.emptyStateHeading)}>
 						{dashboard === undefined ? 'Connecting to backend' : `No current event data for Team ${TEAM_NUMBER}`}
-					</h1>
-					<p {...stylex.props(styles.emptyStateText)}>
+					</TextMorph>
+					<TextMorph as="p" {...stylex.props(styles.emptyStateText)}>
 						{dashboard === undefined
 							? 'Waiting for the server.'
 							: 'Waiting for Team 581 data from an active Nexus event.'}
-					</p>
+					</TextMorph>
 				</section>
 			)}
 		</main>

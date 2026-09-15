@@ -1,8 +1,10 @@
 import * as stylex from '@stylexjs/stylex';
+import { TextMorph } from 'torph/react';
 import type { Dashboard } from '../dashboard';
-import { activeTimingMilestoneIndex } from '../dashboard-time';
-import { formatClock, formatRelativeTime } from '../format-time';
+import { activeTimingMilestoneIndex, formatTimingMilestoneTime } from '../dashboard-time';
+import { formatClock } from '../format-time';
 import { queueProgress } from '../match-progress';
+import { MatchLabel } from './MatchLabel';
 import { styles } from './MatchSummary.stylex';
 import { panelStyles } from './Panel.stylex';
 
@@ -16,6 +18,7 @@ export function MatchSummary({
 	now: number;
 }) {
 	const activeTimingIndex = nextMatch ? activeTimingMilestoneIndex(nextMatch.milestones) : -1;
+	const hasActiveTiming = activeTimingIndex !== -1;
 	const nextQueueProgress = queueProgress(currentMatch?.startedAt, nextMatch?.milestones[0]?.time, now);
 	const queueWindowComplete = nextQueueProgress === 1;
 
@@ -27,7 +30,7 @@ export function MatchSummary({
 				</div>
 				<div {...stylex.props(styles.cardBody)}>
 					<div {...stylex.props(styles.matchNumberArea)}>
-						<strong {...stylex.props(styles.matchNumber)}>{currentMatch?.displayLabel ?? '—'}</strong>
+						<MatchLabel displayLabel={currentMatch?.displayLabel} {...stylex.props(styles.matchNumber)} />
 					</div>
 					{nextMatch && (
 						<div
@@ -55,10 +58,12 @@ export function MatchSummary({
 						</div>
 						<div {...stylex.props(styles.cardBody)}>
 							<div {...stylex.props(styles.matchNumberArea)}>
-								<strong {...stylex.props(styles.matchNumber)}>{nextMatch.displayLabel}</strong>
+								<MatchLabel displayLabel={nextMatch.displayLabel} {...stylex.props(styles.matchNumber)} />
 							</div>
 							<div {...stylex.props(styles.matchDetail, styles.matchStartTime)}>
-								<strong {...stylex.props(styles.matchStartValue)}>Starts {formatClock(nextMatch.startTime)}</strong>
+								<TextMorph as="strong" {...stylex.props(styles.matchStartValue)}>
+									Starts {formatClock(nextMatch.startTime)}
+								</TextMorph>
 							</div>
 						</div>
 					</article>
@@ -71,13 +76,20 @@ export function MatchSummary({
 							{nextMatch.milestones.map((milestone, index) => {
 								const isActive = index === activeTimingIndex;
 								return (
-									<div {...stylex.props(styles.timingRow, isActive && styles.timingActive)} key={milestone.label}>
+									<div
+										{...stylex.props(
+											styles.timingRow,
+											hasActiveTiming && styles.timingRowExpanded,
+											isActive && styles.timingActive,
+										)}
+										key={milestone.label}
+									>
 										<span {...stylex.props(styles.timingLabel, isActive && styles.timingLabelActive)}>
 											{milestone.label}
 										</span>
-										<strong {...stylex.props(styles.timingValue)}>
-											{formatRelativeTime(milestone.time, now, 'in ', 'seconds')}
-										</strong>
+										<TextMorph as="strong" {...stylex.props(styles.timingValue, isActive && styles.timingValueActive)}>
+											{formatTimingMilestoneTime(milestone, now)}
+										</TextMorph>
 									</div>
 								);
 							})}

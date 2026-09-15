@@ -51,6 +51,7 @@ export const styles = stylex.create({
 		fontWeight: 900,
 		fontVariationSettings: "'wdth' 92",
 		lineHeight: 1,
+		whiteSpace: 'nowrap',
 	},
 	matchTime: { lineHeight: 1.12 },
 	startTime: {

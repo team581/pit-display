@@ -1,7 +1,9 @@
 import * as stylex from '@stylexjs/stylex';
+import { TextMorph } from 'torph/react';
 import type { Dashboard } from '../dashboard';
 import { formatClock, formatRelativeTime } from '../format-time';
 import { AllianceBadge } from './AllianceBadge';
+import { MatchLabel } from './MatchLabel';
 import { styles } from './MatchSchedule.stylex';
 import { MatchWarning } from './MatchWarning';
 import { panelStyles } from './Panel.stylex';
@@ -25,11 +27,11 @@ export function MatchSchedule({
 			<div {...stylex.props(styles.rows)}>
 				{matches.map((match) => (
 					<article {...stylex.props(styles.matchRow)} key={match.key}>
-						<strong {...stylex.props(styles.matchNumber)}>{match.displayLabel}</strong>
+						<MatchLabel displayLabel={match.displayLabel} {...stylex.props(styles.matchNumber)} />
 						<div {...stylex.props(styles.matchTime)}>
-							<strong {...stylex.props(styles.startTime)}>
+							<TextMorph as="strong" {...stylex.props(styles.startTime)}>
 								Starts {formatClock(match.startTime)} ({formatRelativeTime(match.startTime, now, '')})
-							</strong>
+							</TextMorph>
 						</div>
 						{match.warning && <MatchWarning warning={match.warning} />}
 						<AllianceBadge alliance={match.alliance} eventKey={eventKey} teams={match.teams} />
