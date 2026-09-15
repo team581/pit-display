@@ -18,4 +18,10 @@ describe('formatRelativeTime', () => {
 		expect(formatRelativeTime(0, 5 * minute + 12 * second, '', 'seconds')).toBe('5 min 12 sec ago');
 		expect(formatRelativeTime(500, 0, 'in ', 'seconds')).toBe('now');
 	});
+
+	it('omits seconds for durations of at least ten minutes', () => {
+		expect(formatRelativeTime(9 * minute + 59 * second, 0, 'in ', 'seconds')).toBe('in 9 min 59 sec');
+		expect(formatRelativeTime(10 * minute, 0, 'in ', 'seconds')).toBe('in 10 min');
+		expect(formatRelativeTime(75 * minute + 20 * second, 0, '', 'seconds')).toBe('1 hr 15 min');
+	});
 });

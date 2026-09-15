@@ -12,21 +12,8 @@ const secondDurationFormatter = new Intl.DurationFormat(undefined, {
 	seconds: 'short',
 	secondsDisplay: 'always',
 });
-const hourlySecondDurationFormatter = new Intl.DurationFormat(undefined, {
-	style: 'short',
-	minutes: 'short',
-	minutesDisplay: 'always',
-	seconds: 'short',
-	secondsDisplay: 'always',
-});
-
 function formatDuration(duration: Temporal.Duration, precision: 'minutes' | 'seconds'): string {
-	const formatter =
-		precision === 'minutes'
-			? durationFormatter
-			: duration.hours === 0
-				? secondDurationFormatter
-				: hourlySecondDurationFormatter;
+	const formatter = precision === 'minutes' ? durationFormatter : secondDurationFormatter;
 	return formatter.format(duration).replaceAll(',', '');
 }
 
@@ -39,11 +26,12 @@ export function formatRelativeTime(
 	if (time === null) return 'Not available';
 	const difference = time - now;
 	if (Math.abs(difference) < (precision === 'seconds' ? 1000 : 30_000)) return 'now';
+	const displayedPrecision = precision === 'seconds' && Math.abs(difference) < 10 * 60_000 ? 'seconds' : 'minutes';
 	const duration = Temporal.Duration.from({ milliseconds: Math.abs(difference) }).round({
 		largestUnit: 'hours',
-		smallestUnit: precision,
-		roundingMode: precision === 'seconds' ? 'floor' : 'halfExpand',
+		smallestUnit: displayedPrecision,
+		roundingMode: displayedPrecision === 'seconds' ? 'floor' : 'halfExpand',
 	});
-	const formattedDuration = formatDuration(duration, precision);
+	const formattedDuration = formatDuration(duration, displayedPrecision);
 	return difference < 0 ? `${formattedDuration} ago` : `${futurePrefix}${formattedDuration}`;
 }
