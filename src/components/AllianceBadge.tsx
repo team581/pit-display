@@ -14,7 +14,7 @@ export function AllianceBadge({
 			{...stylex.props(styles.container, alliance === 'red' ? styles.red : styles.blue)}
 			aria-label={`${alliance} alliance: teams ${teams.join(', ')}`}
 		>
-			<div {...stylex.props(styles.teams)}>
+			<div {...stylex.props(styles.teams, teams.length === 4 && styles.fourTeams)}>
 				{teams.map((team) => (
 					<a
 						{...stylex.props(styles.team, team === TEAM_NUMBER && styles.ourTeam)}

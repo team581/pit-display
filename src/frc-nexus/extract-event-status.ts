@@ -10,6 +10,7 @@ const breakLabels = {
 } as const;
 
 type AfterBreak = { breakLabel: string; position: number };
+type CompetitionPhase = 'qualification' | 'allianceSelection' | 'elimination';
 
 const breakWarningWindow = 30 * 60_000;
 const minimumMatchesAfterBreak = 3;
@@ -28,6 +29,29 @@ function withoutNullTimes(times: Match['times']) {
 		...(times?.actualOnDeckTime != null ? { actualOnDeckTime: times.actualOnDeckTime } : {}),
 		...(times?.actualOnFieldTime != null ? { actualOnFieldTime: times.actualOnFieldTime } : {}),
 	};
+}
+
+function competitionPhase(matches: Match[]): CompetitionPhase {
+	const qualificationMatches = matches.filter((match) => match.label?.startsWith('Qualification '));
+	const playoffMatches = matches.filter((match) => match.label?.startsWith('Playoff '));
+	const qualificationsComplete =
+		qualificationMatches.length > 0 && qualificationMatches.every((match) => match.status === 'On field');
+	if (!qualificationsComplete) return 'qualification';
+
+	const playoffsStarted = playoffMatches.some((match) => match.status !== 'Queuing soon');
+	return playoffsStarted ? 'elimination' : 'allianceSelection';
+}
+
+function alliancePartners(matches: Match[]): string[] {
+	const match = matches.find(
+		(match) =>
+			match.label?.startsWith('Playoff ') &&
+			(match.redTeams?.includes(TEAM_NUMBER_STRING) || match.blueTeams?.includes(TEAM_NUMBER_STRING)),
+	);
+	if (!match) return [];
+
+	const alliance = match.redTeams?.includes(TEAM_NUMBER_STRING) ? match.redTeams : match.blueTeams;
+	return withoutNullTeams(alliance).filter((team) => team !== TEAM_NUMBER_STRING);
 }
 
 function breakPositions(matches: Match[]): (AfterBreak | undefined)[] {
@@ -63,7 +87,20 @@ function breakPositions(matches: Match[]): (AfterBreak | undefined)[] {
 
 export function extractEventStatus(data: EventStatus) {
 	if (!data.eventKey || !data.dataAsOfTime || !data.matches) return;
-	const currentMatchIndex = data.matches.findLastIndex((match) => match.status === 'On field');
+	const phase = competitionPhase(data.matches);
+	const lastOnFieldIndex = data.matches.findLastIndex((match) => match.status === 'On field');
+	const eliminationOnFieldIndex = data.matches.findLastIndex(
+		(match) => match.status === 'On field' && /^(Playoff|Final) /.test(match.label ?? ''),
+	);
+	const eliminationOnDeckIndex = data.matches.findIndex(
+		(match) => match.status === 'On deck' && /^(Playoff|Final) /.test(match.label ?? ''),
+	);
+	const currentMatchIndex =
+		phase === 'elimination'
+			? eliminationOnFieldIndex === -1
+				? eliminationOnDeckIndex
+				: eliminationOnFieldIndex
+			: lastOnFieldIndex;
 	const afterBreakByMatch = breakPositions(data.matches);
 	const teamIsPresent = data.matches.some(
 		(match) => match.redTeams?.includes(TEAM_NUMBER_STRING) || match.blueTeams?.includes(TEAM_NUMBER_STRING),
@@ -73,6 +110,8 @@ export function extractEventStatus(data: EventStatus) {
 		eventKey: data.eventKey,
 		dataAsOfTime: data.dataAsOfTime,
 		teamIsPresent,
+		competitionPhase: phase,
+		alliancePartners: alliancePartners(data.matches),
 		matches: data.matches.flatMap((match, index) => {
 			const isTeamMatch =
 				match.redTeams?.includes(TEAM_NUMBER_STRING) || match.blueTeams?.includes(TEAM_NUMBER_STRING) || false;

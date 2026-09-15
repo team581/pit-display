@@ -5,6 +5,8 @@ import type { Doc } from '../_generated/dataModel';
 export const dashboardData = v.object({
 	eventKey: v.string(),
 	updatedAt: v.number(),
+	competitionPhase: v.union(v.literal('qualification'), v.literal('allianceSelection'), v.literal('elimination')),
+	alliancePartners: v.array(v.number()),
 	currentMatch: v.nullable(v.object({ displayLabel: v.string(), startedAt: v.nullable(v.number()) })),
 	nextMatch: v.nullable(
 		v.object({
@@ -33,7 +35,10 @@ export const dashboardData = v.object({
 
 export type DashboardData = Infer<typeof dashboardData>;
 type NexusMatch = Doc<'eventStatuses'>['matches'][number];
-type EventStatusSnapshot = Pick<Doc<'eventStatuses'>, 'eventKey' | 'matches' | 'receivedAt'>;
+type EventStatusSnapshot = Pick<
+	Doc<'eventStatuses'>,
+	'alliancePartners' | 'competitionPhase' | 'eventKey' | 'matches' | 'receivedAt'
+>;
 type MatchType = 'elimination' | 'final' | 'practice' | 'qualification';
 type ParsedMatch = { number: number; type: MatchType; displayLabel: string };
 
@@ -111,19 +116,41 @@ function turnaroundWarningForMatch(
 }
 
 export function createDashboardData(status: EventStatusSnapshot): DashboardData | null {
-	let currentMatchIndex = -1;
+	const competitionPhase = status.competitionPhase ?? 'qualification';
+	let lastOnFieldIndex = -1;
 	for (let index = status.matches.length - 1; index >= 0; index--) {
 		if (status.matches[index]?.status === 'On field') {
-			currentMatchIndex = index;
+			lastOnFieldIndex = index;
 			break;
 		}
 	}
+	const eliminationOnFieldIndex = status.matches.findLastIndex((match) => {
+		const parsedMatch = parseMatchLabel(match.label);
+		return match.status === 'On field' && (parsedMatch?.type === 'elimination' || parsedMatch?.type === 'final');
+	});
+	const eliminationOnDeckIndex = status.matches.findIndex((match) => {
+		const parsedMatch = parseMatchLabel(match.label);
+		return match.status === 'On deck' && (parsedMatch?.type === 'elimination' || parsedMatch?.type === 'final');
+	});
+	const currentMatchIndex =
+		competitionPhase === 'elimination'
+			? eliminationOnFieldIndex === -1
+				? eliminationOnDeckIndex
+				: eliminationOnFieldIndex
+			: lastOnFieldIndex;
 
 	const currentMatch = status.matches[currentMatchIndex];
 	const parsedCurrentMatch = currentMatch ? parseMatchLabel(currentMatch.label) : null;
 	if (currentMatch && !parsedCurrentMatch) return null;
+	const currentMatchIsInPhase =
+		parsedCurrentMatch &&
+		((competitionPhase === 'qualification' &&
+			(parsedCurrentMatch.type === 'practice' || parsedCurrentMatch.type === 'qualification')) ||
+			(competitionPhase === 'elimination' &&
+				(parsedCurrentMatch.type === 'elimination' || parsedCurrentMatch.type === 'final')));
 
-	const teamMatches = status.matches.slice(currentMatchIndex + 1).filter(includesTeam);
+	const lastOnFieldMatch = status.matches[lastOnFieldIndex];
+	const teamMatches = status.matches.slice(lastOnFieldIndex + 1).filter(includesTeam);
 	const nextMatch = teamMatches[0];
 	const parsedNextMatch = nextMatch ? parseMatchLabel(nextMatch.label) : null;
 	if (nextMatch && !parsedNextMatch) return null;
@@ -133,11 +160,11 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 		if (!parsedMatch) return [];
 
 		const alliance = match.redTeams.includes(TEAM_NUMBER_STRING) ? 'red' : 'blue';
-		const teams = (alliance === 'red' ? match.redTeams : match.blueTeams).slice(0, 3).map(Number);
-		if (teams.length !== 3 || teams.some((team) => !Number.isInteger(team))) return [];
+		const teams = (alliance === 'red' ? match.redTeams : match.blueTeams).map(Number);
+		if (teams.length < 3 || teams.length > 4 || teams.some((team) => !Number.isInteger(team))) return [];
 
 		const previousMatch =
-			teamMatches[index - 1] ?? (currentMatch && includesTeam(currentMatch) ? currentMatch : undefined);
+			teamMatches[index - 1] ?? (lastOnFieldMatch && includesTeam(lastOnFieldMatch) ? lastOnFieldMatch : undefined);
 		const previousParsedMatch = previousMatch ? parseMatchLabel(previousMatch.label) : null;
 		return [
 			{
@@ -158,8 +185,10 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 	return {
 		eventKey: status.eventKey,
 		updatedAt: status.receivedAt,
+		competitionPhase,
+		alliancePartners: (status.alliancePartners ?? []).map(Number).filter(Number.isInteger),
 		currentMatch:
-			currentMatch && parsedCurrentMatch
+			currentMatch && parsedCurrentMatch && currentMatchIsInPhase
 				? {
 						displayLabel: parsedCurrentMatch.displayLabel,
 						startedAt: currentMatch.times.actualOnFieldTime ?? matchStart(currentMatch) ?? null,

@@ -177,4 +177,49 @@ describe('createDashboardData', () => {
 			upcomingMatches: [],
 		});
 	});
+
+	it('includes competition phase and numeric alliance partners', () => {
+		const dashboard = createDashboardData({
+			eventKey: '2026test',
+			receivedAt: now,
+			competitionPhase: 'allianceSelection',
+			alliancePartners: ['254', '1678'],
+			matches: [],
+		});
+
+		expect(dashboard).toMatchObject({
+			competitionPhase: 'allianceSelection',
+			alliancePartners: [254, 1678],
+		});
+	});
+
+	it('keeps all four teams in a playoff alliance', () => {
+		const dashboard = createDashboardData({
+			eventKey: '2026test',
+			receivedAt: now,
+			competitionPhase: 'elimination',
+			alliancePartners: ['254', '1678', '971'],
+			matches: [match('Playoff 1', { redTeams: ['581', '254', '1678', '971'] })],
+		});
+
+		expect(dashboard?.upcomingMatches[0]?.teams).toEqual([581, 254, 1678, 971]);
+	});
+
+	it('shows an on-deck elimination match instead of the last qualification match', () => {
+		const dashboard = createDashboardData({
+			eventKey: '2026test',
+			receivedAt: now,
+			competitionPhase: 'elimination',
+			alliancePartners: ['254', '1678'],
+			matches: [
+				match('Qualification 56', { status: 'On field' }),
+				match('Playoff 1', { status: 'On deck', redTeams: ['581', '254', '1678'] }),
+			],
+		});
+
+		expect(dashboard).toMatchObject({
+			currentMatch: { displayLabel: 'M1' },
+			nextMatch: { displayLabel: 'M1' },
+		});
+	});
 });

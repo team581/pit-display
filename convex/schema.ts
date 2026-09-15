@@ -27,11 +27,19 @@ export const NexusMatch = v.object({
 	afterBreak: v.optional(v.object({ breakLabel: v.string(), position: v.number() })),
 });
 
+export const CompetitionPhase = v.union(
+	v.literal('qualification'),
+	v.literal('allianceSelection'),
+	v.literal('elimination'),
+);
+
 export default defineSchema({
 	eventStatuses: defineTable({
 		eventKey: v.string(),
 		dataAsOfTime: v.number(),
 		receivedAt: v.number(),
 		matches: v.array(NexusMatch),
+		competitionPhase: v.optional(CompetitionPhase),
+		alliancePartners: v.optional(v.array(v.string())),
 	}).index('by_dataAsOfTime', ['dataAsOfTime']),
 });

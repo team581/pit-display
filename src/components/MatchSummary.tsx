@@ -9,10 +9,12 @@ import { styles } from './MatchSummary.stylex';
 import { panelStyles } from './Panel.stylex';
 
 export function MatchSummary({
+	competitionPhase,
 	currentMatch,
 	nextMatch,
 	now,
 }: {
+	competitionPhase: Dashboard['competitionPhase'];
 	currentMatch: Dashboard['currentMatch'];
 	nextMatch: Dashboard['nextMatch'];
 	now: number;
@@ -21,6 +23,7 @@ export function MatchSummary({
 	const hasActiveTiming = activeTimingIndex !== -1;
 	const nextQueueProgress = queueProgress(currentMatch?.startedAt, nextMatch?.milestones[0]?.time, now);
 	const queueWindowComplete = nextQueueProgress === 1;
+	const isAllianceSelection = competitionPhase === 'allianceSelection';
 
 	return (
 		<section {...stylex.props(styles.grid)} aria-label="Match summary">
@@ -30,23 +33,33 @@ export function MatchSummary({
 				</div>
 				<div {...stylex.props(styles.cardBody)}>
 					<div {...stylex.props(styles.matchNumberArea)}>
-						<MatchLabel displayLabel={currentMatch?.displayLabel} {...stylex.props(styles.matchNumber)} />
+						{isAllianceSelection ? (
+							<strong {...stylex.props(styles.currentStage)} aria-label="Alliance selection">
+								<span aria-hidden="true">Alliance</span>
+								<span aria-hidden="true">selection</span>
+							</strong>
+						) : (
+							<MatchLabel displayLabel={currentMatch?.displayLabel} {...stylex.props(styles.matchNumber)} />
+						)}
 					</div>
-					{nextMatch && (
-						<div
-							{...stylex.props(styles.matchDetail, styles.matchProgress)}
-							aria-label={`Progress until ${nextMatch.displayLabel} queues: ${Math.round(nextQueueProgress * 100)}%`}
-							role="progressbar"
-							aria-valuemin={0}
-							aria-valuemax={100}
-							aria-valuenow={Math.round(nextQueueProgress * 100)}
-						>
-							<div {...stylex.props(styles.matchProgressFill)} style={{ width: `${nextQueueProgress * 100}%` }} />
-							{queueWindowComplete && (
-								<strong {...stylex.props(styles.matchStartValue, styles.matchProgressMessage)}>Ending soon</strong>
-							)}
-						</div>
-					)}
+					{currentMatch &&
+						nextMatch &&
+						currentMatch.displayLabel !== nextMatch.displayLabel &&
+						!isAllianceSelection && (
+							<div
+								{...stylex.props(styles.matchDetail, styles.matchProgress)}
+								aria-label={`Progress until ${nextMatch.displayLabel} queues: ${Math.round(nextQueueProgress * 100)}%`}
+								role="progressbar"
+								aria-valuemin={0}
+								aria-valuemax={100}
+								aria-valuenow={Math.round(nextQueueProgress * 100)}
+							>
+								<div {...stylex.props(styles.matchProgressFill)} style={{ width: `${nextQueueProgress * 100}%` }} />
+								{queueWindowComplete && (
+									<strong {...stylex.props(styles.matchStartValue, styles.matchProgressMessage)}>Ending soon</strong>
+								)}
+							</div>
+						)}
 				</div>
 			</article>
 

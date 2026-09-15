@@ -7,7 +7,7 @@ import { TEAM_NUMBER_STRING } from '../src/team';
 import { internal } from './_generated/api';
 import { env, internalAction, internalMutation } from './_generated/server';
 import { app } from './lib/hono';
-import { NexusMatch } from './schema';
+import { CompetitionPhase, NexusMatch } from './schema';
 
 const frcNexus = new FrcNexus();
 
@@ -69,6 +69,8 @@ export const processEventStatus = internalMutation({
 		dataAsOfTime: v.number(),
 		teamIsPresent: v.boolean(),
 		matches: v.array(NexusMatch),
+		competitionPhase: CompetitionPhase,
+		alliancePartners: v.array(v.string()),
 	},
 	returns: v.null(),
 	handler: async (ctx, args) => {
@@ -81,6 +83,8 @@ export const processEventStatus = internalMutation({
 			dataAsOfTime: args.dataAsOfTime,
 			receivedAt: Date.now(),
 			matches: args.matches,
+			competitionPhase: args.competitionPhase,
+			alliancePartners: args.alliancePartners,
 		};
 		if (activeEvent?.eventKey === args.eventKey) {
 			await ctx.db.patch(activeEvent._id, snapshot);

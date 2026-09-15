@@ -24,6 +24,7 @@ export const styles = stylex.create({
 		gridTemplateColumns: 'repeat(3, 1fr)',
 		alignSelf: 'stretch',
 	},
+	fourTeams: { gridTemplateColumns: 'repeat(4, 1fr)' },
 	team: {
 		display: 'flex',
 		alignItems: 'center',

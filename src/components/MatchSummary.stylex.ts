@@ -55,6 +55,16 @@ export const styles = stylex.create({
 		letterSpacing: '-0.045em',
 		whiteSpace: 'nowrap',
 	},
+	currentStage: {
+		display: 'flex',
+		maxWidth: '100%',
+		flexDirection: 'column',
+		fontSize: { default: 'clamp(3rem, 4vw, 4rem)', [portrait]: '3.5rem' },
+		fontWeight: 900,
+		fontVariationSettings: "'wdth' 92",
+		lineHeight: 0.95,
+		textAlign: 'center',
+	},
 	matchDetail: {
 		display: 'flex',
 		width: '100%',

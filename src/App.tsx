@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { TextMorph } from 'torph/react';
 import { api } from '../convex/_generated/api';
 import { styles } from './App.stylex';
+import { AlliancePartners } from './components/AlliancePartners';
 import { MatchSchedule } from './components/MatchSchedule';
 import { MatchSummary } from './components/MatchSummary';
 import { TeamIdentity } from './components/TeamIdentity';
@@ -43,8 +44,17 @@ function Dashboard({ dashboard, now }: { dashboard: DashboardData | null | undef
 
 			{dashboard ? (
 				<div {...stylex.props(styles.dashboardContent)}>
-					<MatchSummary currentMatch={dashboard.currentMatch} nextMatch={dashboard.nextMatch} now={now} />
-					<MatchSchedule eventKey={dashboard.eventKey} matches={dashboard.upcomingMatches} now={now} />
+					<MatchSummary
+						competitionPhase={dashboard.competitionPhase}
+						currentMatch={dashboard.currentMatch}
+						nextMatch={dashboard.nextMatch}
+						now={now}
+					/>
+					{dashboard.competitionPhase === 'allianceSelection' ? (
+						<AlliancePartners eventKey={dashboard.eventKey} teams={dashboard.alliancePartners} />
+					) : (
+						<MatchSchedule eventKey={dashboard.eventKey} matches={dashboard.upcomingMatches} now={now} />
+					)}
 				</div>
 			) : (
 				<section {...stylex.props(styles.emptyState)}>
