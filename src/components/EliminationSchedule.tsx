@@ -67,7 +67,7 @@ export function EliminationSchedule({
 	matches: Dashboard['upcomingMatches'];
 	now: number;
 }) {
-	const rows = paths.length > 0 ? paths.map(rowFromPath) : matches.map(rowFromMatch);
+	const rows = paths.length > 0 ? paths.map(rowFromPath) : matches.slice(0, 2).map(rowFromMatch);
 
 	return (
 		<section {...stylex.props(styles.schedule)} aria-label="Next matches">
