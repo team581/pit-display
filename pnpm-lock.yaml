@@ -208,9 +208,6 @@ importers:
       convex-helpers:
         specifier: 0.1.124
         version: 0.1.124(@standard-schema/spec@1.1.0)(convex@1.45.0(react@19.3.0))(hono@4.13.7)(react@19.3.0)(typescript@7.0.2)(zod@4.6.5)
-      envalid:
-        specifier: 8.2.0
-        version: 8.2.0
       fetch-extras:
         specifier: 3.2.1
         version: 3.2.1
@@ -266,6 +263,9 @@ importers:
       '@vitest/ui':
         specifier: 4.1.11
         version: 4.1.11(vitest@4.1.11)
+      envalid:
+        specifier: 8.2.0
+        version: 8.2.0
       knip:
         specifier: 6.35.1
         version: 6.35.1
