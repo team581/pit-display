@@ -57,7 +57,15 @@ for (const scenario of dashboardScenarios) {
 		await render(<DashboardView connected={scenario.connected} dashboard={scenario.dashboard} now={SCENARIO_NOW} />);
 		await waitForAssets();
 		expect(document.querySelector('main')?.getBoundingClientRect().width).toBe(1376);
-		await expect(page.getByRole('main')).toMatchScreenshot(scenario.id);
+		if (scenario.dashboard === null || scenario.dashboard === undefined) {
+			expect(getComputedStyle(document.querySelector('main')!).backgroundColor).toBe('rgb(39, 29, 29)');
+			await expect(page.getByRole('main')).toMatchScreenshot(scenario.id, {
+				comparatorName: 'pixelmatch',
+				comparatorOptions: { threshold: 0.01 },
+			});
+		} else {
+			await expect(page.getByRole('main')).toMatchScreenshot(scenario.id);
+		}
 	});
 }
 

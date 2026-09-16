@@ -10,6 +10,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 			{ charSet: 'utf-8' },
 			{ name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
 			{ name: 'description', content: "Team 581's live match and queue dashboard." },
+			{ name: 'theme-color', content: '#591616' },
 			{ name: 'mobile-web-app-capable', content: 'yes' },
 			{ name: 'apple-mobile-web-app-capable', content: 'yes' },
 			{ name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },

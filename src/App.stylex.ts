@@ -7,7 +7,7 @@ const narrow = '@media (max-width: 620px)';
 export const styles = stylex.create({
 	dashboard: {
 		minHeight: '100svh',
-		backgroundColor: colors.background,
+		backgroundColor: colors.surface,
 		color: colors.text,
 		overflow: {
 			default: 'hidden',
