@@ -37,7 +37,7 @@ export const styles = stylex.create({
 		flexWrap: 'wrap',
 	},
 	team: {
-		color: colors.gold,
+		color: colors.text,
 		fontSize: { default: '6rem', [portrait]: '4.5rem', [narrow]: '3.5rem' },
 		fontWeight: 900,
 		fontVariationSettings: "'wdth' 92",

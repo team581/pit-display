@@ -98,11 +98,6 @@ export const styles = stylex.create({
 		letterSpacing: '-0.03em',
 		whiteSpace: 'nowrap',
 	},
-	activityEndValue: {
-		fontSize: 'clamp(3rem, 14cqw, 3.75rem)',
-		letterSpacing: '-0.03em',
-		whiteSpace: 'nowrap',
-	},
 	activityEndValueLong: {
 		fontSize: 'clamp(2rem, 12.5cqw, 3.35rem)',
 	},

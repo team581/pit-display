@@ -33,7 +33,7 @@ export const styles = stylex.create({
 		display: 'grid',
 		minHeight: '6rem',
 		gridTemplateColumns: {
-			default: 'minmax(5rem, 0.55fr) minmax(18rem, 2.3fr) minmax(12rem, 1fr) minmax(20rem, 1.8fr)',
+			default: 'minmax(5rem, 0.55fr) minmax(18rem, 2.3fr) minmax(12rem, max-content) minmax(20rem, 1.8fr)',
 			[portrait]: '5rem minmax(9rem, 1fr) minmax(9rem, max-content) minmax(14rem, 1.4fr)',
 			[narrow]: '4rem 1fr',
 		},

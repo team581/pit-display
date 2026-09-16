@@ -1,7 +1,7 @@
 import * as stylex from '@stylexjs/stylex';
 import { TextMorph } from 'torph/react';
 import type { Dashboard } from '../dashboard';
-import { formatClock, formatRelativeTime } from '../format-time';
+import { formatMatchStart } from '../format-time';
 import { AllianceBadge } from './AllianceBadge';
 import { MatchLabel } from './MatchLabel';
 import { styles } from './MatchSchedule.stylex';
@@ -30,7 +30,7 @@ export function MatchSchedule({
 						<MatchLabel displayLabel={match.displayLabel} {...stylex.props(styles.matchNumber)} />
 						<div {...stylex.props(styles.matchTime)}>
 							<TextMorph as="strong" {...stylex.props(styles.startTime)}>
-								Starts {formatClock(match.startTime)} ({formatRelativeTime(match.startTime, now, '')})
+								{formatMatchStart(match.startTime, now)}
 							</TextMorph>
 						</div>
 						{match.warning && <MatchWarning warning={match.warning} />}

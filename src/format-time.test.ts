@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { formatRelativeTime } from './format-time';
+import { formatMatchStart, formatRelativeTime } from './format-time';
 
 const minute = 60_000;
 const second = 1000;
@@ -23,5 +23,11 @@ describe('formatRelativeTime', () => {
 		expect(formatRelativeTime(9 * minute + 59 * second, 0, 'in ', 'seconds')).toBe('in 9 min 59 sec');
 		expect(formatRelativeTime(10 * minute, 0, 'in ', 'seconds')).toBe('in 10 min');
 		expect(formatRelativeTime(75 * minute + 20 * second, 0, '', 'seconds')).toBe('1 hr 15 min');
+	});
+});
+
+describe('formatMatchStart', () => {
+	it('uses one concise fallback when the start time is unknown', () => {
+		expect(formatMatchStart(null, 0)).toBe('Start time unavailable');
 	});
 });

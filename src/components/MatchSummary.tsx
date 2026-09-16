@@ -20,9 +20,15 @@ export function MatchSummary({
 }) {
 	const matchStartMilestone = nextMatch?.milestones.find(({ label }) => label === 'Match start');
 	const matchStartCountdown = matchStartMilestone
-		? formatTimingMilestoneTime(matchStartMilestone, now, '')
+		? matchStartMilestone.time === null
+			? 'TBD'
+			: formatTimingMilestoneTime(matchStartMilestone, now, '')
 		: 'Not available';
-	const matchStartText = nextMatch ? `Starts ${formatClock(nextMatch.startTime)}` : '';
+	const matchStartText = nextMatch
+		? nextMatch.startTime === null
+			? 'Start time unavailable'
+			: `Starts ${formatClock(nextMatch.startTime)}`
+		: '';
 	const timingStatuses = nextMatch ? timingStatusMilestones(nextMatch.milestones) : [];
 	const isAllianceSelection = competitionPhase === 'allianceSelection';
 	const awardsEndsAt = currentMatch?.displayLabel === 'Awards' ? currentMatch.endsAt : null;
@@ -69,21 +75,18 @@ export function MatchSummary({
 							<MatchLabel displayLabel={currentMatch?.displayLabel} {...stylex.props(styles.matchNumber)} />
 						)}
 					</div>
-					<div {...stylex.props(styles.matchDetailSlot)}>
-						{currentStatusText && (
+					{currentStatusText && (
+						<div {...stylex.props(styles.matchDetailSlot)}>
 							<div {...stylex.props(styles.matchDetail, styles.matchStartTime)}>
 								<TextMorph
 									as="strong"
-									{...stylex.props(
-										styles.activityEndValue,
-										currentStatusText.length > 16 && styles.activityEndValueLong,
-									)}
+									{...stylex.props(styles.matchTimeValue, currentStatusText.length > 16 && styles.activityEndValueLong)}
 								>
 									{currentStatusText}
 								</TextMorph>
 							</div>
-						)}
-					</div>
+						</div>
+					)}
 				</div>
 			</article>
 
@@ -121,7 +124,7 @@ export function MatchSummary({
 						<div {...stylex.props(styles.cardBody, styles.timingBody)}>
 							<div {...stylex.props(styles.matchCountdown)}>
 								<span {...stylex.props(styles.matchCountdownLabel)}>
-									{matchStartCountdown === 'Soon' ? 'Starts' : 'Starts in'}
+									{matchStartCountdown === 'Soon' || matchStartCountdown === 'TBD' ? 'Starts' : 'Starts in'}
 								</span>
 								<TextMorph
 									as="strong"

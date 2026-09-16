@@ -29,6 +29,7 @@ export const styles = stylex.create({
 		display: 'flex',
 		alignItems: 'center',
 		justifyContent: 'center',
+		paddingInline: { default: spacing.sm, [narrow]: spacing.xs },
 		color: 'white',
 		fontSize: { default: '2rem', [narrow]: '1.75rem' },
 		fontWeight: 800,

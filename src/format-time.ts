@@ -35,3 +35,9 @@ export function formatRelativeTime(
 	const formattedDuration = formatDuration(duration, displayedPrecision);
 	return difference < 0 ? `${formattedDuration} ago` : `${futurePrefix}${formattedDuration}`;
 }
+
+export function formatMatchStart(time: number | null, now: number): string {
+	return time === null
+		? 'Start time unavailable'
+		: `Starts ${formatClock(time)} (${formatRelativeTime(time, now, '')})`;
+}
