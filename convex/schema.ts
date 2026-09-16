@@ -42,7 +42,7 @@ export default defineSchema({
 		dataAsOfTime: v.number(),
 		receivedAt: v.number(),
 		matches: v.array(NexusMatch),
-		competitionPhase: v.optional(CompetitionPhase),
-		alliancePartners: v.optional(v.array(v.string())),
+		competitionPhase: CompetitionPhase,
+		alliancePartners: v.array(v.string()),
 	}).index('by_dataAsOfTime', ['dataAsOfTime']),
 });
