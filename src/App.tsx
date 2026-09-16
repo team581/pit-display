@@ -30,6 +30,39 @@ function App({ loadedAt }: { loadedAt: number }) {
 		};
 	}, []);
 
+	useEffect(() => {
+		let wakeLock: WakeLockSentinel | undefined;
+		let disposed = false;
+
+		const requestWakeLock = async () => {
+			if (!('wakeLock' in navigator) || document.visibilityState !== 'visible') return;
+
+			try {
+				const lock = await navigator.wakeLock.request('screen');
+				if (disposed) {
+					await lock.release();
+				} else {
+					wakeLock = lock;
+				}
+			} catch {
+				// The device may deny wake locks, such as while in low-power mode.
+			}
+		};
+
+		const handleVisibilityChange = () => {
+			if (document.visibilityState === 'visible' && wakeLock?.released !== false) void requestWakeLock();
+		};
+
+		void requestWakeLock();
+		document.addEventListener('visibilitychange', handleVisibilityChange);
+
+		return () => {
+			disposed = true;
+			document.removeEventListener('visibilitychange', handleVisibilityChange);
+			void wakeLock?.release();
+		};
+	}, []);
+
 	return <Dashboard dashboard={dashboard} now={now} />;
 }
 
