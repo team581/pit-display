@@ -9,7 +9,8 @@ services:
     platform: linux/amd64
     volumes:
       - .:/work
-      - visual-test-node-modules:/work/node_modules
+      # Keep Linux packages separate from the host's node_modules.
+      - visual-test-vp-node-modules:/work/node_modules
 
 volumes:
-  visual-test-node-modules:
+  visual-test-vp-node-modules:

@@ -29,19 +29,21 @@ vp run storybook
 The catalog uses deterministic dashboard fixtures from `src/testing/dashboard-scenarios.ts`. Raw Nexus fixtures in
 `src/testing/nexus-fixtures.ts` cover the separate Nexus-to-dashboard transformation boundary.
 
-Docker is required for screenshot comparisons. Both local development and CI use the same pinned Ubuntu/AMD64
-Playwright image, so there is one canonical baseline for each state:
+Local screenshot comparisons run in a pinned Linux/AMD64 Vite+ container, so macOS can compare and update the Linux
+baselines directly:
 
 ```sh
 vp run test:visual
 vp run test:visual:update
 ```
 
-The Dockerfile copies the standalone pnpm binary from the exact official pnpm image matching `packageManager`, and
-Compose caches project dependencies in a named volume. To update baselines in CI, run the **CI** workflow manually
-with **Generate Linux visual baselines** enabled, download the
-`visual-snapshots-linux` artifact, review it, and commit the updated PNGs. Failed comparison runs attach a Vitest HTML
-report containing the actual and diff images.
+Review and commit the updated PNGs after running the update command. CI runs natively on a pinned Ubuntu runner with
+the same Playwright and WebKit versions. A manual **Generate Linux visual baselines** workflow remains available as a
+fallback if the runner environment ever produces a different rendering. Failed comparison runs attach a Vitest HTML
+report containing the actual and diff images. The local container derives from the exact project version of the
+official Vite+ image, provisions Node from `devEngines`, and installs the lockfile's WebKit revision into a cached image
+layer. Its BuildKit cache retains pnpm's content-addressable store between image builds, while a separate
+`node_modules` volume keeps Linux-native packages out of the macOS working tree.
 
 ## Deploy
 

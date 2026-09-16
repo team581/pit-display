@@ -27,6 +27,7 @@ export default defineConfig(({ command, mode }) => {
 			plugins: [stylex.vite()],
 			test: {
 				name: 'visual',
+				maxWorkers: 1,
 				include: ['src/**/*.visual.test.tsx'],
 				setupFiles: ['./src/testing/visual-setup.ts'],
 				browser: {

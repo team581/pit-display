@@ -32,18 +32,24 @@ jobs:
   visual-tests:
     name: Visual tests
     timeout-minutes: 10
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: voidzero-dev/setup-vp@v1.20.0
         with:
           cache: true
+      - name: Install WebKit
+        run: vp exec playwright install --with-deps webkit
       - name: Compare visual snapshots
         if: ${{ !inputs.update_visual_snapshots }}
-        run: vp run test:visual
+        run: vp test --project visual --reporter=default --reporter=html --outputFile.html=.vitest/html/index.html
+        env:
+          VISUAL_TESTS: 'true'
       - name: Generate visual snapshots
         if: ${{ inputs.update_visual_snapshots }}
-        run: vp run test:visual:update
+        run: vp test --project visual --update
+        env:
+          VISUAL_TESTS: 'true'
       - name: Upload Vitest report
         id: upload-report
         if: ${{ always() && !inputs.update_visual_snapshots }}
