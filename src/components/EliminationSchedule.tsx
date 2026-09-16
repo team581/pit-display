@@ -77,7 +77,7 @@ export function EliminationSchedule({
 
 	return (
 		<section {...stylex.props(styles.schedule)} aria-label="Next matches">
-			<div {...stylex.props(styles.rows)}>
+			<div {...stylex.props(styles.rows, rows.length === 1 && styles.singleRow)}>
 				{rows.length === 0 ? (
 					<p {...stylex.props(styles.empty)}>Waiting for the playoff bracket to update.</p>
 				) : (
@@ -105,15 +105,11 @@ export function EliminationSchedule({
 											<MatchLabel displayLabel={row.displayLabel} {...stylex.props(styles.matchNumber)} />
 											<div {...stylex.props(styles.matchTime)}>
 												<TextMorph as="strong" {...stylex.props(styles.startTime)}>
-													{row.startTime === null
-														? 'Time TBD'
-														: row.break
-															? formatRelativeTime(row.startTime, now, 'in ')
-															: `Starts ${formatClock(row.startTime)}`}
+													{row.startTime === null ? 'Time TBD' : formatRelativeTime(row.startTime, now, 'in ')}
 												</TextMorph>
 												{!row.break && row.startTime !== null && (
 													<TextMorph as="span" {...stylex.props(styles.relativeTime)}>
-														{formatRelativeTime(row.startTime, now, 'in ')}
+														Starts {formatClock(row.startTime)}
 													</TextMorph>
 												)}
 											</div>

@@ -31,6 +31,9 @@ export const styles = stylex.create({
 		scrollbarColor: `${colors.orange} ${colors.surface}`,
 		scrollbarWidth: 'thin',
 	},
+	singleRow: {
+		gridTemplateColumns: '1fr',
+	},
 	matchCard: {
 		display: 'flex',
 		minWidth: 0,
