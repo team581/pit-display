@@ -109,8 +109,8 @@ export function DashboardView({
 					</TextMorph>
 					<TextMorph as="p" {...stylex.props(styles.emptyStateText)}>
 						{dashboard === undefined
-							? 'Waiting for the server.'
-							: 'Waiting for Team 581 data from an active Nexus event.'}
+							? 'Waiting for the server'
+							: 'Waiting for Team 581 data from an active Nexus event'}
 					</TextMorph>
 				</section>
 			)}
