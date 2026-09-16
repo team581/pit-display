@@ -157,7 +157,7 @@ export function MatchSummary({
 						<h2 {...stylex.props(panelStyles.heading)}>Our match</h2>
 					</div>
 					<div {...stylex.props(styles.cardBody)}>
-						<strong {...stylex.props(styles.noNextMessage)}>No more matches scheduled</strong>
+						<strong {...stylex.props(styles.noNextMessage)}>No matches scheduled</strong>
 					</div>
 				</article>
 			)}
