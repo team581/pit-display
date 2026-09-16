@@ -1,0 +1,15 @@
+services:
+  visual-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.visual-tests
+    environment:
+      CI: '1'
+      VISUAL_TESTS: 'true'
+    platform: linux/amd64
+    volumes:
+      - .:/work
+      - visual-test-node-modules:/work/node_modules
+
+volumes:
+  visual-test-node-modules:

@@ -1,7 +1,17 @@
 import type { KnipConfig } from 'knip';
 
 const config: KnipConfig = {
-	ignore: ['src/frc-nexus/generated/**'],
+	ignore: [
+		// Referenced by Storybook through its viteConfigPath string.
+		'.storybook/vite.config.ts',
+		// Loaded by the visual project only when the container sets VISUAL_TESTS.
+		'src/testing/visual-setup.ts',
+		'src/frc-nexus/generated/**',
+	],
+	ignoreDependencies: [
+		// Provides the HTML reporter selected by the test:visual:ci script.
+		'@vitest/ui',
+	],
 };
 
 export default config;

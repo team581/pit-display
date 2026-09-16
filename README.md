@@ -17,6 +17,32 @@ vp run dev
 This starts the Convex function watcher and frontend together. Open the Portless URL shown in the terminal and use
 landscape orientation for the intended display layout.
 
+### Visual states
+
+Open the Storybook catalog to inspect complete dashboard states and focused tile variants without running Convex or
+FRC Nexus:
+
+```sh
+vp run storybook
+```
+
+The catalog uses deterministic dashboard fixtures from `src/testing/dashboard-scenarios.ts`. Raw Nexus fixtures in
+`src/testing/nexus-fixtures.ts` cover the separate Nexus-to-dashboard transformation boundary.
+
+Docker is required for screenshot comparisons. Both local development and CI use the same pinned Ubuntu/AMD64
+Playwright image, so there is one canonical baseline for each state:
+
+```sh
+vp run test:visual
+vp run test:visual:update
+```
+
+The Dockerfile copies the standalone pnpm binary from the exact official pnpm image matching `packageManager`, and
+Compose caches project dependencies in a named volume. To update baselines in CI, run the **CI** workflow manually
+with **Generate Linux visual baselines** enabled, download the
+`visual-snapshots-linux` artifact, review it, and commit the updated PNGs. Failed comparison runs attach a Vitest HTML
+report containing the actual and diff images.
+
 ## Deploy
 
 Publish the frontend to [pit.frc581.com](https://pit.frc581.com):
@@ -57,4 +83,5 @@ vp check
 vp test
 vp exec knip
 vp run build
+vp run storybook:build
 ```

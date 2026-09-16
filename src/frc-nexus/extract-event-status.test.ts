@@ -1,17 +1,6 @@
 import { describe, expect, it } from 'vite-plus/test';
+import { nexusApiMatch as match } from '../testing/nexus-match';
 import { extractEventStatus } from './extract-event-status';
-import type { Match } from './generated/types.gen';
-
-function match(label: string, overrides: Partial<Match> = {}): Match {
-	return {
-		label,
-		status: 'Queuing soon',
-		redTeams: ['1', '2', '3'],
-		blueTeams: ['4', '5', '6'],
-		times: {},
-		...overrides,
-	};
-}
 
 describe('extractEventStatus', () => {
 	it('stores only the current field match and Team 581 matches that follow it', () => {
@@ -126,7 +115,7 @@ describe('extractEventStatus', () => {
 			dataAsOfTime: 128,
 			matches: [
 				match('Qualification 1', { status: 'On field', redTeams: ['581', '2', '3'] }),
-				match('Playoff 1', { redTeams: ['581', '254', '1678', '971'], blueTeams: null }),
+				match('Playoff 1', { redTeams: ['581', '254', '1678', '9408'], blueTeams: null }),
 				match('Playoff 2', { redTeams: null, blueTeams: null }),
 				match('Playoff 3', { redTeams: null, blueTeams: null }),
 				match('Playoff 4', { redTeams: null, blueTeams: null }),
@@ -135,7 +124,7 @@ describe('extractEventStatus', () => {
 
 		expect(extracted).toMatchObject({
 			competitionPhase: 'allianceSelection',
-			alliancePartners: ['254', '1678', '971'],
+			alliancePartners: ['254', '1678', '9408'],
 		});
 	});
 
@@ -145,7 +134,7 @@ describe('extractEventStatus', () => {
 			dataAsOfTime: 129,
 			matches: [
 				match('Qualification 1', { status: 'On field', redTeams: ['581', '2', '3'] }),
-				match('Playoff 1', { redTeams: ['581', '254', '1678', '971'] }),
+				match('Playoff 1', { redTeams: ['581', '254', '1678', '9408'] }),
 				match('Playoff 2'),
 				match('Playoff 3'),
 				match('Playoff 4'),
@@ -161,7 +150,7 @@ describe('extractEventStatus', () => {
 			dataAsOfTime: 130,
 			matches: [
 				match('Qualification 1', { status: 'On field', redTeams: ['581', '2', '3'] }),
-				match('Playoff 1', { status: 'Now queuing', redTeams: ['581', '254', '1678', '971'] }),
+				match('Playoff 1', { status: 'Now queuing', redTeams: ['581', '254', '1678', '9408'] }),
 				match('Playoff 2', { redTeams: null, blueTeams: null }),
 			],
 		});

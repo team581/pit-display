@@ -1,22 +1,9 @@
 import { describe, expect, it } from 'vite-plus/test';
-import type { Doc } from '../_generated/dataModel';
+import { storedNexusMatch as match } from '../../src/testing/nexus-match';
 import { createDashboardData } from './dashboard';
-
-type NexusMatch = Doc<'eventStatuses'>['matches'][number];
 
 const minute = 60_000;
 const now = Date.UTC(2026, 0, 1, 12);
-
-function match(label: string, overrides: Partial<NexusMatch> = {}): NexusMatch {
-	return {
-		label,
-		status: 'Queuing soon',
-		redTeams: ['1', '2', '3'],
-		blueTeams: ['4', '5', '6'],
-		times: {},
-		...overrides,
-	};
-}
 
 describe('createDashboardData', () => {
 	it('builds the display model from a trimmed Nexus snapshot', () => {
@@ -38,7 +25,7 @@ describe('createDashboardData', () => {
 					},
 				}),
 				match('Qualification 18', {
-					blueTeams: ['581', '1323', '971'],
+					blueTeams: ['581', '604', '9408'],
 					times: { scheduledStartTime: now + 75 * minute, estimatedStartTime: now + 75 * minute },
 				}),
 			],
@@ -72,7 +59,7 @@ describe('createDashboardData', () => {
 					startTime: now + 75 * minute,
 					warning: null,
 					alliance: 'blue',
-					teams: [581, 1323, 971],
+					teams: [581, 604, 9408],
 				},
 			],
 		});
@@ -143,7 +130,7 @@ describe('createDashboardData', () => {
 					},
 				}),
 				match('Qualification 8', {
-					blueTeams: ['581', '1323', '971'],
+					blueTeams: ['581', '604', '9408'],
 					times: { estimatedStartTime: now + 60 * minute },
 				}),
 			],
@@ -198,11 +185,11 @@ describe('createDashboardData', () => {
 			eventKey: '2026test',
 			receivedAt: now,
 			competitionPhase: 'elimination',
-			alliancePartners: ['254', '1678', '971'],
-			matches: [match('Playoff 1', { redTeams: ['581', '254', '1678', '971'] })],
+			alliancePartners: ['254', '1678', '9408'],
+			matches: [match('Playoff 1', { redTeams: ['581', '254', '1678', '9408'] })],
 		});
 
-		expect(dashboard?.upcomingMatches[0]?.teams).toEqual([581, 254, 1678, 971]);
+		expect(dashboard?.upcomingMatches[0]?.teams).toEqual([581, 254, 1678, 9408]);
 	});
 
 	it('shows an on-deck elimination match instead of the last qualification match', () => {
