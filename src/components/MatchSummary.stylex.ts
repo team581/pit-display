@@ -38,7 +38,12 @@ export const styles = stylex.create({
 		paddingInline: spacing.lg,
 		paddingBlockEnd: spacing.lg,
 	},
-	noNextMessage: { maxWidth: '26rem', fontSize: '3rem', lineHeight: 1.05, textAlign: 'center' },
+	noNextMessage: {
+		maxWidth: '26rem',
+		fontSize: '3rem',
+		lineHeight: 1.05,
+		textAlign: 'center',
+	},
 	matchNumberArea: {
 		display: 'flex',
 		minHeight: 0,
@@ -49,8 +54,8 @@ export const styles = stylex.create({
 	},
 	matchNumber: {
 		fontSize: { default: 'clamp(8rem, 12vw, 12rem)', [portrait]: '7rem' },
-		fontWeight: 900,
-		fontVariationSettings: "'wdth' 92",
+		fontWeight: 700,
+		fontVariantNumeric: 'tabular-nums',
 		lineHeight: 0.82,
 		letterSpacing: '-0.045em',
 		whiteSpace: 'nowrap',
@@ -60,16 +65,14 @@ export const styles = stylex.create({
 		maxWidth: '100%',
 		flexDirection: 'column',
 		fontSize: { default: 'clamp(3rem, 4vw, 4rem)', [portrait]: '3.5rem' },
-		fontWeight: 900,
-		fontVariationSettings: "'wdth' 92",
+		fontWeight: 700,
 		lineHeight: 0.95,
 		textAlign: 'center',
 	},
 	currentActivity: {
 		maxWidth: '100%',
 		fontSize: { default: 'clamp(4rem, 6.5vw, 6.5rem)', [portrait]: '4rem' },
-		fontWeight: 900,
-		fontVariationSettings: "'wdth' 92",
+		fontWeight: 700,
 		lineHeight: 1,
 		textAlign: 'center',
 	},
@@ -95,6 +98,7 @@ export const styles = stylex.create({
 	},
 	matchTimeValue: {
 		fontSize: 'clamp(2.5rem, 17cqw, 4.1875rem)',
+		fontVariantNumeric: 'tabular-nums',
 		letterSpacing: '-0.03em',
 		whiteSpace: 'nowrap',
 	},
@@ -102,7 +106,7 @@ export const styles = stylex.create({
 		fontSize: 'clamp(2rem, 12.5cqw, 3.35rem)',
 	},
 	matchTimeValueWithTwoDigitHour: {
-		fontSize: 'clamp(2.5rem, 15.75cqw, 3.875rem)',
+		fontSize: 'clamp(2.5rem, 14cqw, 3.5rem)',
 	},
 	matchTimeValueLong: {
 		fontSize: 'clamp(2rem, 9cqw, 3rem)',
@@ -126,11 +130,12 @@ export const styles = stylex.create({
 	matchCountdownLabel: {
 		color: colors.muted,
 		fontSize: { default: '2.5rem', [portrait]: '2rem' },
-		fontWeight: 800,
+		fontWeight: 700,
 		letterSpacing: '0.035em',
 	},
 	matchCountdownValue: {
 		fontSize: 'clamp(3.5rem, 26cqw, 7rem)',
+		fontVariantNumeric: 'tabular-nums',
 		lineHeight: 1,
 		letterSpacing: '-0.03em',
 		whiteSpace: 'nowrap',
@@ -167,12 +172,13 @@ export const styles = stylex.create({
 	timingLabel: {
 		color: colors.muted,
 		fontSize: '1.5rem',
-		fontWeight: 800,
+		fontWeight: 700,
 		letterSpacing: '0.035em',
 		whiteSpace: 'nowrap',
 	},
 	timingValue: {
 		fontSize: '1.75rem',
+		fontVariantNumeric: 'tabular-nums',
 		whiteSpace: 'nowrap',
 	},
 });

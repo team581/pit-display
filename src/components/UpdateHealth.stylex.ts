@@ -20,7 +20,7 @@ export const styles = stylex.create({
 		},
 		borderRadius: spacing.sm,
 		fontSize: '1rem',
-		fontWeight: 750,
+		fontWeight: 700,
 		fontVariantNumeric: 'tabular-nums',
 	},
 	healthy: {
@@ -29,7 +29,7 @@ export const styles = stylex.create({
 	problem: {
 		backgroundColor: 'white',
 		color: 'black',
-		fontWeight: 900,
+		fontWeight: 700,
 	},
 	icon: {
 		width: '1.5rem',

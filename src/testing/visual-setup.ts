@@ -1,3 +1,4 @@
+import '@fontsource-variable/ibm-plex-sans';
 import '@fontsource-variable/source-sans-3';
 import '../index.css';
 

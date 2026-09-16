@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
-import { colors, spacing } from '../theme.stylex';
+import { colors, spacing, typefaces } from '../theme.stylex';
 
 const portrait = '@media (max-width: 850px), (orientation: portrait)';
 
@@ -36,6 +36,7 @@ export const panelStyles = stylex.create({
 	},
 	heading: {
 		margin: 0,
+		fontFamily: typefaces.display,
 		fontSize: '2.625rem',
 		fontWeight: 850,
 		letterSpacing: '0.02em',

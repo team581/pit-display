@@ -1,5 +1,6 @@
 import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext } from '@tanstack/react-router';
+import bodyFontCss from '@fontsource-variable/ibm-plex-sans?url';
 import fontCss from '@fontsource-variable/source-sans-3?url';
 import { RootDocument } from '../components/RootDocument';
 import appCss from '../index.css?url';
@@ -18,6 +19,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 			{ title: 'Team 581 Pit Display' },
 		],
 		links: [
+			{ rel: 'stylesheet', href: bodyFontCss },
 			{ rel: 'stylesheet', href: fontCss },
 			{ rel: 'stylesheet', href: appCss },
 			{ rel: 'manifest', href: '/manifest.webmanifest' },

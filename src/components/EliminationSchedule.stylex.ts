@@ -22,6 +22,7 @@ export const styles = stylex.create({
 		borderTopWidth: '1px',
 		borderTopStyle: 'solid',
 		borderTopColor: colors.line,
+		containerType: 'inline-size',
 	},
 	divider: {
 		borderInlineStartWidth: { default: '1px', [narrow]: 0 },
@@ -58,9 +59,9 @@ export const styles = stylex.create({
 		gap: spacing.lg,
 	},
 	matchNumber: {
-		fontSize: { default: '6.5rem', [compact]: '5.5rem' },
-		fontWeight: 900,
-		fontVariationSettings: "'wdth' 92",
+		fontSize: 'clamp(4.5rem, 15cqw, 6rem)',
+		fontWeight: 700,
+		fontVariantNumeric: 'tabular-nums',
 		lineHeight: 1,
 		whiteSpace: 'nowrap',
 	},
@@ -77,18 +78,20 @@ export const styles = stylex.create({
 		lineHeight: 1,
 	},
 	startTime: {
-		fontSize: { default: '3.5rem', [compact]: '2.9rem', [portrait]: '2.6rem' },
+		fontSize: 'clamp(2.5rem, 8cqw, 3.25rem)',
+		fontVariantNumeric: 'tabular-nums',
 		whiteSpace: 'nowrap',
 	},
 	relativeTime: {
 		color: colors.muted,
 		fontSize: { default: '1.65rem', [compact]: '1.4rem' },
 		fontWeight: 700,
+		fontVariantNumeric: 'tabular-nums',
 		whiteSpace: 'nowrap',
 	},
 	allianceLabel: {
 		fontSize: { default: '1.75rem', [portrait]: '1.5rem' },
-		fontWeight: 850,
+		fontWeight: 700,
 		letterSpacing: '0.02em',
 		whiteSpace: 'nowrap',
 	},
@@ -145,6 +148,7 @@ export const styles = stylex.create({
 	},
 	timelineTime: {
 		fontSize: { default: '2.05rem', [compact]: '1.8rem' },
+		fontVariantNumeric: 'tabular-nums',
 		whiteSpace: 'nowrap',
 	},
 	timelineBreak: {

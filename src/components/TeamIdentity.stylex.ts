@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
-import { spacing } from '../theme.stylex';
+import { spacing, typefaces } from '../theme.stylex';
 
 export const styles = stylex.create({
 	container: {
@@ -16,9 +16,9 @@ export const styles = stylex.create({
 		paddingBlock: spacing.xs,
 		paddingInline: spacing.sm,
 		color: 'white',
+		fontFamily: typefaces.display,
 		fontSize: '2rem',
 		fontWeight: 900,
-		fontVariationSettings: "'wdth' 90",
 		lineHeight: 1,
 	},
 });

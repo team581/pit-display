@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
-import { colors, spacing } from '../theme.stylex';
+import { colors, spacing, typefaces } from '../theme.stylex';
 
 const portrait = '@media (max-width: 850px), (orientation: portrait)';
 const narrow = '@media (max-width: 620px)';
@@ -38,9 +38,10 @@ export const styles = stylex.create({
 	},
 	team: {
 		color: colors.text,
+		fontFamily: typefaces.display,
 		fontSize: { default: '6rem', [portrait]: '4.5rem', [narrow]: '3.5rem' },
 		fontWeight: 900,
-		fontVariationSettings: "'wdth' 92",
+		fontVariantNumeric: 'tabular-nums',
 		lineHeight: 1,
 		textDecoration: 'none',
 	},

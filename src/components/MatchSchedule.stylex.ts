@@ -28,14 +28,15 @@ export const styles = stylex.create({
 	},
 	matchNumber: {
 		fontSize: '4rem',
-		fontWeight: 900,
-		fontVariationSettings: "'wdth' 92",
+		fontWeight: 700,
+		fontVariantNumeric: 'tabular-nums',
 		lineHeight: 1,
 		whiteSpace: 'nowrap',
 	},
 	matchTime: { lineHeight: 1.12 },
 	startTime: {
 		fontSize: { default: '2.25rem', [compact]: '1.75rem', [portrait]: '1.5rem' },
+		fontVariantNumeric: 'tabular-nums',
 		whiteSpace: { default: 'nowrap', [portrait]: 'normal' },
 	},
 });

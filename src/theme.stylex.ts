@@ -23,3 +23,8 @@ export const spacing = stylex.defineVars({
 	xl: '1.5rem',
 	'2xl': '2rem',
 });
+
+export const typefaces = stylex.defineVars({
+	body: "'IBM Plex Sans Variable', 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif",
+	display: "'Source Sans 3 Variable', 'Source Sans Pro', ui-sans-serif, system-ui, sans-serif",
+});

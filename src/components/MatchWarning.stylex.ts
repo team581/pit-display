@@ -15,7 +15,7 @@ export const styles = stylex.create({
 		backgroundColor: colors.orange,
 		color: colors.onAccent,
 		fontSize: '1rem',
-		fontWeight: 850,
+		fontWeight: 700,
 		letterSpacing: '0.03em',
 		whiteSpace: 'nowrap',
 		gridColumn: { default: '3', [narrow]: '1 / -1' },

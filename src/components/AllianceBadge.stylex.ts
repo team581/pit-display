@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
-import { colors, spacing } from '../theme.stylex';
+import { colors, spacing, typefaces } from '../theme.stylex';
 
 const narrow = '@media (max-width: 620px)';
 
@@ -31,8 +31,10 @@ export const styles = stylex.create({
 		justifyContent: 'center',
 		paddingInline: { default: spacing.sm, [narrow]: spacing.xs },
 		color: 'white',
+		fontFamily: typefaces.display,
 		fontSize: { default: '2rem', [narrow]: '1.75rem' },
 		fontWeight: 800,
+		fontVariantNumeric: 'tabular-nums',
 		textAlign: 'center',
 		textDecoration: 'none',
 	},

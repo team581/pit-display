@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
-import { colors, spacing } from './theme.stylex';
+import { colors, spacing, typefaces } from './theme.stylex';
 
 const portrait = '@media (max-width: 850px), (orientation: portrait)';
 const narrow = '@media (max-width: 620px)';
@@ -9,6 +9,7 @@ export const styles = stylex.create({
 		minHeight: '100svh',
 		backgroundColor: colors.surface,
 		color: colors.text,
+		fontFamily: typefaces.body,
 		overflow: {
 			default: 'hidden',
 			[portrait]: 'auto',
@@ -19,6 +20,7 @@ export const styles = stylex.create({
 		height: '5rem',
 		alignItems: 'center',
 		justifyContent: 'space-between',
+		fontFamily: typefaces.display,
 		paddingBlock: spacing.sm,
 		paddingInline: {
 			default: spacing['2xl'],
