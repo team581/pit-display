@@ -1,0 +1,16 @@
+services:
+  visual-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.visual-tests
+    environment:
+      CI: '1'
+      VISUAL_TESTS: 'true'
+    platform: linux/amd64
+    volumes:
+      - .:/work
+      # Keep Linux packages separate from the host's node_modules.
+      - visual-test-vp-node-modules:/work/node_modules
+
+volumes:
+  visual-test-vp-node-modules:

@@ -12,3 +12,4 @@ peerDependencyRules:
     - vite
   allowedVersions:
     vite: '*'
+    vite-plus: '*'

@@ -63,17 +63,27 @@ function App({ loadedAt }: { loadedAt: number }) {
 		};
 	}, []);
 
-	return <Dashboard dashboard={dashboard} now={now} />;
+	return (
+		<ClientOnly fallback={<DashboardView connected={false} dashboard={dashboard} now={now} />}>
+			<ConnectedDashboardView dashboard={dashboard} now={now} />
+		</ClientOnly>
+	);
 }
 
-function Dashboard({ dashboard, now }: { dashboard: DashboardData | null | undefined; now: number }) {
+export function DashboardView({
+	connected,
+	dashboard,
+	now,
+}: {
+	connected: boolean;
+	dashboard: DashboardData | null | undefined;
+	now: number;
+}) {
 	return (
 		<main {...stylex.props(styles.dashboard)}>
 			<header {...stylex.props(styles.topbar)}>
 				<TeamIdentity />
-				<ClientOnly fallback={<UpdateHealth connected={false} receivedAt={dashboard?.updatedAt} now={now} />}>
-					<LiveUpdateHealth receivedAt={dashboard?.updatedAt} now={now} />
-				</ClientOnly>
+				<UpdateHealth connected={connected} receivedAt={dashboard?.updatedAt} now={now} />
 			</header>
 
 			{dashboard ? (
@@ -108,9 +118,9 @@ function Dashboard({ dashboard, now }: { dashboard: DashboardData | null | undef
 	);
 }
 
-function LiveUpdateHealth({ receivedAt, now }: { receivedAt?: number; now: number }) {
+function ConnectedDashboardView({ dashboard, now }: { dashboard: DashboardData | null | undefined; now: number }) {
 	const { isWebSocketConnected } = useConvexConnectionState();
-	return <UpdateHealth connected={isWebSocketConnected} receivedAt={receivedAt} now={now} />;
+	return <DashboardView connected={isWebSocketConnected} dashboard={dashboard} now={now} />;
 }
 
 export default App;

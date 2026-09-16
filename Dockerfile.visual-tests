@@ -1,0 +1,13 @@
+# syntax=docker/dockerfile:1
+
+FROM ghcr.io/voidzero-dev/vite-plus:0.3.2
+
+WORKDIR /work
+
+COPY --chown=vp:vp package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN --mount=type=cache,id=pit-display-pnpm,target=/home/vp/.local/share/pnpm/store,uid=1000,gid=1000 \
+	vp install --frozen-lockfile
+RUN vp exec playwright install --with-deps webkit
+
+ENTRYPOINT ["bash", "-lc", "vp install --frozen-lockfile && exec \"$@\"", "--"]
+CMD ["vp", "test", "--project", "visual", "--reporter=default", "--reporter=html", "--outputFile.html=.vitest/html/index.html"]

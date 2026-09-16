@@ -3,6 +3,13 @@ name: CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
+    inputs:
+      update_visual_snapshots:
+        description: Generate Linux visual baselines and upload them for review
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   build-and-test:
@@ -17,5 +24,48 @@ jobs:
         with:
           cache: true
       - run: vp check
+      - run: vp run test:unit
       - run: vp exec knip
-      - run: vp build
+      - run: vp run build
+      - run: vp run storybook:build
+
+  visual-tests:
+    name: Visual tests
+    timeout-minutes: 10
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: voidzero-dev/setup-vp@v1.20.0
+        with:
+          cache: true
+      - name: Install WebKit
+        run: vp exec playwright install --with-deps webkit
+      - name: Compare visual snapshots
+        if: ${{ !inputs.update_visual_snapshots }}
+        run: vp test --project visual --reporter=default --reporter=html --outputFile.html=.vitest/html/index.html
+        env:
+          VISUAL_TESTS: 'true'
+      - name: Generate visual snapshots
+        if: ${{ inputs.update_visual_snapshots }}
+        run: vp test --project visual --update
+        env:
+          VISUAL_TESTS: 'true'
+      - name: Upload Vitest report
+        id: upload-report
+        if: ${{ always() && !inputs.update_visual_snapshots }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: vitest-visual-report
+          path: .vitest
+          include-hidden-files: true
+      - name: Link Vitest report
+        if: ${{ always() && !inputs.update_visual_snapshots && steps.upload-report.outputs.artifact-url }}
+        run: echo "::notice title=Vitest visual report::$REPORT_URL"
+        env:
+          REPORT_URL: https://viewer.vitest.dev/?url=${{ steps.upload-report.outputs.artifact-url }}
+      - name: Upload updated visual baselines
+        if: ${{ inputs.update_visual_snapshots }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: visual-snapshots-linux
+          path: src/**/__screenshots__/**/*-linux.png
