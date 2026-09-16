@@ -76,8 +76,8 @@ export function EliminationSchedule({
 	const rows = paths.length > 0 ? paths.map(rowFromPath) : matches.slice(0, 2).map(rowFromMatch);
 
 	return (
-		<section {...stylex.props(styles.schedule)} aria-label="Next matches">
-			<div {...stylex.props(styles.rows, rows.length === 1 && styles.singleRow)}>
+		<section {...stylex.props(panelStyles.schedule)} aria-label="Next matches">
+			<div {...stylex.props(panelStyles.scrollArea, styles.rows, rows.length === 1 && styles.singleRow)}>
 				{rows.length === 0 ? (
 					<p {...stylex.props(styles.empty)}>Waiting for the playoff bracket to update.</p>
 				) : (

@@ -6,30 +6,10 @@ const narrow = '@media (max-width: 620px)';
 const compact = '@media (max-width: 1150px)';
 
 export const styles = stylex.create({
-	schedule: {
-		display: 'flex',
-		minHeight: 0,
-		flexDirection: 'column',
-		overflow: 'hidden',
-		borderTopWidth: '1px',
-		borderInlineWidth: { default: 0, [portrait]: '1px' },
-		borderBottomWidth: { default: 0, [portrait]: '1px' },
-		borderStyle: 'solid',
-		borderColor: colors.line,
-		borderRadius: { default: 0, [portrait]: spacing.md },
-		backgroundColor: colors.surface,
-		gridColumn: '1 / -1',
-	},
 	rows: {
 		display: 'grid',
-		minHeight: 0,
 		maxHeight: { default: 'none', [portrait]: '24rem' },
-		flex: 1,
 		gridTemplateColumns: { default: 'repeat(2, minmax(0, 1fr))', [narrow]: '1fr' },
-		overflowY: 'auto',
-		overscrollBehavior: 'contain',
-		scrollbarColor: `${colors.orange} ${colors.surface}`,
-		scrollbarWidth: 'thin',
 	},
 	singleRow: {
 		gridTemplateColumns: '1fr',

@@ -6,28 +6,8 @@ const narrow = '@media (max-width: 620px)';
 const compact = '@media (max-width: 1150px)';
 
 export const styles = stylex.create({
-	schedule: {
-		display: 'flex',
-		minHeight: 0,
-		flexDirection: 'column',
-		overflow: 'hidden',
-		borderTopWidth: '1px',
-		borderInlineWidth: { default: 0, [portrait]: '1px' },
-		borderBottomWidth: { default: 0, [portrait]: '1px' },
-		borderStyle: 'solid',
-		borderColor: colors.line,
-		borderRadius: { default: 0, [portrait]: spacing.md },
-		backgroundColor: colors.surface,
-		gridColumn: '1 / -1',
-	},
 	rows: {
-		minHeight: 0,
 		maxHeight: { default: 'none', [portrait]: '16rem' },
-		flex: 1,
-		overflowY: 'auto',
-		overscrollBehavior: 'contain',
-		scrollbarColor: `${colors.orange} ${colors.surface}`,
-		scrollbarWidth: 'thin',
 	},
 	matchRow: {
 		display: 'grid',
