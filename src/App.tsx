@@ -90,7 +90,7 @@ export function DashboardView({
 				<div {...stylex.props(styles.dashboardContent)}>
 					<MatchSummary
 						competitionPhase={dashboard.competitionPhase}
-						currentMatch={dashboard.currentMatch}
+						currentActivity={dashboard.currentActivity}
 						nextMatch={dashboard.nextMatch}
 						now={now}
 					/>

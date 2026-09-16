@@ -1,5 +1,6 @@
 import { TEAM_NUMBER_STRING } from '../team';
 import type { EventStatus, Match } from './generated/types.gen';
+import { isEliminationMatch, matchIndexes, type CompetitionPhase } from './match-selection';
 
 const breakLabels = {
 	Break: 'a break',
@@ -10,7 +11,6 @@ const breakLabels = {
 } as const;
 
 type AfterBreak = { breakLabel: string; durationMinutes?: number; position: number };
-type CompetitionPhase = 'qualification' | 'allianceSelection' | 'elimination';
 
 const breakWarningWindow = 30 * 60_000;
 const minimumMatchesAfterBreak = 3;
@@ -100,15 +100,7 @@ function breakPositions(
 export function extractEventStatus(data: EventStatus, breakDurations: Readonly<Record<string, number>> = {}) {
 	if (!data.eventKey || !data.dataAsOfTime || !data.matches) return;
 	const phase = competitionPhase(data.matches);
-	const lastOnFieldIndex = data.matches.findLastIndex((match) => match.status === 'On field');
-	const eliminationOnFieldIndex = data.matches.findLastIndex(
-		(match) => match.status === 'On field' && /^(Playoff|Final) /.test(match.label ?? ''),
-	);
-	const eliminationOnDeckIndex = data.matches.findIndex(
-		(match) => match.status === 'On deck' && /^(Playoff|Final) /.test(match.label ?? ''),
-	);
-	const currentMatchIndex =
-		phase === 'elimination' ? Math.max(eliminationOnFieldIndex, eliminationOnDeckIndex) : lastOnFieldIndex;
+	const { currentMatchIndex } = matchIndexes(data.matches, phase);
 	const afterBreakByMatch = breakPositions(data.matches, breakDurations);
 	const teamIsPresent = data.matches.some(
 		(match) => match.redTeams?.includes(TEAM_NUMBER_STRING) || match.blueTeams?.includes(TEAM_NUMBER_STRING),
@@ -123,10 +115,10 @@ export function extractEventStatus(data: EventStatus, breakDurations: Readonly<R
 		matches: data.matches.flatMap((match, index) => {
 			const isTeamMatch =
 				match.redTeams?.includes(TEAM_NUMBER_STRING) || match.blueTeams?.includes(TEAM_NUMBER_STRING) || false;
-			const isEliminationMatch = /^(Playoff|Final) /.test(match.label ?? '');
+			const eliminationMatch = isEliminationMatch(match.label);
 			const isRelevantMatch =
 				phase === 'elimination'
-					? isEliminationMatch
+					? eliminationMatch
 					: index === currentMatchIndex || (index > currentMatchIndex && isTeamMatch);
 			let afterBreak = afterBreakByMatch[index];
 			const qualificationNumber = isTeamMatch ? match.label?.match(/^Qualification (\d+)$/)?.[1] : undefined;

@@ -1,24 +1,20 @@
 import type { Dashboard } from './dashboard';
 import { formatRelativeTime } from './format-time';
 
-type TimingMilestone = NonNullable<Dashboard['nextMatch']>['milestones'][number];
+type NextMatch = NonNullable<Dashboard['nextMatch']>;
+type MatchTiming = NextMatch['timing']['queued'];
+type TimingStatus = MatchTiming & { label: 'On deck' | 'Queued' };
 
-export function timingStatusMilestones(
-	milestones: NonNullable<Dashboard['nextMatch']>['milestones'],
-): TimingMilestone[] {
-	const queued = milestones.find(({ label }) => label === 'Queued');
-	const onDeck = milestones.find(({ label }) => label === 'On deck');
+export function timingStatusMilestones(timing: NextMatch['timing']): TimingStatus[] {
+	const queued = { label: 'Queued', ...timing.queued } as const;
+	const onDeck = { label: 'On deck', ...timing.onDeck } as const;
 
-	if (onDeck?.isActual) return [onDeck, ...(queued?.isActual ? [queued] : [])];
-	if (queued?.isActual) return onDeck ? [onDeck] : [];
-	return queued ? [queued] : [];
+	if (onDeck.isActual) return [onDeck, ...(queued.isActual ? [queued] : [])];
+	if (queued.isActual) return [onDeck];
+	return [queued];
 }
 
-export function formatTimingMilestoneTime(
-	milestone: TimingMilestone,
-	now: number,
-	futurePrefix: '' | 'in ' = 'in ',
-): string {
-	if (!milestone.isActual && milestone.time !== null && milestone.time <= now) return 'Soon';
-	return formatRelativeTime(milestone.time, now, futurePrefix, 'seconds');
+export function formatMatchTiming(timing: MatchTiming, now: number, futurePrefix: '' | 'in ' = 'in '): string {
+	if (!timing.isActual && timing.time !== null && timing.time <= now) return 'Soon';
+	return formatRelativeTime(timing.time, now, futurePrefix, 'seconds');
 }

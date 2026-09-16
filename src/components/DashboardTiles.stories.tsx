@@ -31,7 +31,7 @@ export const MatchSummaryStates: Story = {
 		<TileFrame>
 			<MatchSummary
 				competitionPhase={qualification.competitionPhase}
-				currentMatch={qualification.currentMatch}
+				currentActivity={qualification.currentActivity}
 				nextMatch={qualification.nextMatch}
 				now={SCENARIO_NOW}
 			/>

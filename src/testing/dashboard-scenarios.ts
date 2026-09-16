@@ -8,8 +8,8 @@ export function minutesFromNow(minutes: number): number {
 	return SCENARIO_NOW + minutes * minute;
 }
 
-function milestone(label: string, minutes: number | null, isActual = false) {
-	return { label, time: minutes === null ? null : minutesFromNow(minutes), isActual };
+function timing(minutes: number | null, isActual = false) {
+	return { time: minutes === null ? null : minutesFromNow(minutes), isActual };
 }
 
 function upcomingMatch(
@@ -35,11 +35,11 @@ const qualificationNormal = {
 	updatedAt: minutesFromNow(-1),
 	competitionPhase: 'qualification',
 	alliancePartners: [],
-	currentMatch: { displayLabel: 'Q36', startedAt: minutesFromNow(-4), endsAt: null },
+	currentActivity: { type: 'match', displayLabel: 'Q36' },
 	nextMatch: {
 		displayLabel: 'Q42',
 		startTime: minutesFromNow(14),
-		milestones: [milestone('Queued', -1, true), milestone('On deck', 5), milestone('Match start', 14)],
+		timing: { queued: timing(-1, true), onDeck: timing(5) },
 	},
 	upcomingMatches: [
 		upcomingMatch('Q42', 14, 'red', [581, 254, 1678]),
@@ -52,11 +52,11 @@ const qualificationNormal = {
 const qualificationBeforeStart = {
 	...qualificationNormal,
 	updatedAt: minutesFromNow(0),
-	currentMatch: null,
+	currentActivity: null,
 	nextMatch: {
 		displayLabel: 'Q3',
 		startTime: minutesFromNow(18),
-		milestones: [milestone('Queued', 6), milestone('On deck', 12), milestone('Match start', 18)],
+		timing: { queued: timing(6), onDeck: timing(12) },
 	},
 	upcomingMatches: [
 		upcomingMatch('Q3', 18, 'red', [581, 254, 1678], '3rd match after the start of the day'),
@@ -67,18 +67,18 @@ const qualificationBeforeStart = {
 const qualificationUrgent = {
 	...qualificationNormal,
 	updatedAt: minutesFromNow(-7),
-	currentMatch: { displayLabel: 'Q50', startedAt: minutesFromNow(-10), endsAt: null },
+	currentActivity: { type: 'match', displayLabel: 'Q50' },
 	nextMatch: {
 		displayLabel: 'Q51',
 		startTime: minutesFromNow(-1),
-		milestones: [milestone('Queued', -8, true), milestone('On deck', -4, true), milestone('Match start', -1)],
+		timing: { queued: timing(-8, true), onDeck: timing(-4, true) },
 	},
 	upcomingMatches: [upcomingMatch('Q51', -1, 'blue', [581, 604, 9408], 'Back to back')],
 } satisfies Dashboard;
 
 const qualificationComplete = {
 	...qualificationNormal,
-	currentMatch: { displayLabel: 'Q70', startedAt: minutesFromNow(-5), endsAt: null },
+	currentActivity: { type: 'match', displayLabel: 'Q70' },
 	nextMatch: null,
 	upcomingMatches: [],
 } satisfies Dashboard;
@@ -86,7 +86,7 @@ const qualificationComplete = {
 const allianceSelectionWaiting = {
 	...qualificationComplete,
 	competitionPhase: 'allianceSelection',
-	currentMatch: null,
+	currentActivity: null,
 	alliancePartners: [],
 } satisfies Dashboard;
 
@@ -99,7 +99,7 @@ const eliminationPending = {
 	...qualificationComplete,
 	competitionPhase: 'elimination',
 	alliancePartners: [254, 1678, 9408],
-	currentMatch: null,
+	currentActivity: null,
 	eliminationPaths: [],
 } satisfies Dashboard;
 
@@ -129,11 +129,11 @@ const activeAwardsBreak = {
 
 const eliminationPaths = {
 	...eliminationPending,
-	currentMatch: { displayLabel: 'M7', startedAt: minutesFromNow(-3), endsAt: null },
+	currentActivity: { type: 'match', displayLabel: 'M7' },
 	nextMatch: {
 		displayLabel: 'M11',
 		startTime: minutesFromNow(28),
-		milestones: [milestone('Queued', 16), milestone('On deck', 22), milestone('Match start', 28)],
+		timing: { queued: timing(16), onDeck: timing(22) },
 	},
 	upcomingMatches: [upcomingMatch('M11', 28, 'red', [581, 254, 1678, 9408])],
 	eliminationPaths: [
@@ -164,11 +164,11 @@ const eliminationScheduledBreak = {
 
 const eliminationWithEliminatedPath = {
 	...eliminationPaths,
-	currentMatch: { displayLabel: 'M13', startedAt: minutesFromNow(-2), endsAt: null },
+	currentActivity: { type: 'match', displayLabel: 'M13' },
 	nextMatch: {
 		displayLabel: 'F1',
 		startTime: minutesFromNow(34),
-		milestones: [milestone('Queued', 22), milestone('On deck', 28), milestone('Match start', 34)],
+		timing: { queued: timing(22), onDeck: timing(28) },
 	},
 	upcomingMatches: [upcomingMatch('F1', 34, 'blue', [581, 254, 1678])],
 	eliminationPaths: [
@@ -179,11 +179,11 @@ const eliminationWithEliminatedPath = {
 
 const awardsBreak = {
 	...eliminationWithEliminatedPath,
-	currentMatch: { displayLabel: 'Awards', startedAt: minutesFromNow(-3), endsAt: minutesFromNow(12) },
+	currentActivity: { type: 'awards', endsAt: minutesFromNow(12) },
 	nextMatch: {
 		displayLabel: 'F1',
 		startTime: minutesFromNow(18),
-		milestones: [milestone('Queued', 8), milestone('On deck', 13), milestone('Match start', 18)],
+		timing: { queued: timing(8), onDeck: timing(13) },
 	},
 	upcomingMatches: [{ ...upcomingMatch('F1', 18, 'blue', [581, 254, 1678]), break: activeAwardsBreak }],
 	eliminationPaths: [],

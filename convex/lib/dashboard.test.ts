@@ -1,9 +1,16 @@
 import { describe, expect, it } from 'vite-plus/test';
 import { storedNexusMatch as match } from '../../src/testing/nexus-match';
-import { createDashboardData } from './dashboard';
+import { createDashboardData as createDashboard } from './dashboard';
 
 const minute = 60_000;
 const now = Date.UTC(2026, 0, 1, 12);
+type Snapshot = Parameters<typeof createDashboard>[0];
+type SnapshotFixture = Omit<Snapshot, 'alliancePartners' | 'competitionPhase'> &
+	Partial<Pick<Snapshot, 'alliancePartners' | 'competitionPhase'>>;
+
+function createDashboardData(status: SnapshotFixture) {
+	return createDashboard({ competitionPhase: 'qualification', alliancePartners: [], ...status });
+}
 
 describe('createDashboardData', () => {
 	it('builds the display model from a trimmed Nexus snapshot', () => {
@@ -34,15 +41,14 @@ describe('createDashboardData', () => {
 		expect(dashboard).toMatchObject({
 			eventKey: 'demo9705',
 			updatedAt: now - 5_000,
-			currentMatch: { displayLabel: 'Q10', startedAt: now - minute },
+			currentActivity: { type: 'match', displayLabel: 'Q10' },
 			nextMatch: {
 				displayLabel: 'Q12',
 				startTime: now + 15 * minute,
-				milestones: [
-					{ label: 'Queued', time: now + 5 * minute, isActual: false },
-					{ label: 'On deck', time: now + 10 * minute, isActual: false },
-					{ label: 'Match start', time: now + 15 * minute, isActual: false },
-				],
+				timing: {
+					queued: { time: now + 5 * minute, isActual: false },
+					onDeck: { time: now + 10 * minute, isActual: false },
+				},
 			},
 			upcomingMatches: [
 				{
@@ -137,7 +143,7 @@ describe('createDashboardData', () => {
 		});
 
 		expect(dashboard).toMatchObject({
-			currentMatch: null,
+			currentActivity: null,
 			nextMatch: { displayLabel: 'Q3', startTime: now + 15 * minute },
 			upcomingMatches: [
 				{ displayLabel: 'Q3', warning: '3rd match after the start of the day' },
@@ -148,7 +154,7 @@ describe('createDashboardData', () => {
 
 	it('keeps displaying event state when no Team 581 matches remain', () => {
 		expect(createDashboardData({ eventKey: '2026test', receivedAt: now, matches: [] })).toMatchObject({
-			currentMatch: null,
+			currentActivity: null,
 			nextMatch: null,
 			upcomingMatches: [],
 		});
@@ -159,7 +165,7 @@ describe('createDashboardData', () => {
 				matches: [match('Qualification 10', { status: 'On field', redTeams: ['581', '2', '3'] })],
 			}),
 		).toMatchObject({
-			currentMatch: { displayLabel: 'Q10' },
+			currentActivity: { type: 'match', displayLabel: 'Q10' },
 			nextMatch: null,
 			upcomingMatches: [],
 		});
@@ -209,7 +215,7 @@ describe('createDashboardData', () => {
 		});
 
 		expect(dashboard).toMatchObject({
-			currentMatch: { displayLabel: 'M1', startedAt: now - minute },
+			currentActivity: { type: 'match', displayLabel: 'M1' },
 			nextMatch: { displayLabel: 'M1' },
 		});
 	});
@@ -233,7 +239,7 @@ describe('createDashboardData', () => {
 		});
 
 		expect(dashboard).toMatchObject({
-			currentMatch: { displayLabel: 'Awards', startedAt: now, endsAt: awardsEnd },
+			currentActivity: { type: 'awards', endsAt: awardsEnd },
 			nextMatch: { displayLabel: 'F1' },
 			eliminationPaths: [],
 		});
@@ -318,7 +324,7 @@ describe('createDashboardData', () => {
 		});
 
 		expect(dashboard).toMatchObject({
-			currentMatch: { displayLabel: 'M8' },
+			currentActivity: { type: 'match', displayLabel: 'M8' },
 			nextMatch: null,
 			eliminationPaths: [
 				{ outcome: 'win', displayLabel: 'M11', alliance: 'red' },

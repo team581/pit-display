@@ -1,4 +1,5 @@
 import { v, type Infer } from 'convex/values';
+import { matchIndexes, type CompetitionPhase } from '../../src/frc-nexus/match-selection';
 import { TEAM_NUMBER_STRING } from '../../src/team';
 import type { Doc } from '../_generated/dataModel';
 
@@ -14,25 +15,27 @@ const eliminationBreak = v.object({
 	}),
 });
 
+const matchTiming = v.object({
+	time: v.nullable(v.number()),
+	isActual: v.boolean(),
+});
+
 export const dashboardData = v.object({
 	eventKey: v.string(),
 	updatedAt: v.number(),
 	competitionPhase: v.union(v.literal('qualification'), v.literal('allianceSelection'), v.literal('elimination')),
 	alliancePartners: v.array(v.number()),
-	currentMatch: v.nullable(
-		v.object({ displayLabel: v.string(), startedAt: v.nullable(v.number()), endsAt: v.nullable(v.number()) }),
+	currentActivity: v.nullable(
+		v.union(
+			v.object({ type: v.literal('match'), displayLabel: v.string() }),
+			v.object({ type: v.literal('awards'), endsAt: v.number() }),
+		),
 	),
 	nextMatch: v.nullable(
 		v.object({
 			displayLabel: v.string(),
 			startTime: v.nullable(v.number()),
-			milestones: v.array(
-				v.object({
-					label: v.string(),
-					time: v.nullable(v.number()),
-					isActual: v.boolean(),
-				}),
-			),
+			timing: v.object({ queued: matchTiming, onDeck: matchTiming }),
 		}),
 	),
 	upcomingMatches: v.array(
@@ -67,6 +70,9 @@ type MatchType = 'elimination' | 'final' | 'practice' | 'qualification';
 type ParsedMatch = { number: number; type: MatchType; displayLabel: string };
 type AllianceColor = 'blue' | 'red';
 type EliminationDestination = { label: string; alliance: AllianceColor };
+type CurrentActivity = DashboardData['currentActivity'];
+type NextMatch = NonNullable<DashboardData['nextMatch']>;
+type UpcomingMatch = DashboardData['upcomingMatches'][number];
 
 // Nexus's public API omits advancement routes, so keep the official eight-alliance
 // double-elimination bracket destinations here and use Nexus for their live timing.
@@ -159,13 +165,9 @@ function eliminationBreakForMatch(
 	};
 }
 
-function milestone(
-	label: string,
-	estimated: number | undefined,
-	actual: number | undefined,
-): NonNullable<DashboardData['nextMatch']>['milestones'][number] {
+function timing(estimated: number | undefined, actual: number | undefined): NextMatch['timing']['queued'] {
 	const time = actual ?? estimated ?? null;
-	return { label, time, isActual: actual !== undefined };
+	return { time, isActual: actual !== undefined };
 }
 
 function turnaroundWarningForMatch(
@@ -217,35 +219,110 @@ function eliminationPaths(match: NexusMatch | undefined, matches: NexusMatch[]):
 	});
 }
 
+function matchIsInPhase(match: ParsedMatch, phase: CompetitionPhase): boolean {
+	return phase === 'qualification'
+		? match.type === 'practice' || match.type === 'qualification'
+		: phase === 'elimination' && (match.type === 'elimination' || match.type === 'final');
+}
+
+function createUpcomingMatch(
+	match: NexusMatch,
+	index: number,
+	teamMatches: NexusMatch[],
+	lastOnFieldMatch: NexusMatch | undefined,
+	allMatches: NexusMatch[],
+): UpcomingMatch | null {
+	const parsedMatch = parseMatchLabel(match.label);
+	if (!parsedMatch) return null;
+
+	const alliance = match.redTeams.includes(TEAM_NUMBER_STRING) ? 'red' : 'blue';
+	const teams = (alliance === 'red' ? match.redTeams : match.blueTeams).map(Number);
+	if (teams.length < 3 || teams.length > 4 || teams.some((team) => !Number.isInteger(team))) return null;
+
+	const previousMatch =
+		teamMatches[index - 1] ?? (lastOnFieldMatch && includesTeam(lastOnFieldMatch) ? lastOnFieldMatch : undefined);
+	const previousParsedMatch = previousMatch ? parseMatchLabel(previousMatch.label) : null;
+	return {
+		key: match.label,
+		displayLabel: parsedMatch.displayLabel,
+		startTime: matchStart(match) ?? null,
+		warning: match.afterBreak
+			? breakWarning(match.afterBreak)
+			: previousMatch && previousParsedMatch
+				? turnaroundWarningForMatch(match, parsedMatch, previousMatch, previousParsedMatch)
+				: null,
+		break: eliminationBreakForMatch(match, allMatches),
+		alliance,
+		teams,
+	};
+}
+
+function createUpcomingMatches(
+	teamMatches: NexusMatch[],
+	lastOnFieldMatch: NexusMatch | undefined,
+	allMatches: NexusMatch[],
+): DashboardData['upcomingMatches'] {
+	return teamMatches.flatMap((match, index) => {
+		const upcomingMatch = createUpcomingMatch(match, index, teamMatches, lastOnFieldMatch, allMatches);
+		return upcomingMatch ? [upcomingMatch] : [];
+	});
+}
+
+function findActiveEliminationMatch(
+	matches: NexusMatch[],
+	currentMatchIndex: number,
+	currentMatch: NexusMatch | undefined,
+	nextMatch: NexusMatch | undefined,
+): NexusMatch | undefined {
+	const mostRecentTeamMatch = matches.slice(0, currentMatchIndex + 1).findLast((match) => {
+		const parsedMatch = parseMatchLabel(match.label);
+		return includesTeam(match) && (parsedMatch?.type === 'elimination' || parsedMatch?.type === 'final');
+	});
+	return nextMatch ?? (currentMatch && includesTeam(currentMatch) ? currentMatch : mostRecentTeamMatch);
+}
+
+function activeAwardsEndTime(nextMatch: NexusMatch | undefined, matches: NexusMatch[]): number | null {
+	if (!nextMatch) return null;
+	const nextMatchBreak = eliminationBreakForMatch(nextMatch, matches);
+	return nextMatchBreak?.label === 'Awards break' &&
+		nextMatchBreak.hasStarted &&
+		!nextMatchBreak.hasEnded &&
+		nextMatchBreak.durationMinutes !== null &&
+		nextMatchBreak.endTime !== null
+		? nextMatchBreak.endTime
+		: null;
+}
+
+function createCurrentActivity(
+	currentMatch: NexusMatch | undefined,
+	parsedCurrentMatch: ParsedMatch | null,
+	phase: CompetitionPhase,
+	awardsEndsAt: number | null,
+): CurrentActivity {
+	if (awardsEndsAt !== null) return { type: 'awards', endsAt: awardsEndsAt };
+	if (!currentMatch || !parsedCurrentMatch || !matchIsInPhase(parsedCurrentMatch, phase)) return null;
+	return { type: 'match', displayLabel: parsedCurrentMatch.displayLabel };
+}
+
+function createNextMatch(nextMatch: NexusMatch | undefined, parsedNextMatch: ParsedMatch | null): NextMatch | null {
+	if (!nextMatch || !parsedNextMatch) return null;
+	return {
+		displayLabel: parsedNextMatch.displayLabel,
+		startTime: matchStart(nextMatch) ?? null,
+		timing: {
+			queued: timing(nextMatch.times.estimatedQueueTime, nextMatch.times.actualQueueTime),
+			onDeck: timing(nextMatch.times.estimatedOnDeckTime, nextMatch.times.actualOnDeckTime),
+		},
+	};
+}
+
 export function createDashboardData(status: EventStatusSnapshot): DashboardData | null {
-	const competitionPhase = status.competitionPhase ?? 'qualification';
-	let lastOnFieldIndex = -1;
-	for (let index = status.matches.length - 1; index >= 0; index--) {
-		if (status.matches[index]?.status === 'On field') {
-			lastOnFieldIndex = index;
-			break;
-		}
-	}
-	const eliminationOnFieldIndex = status.matches.findLastIndex((match) => {
-		const parsedMatch = parseMatchLabel(match.label);
-		return match.status === 'On field' && (parsedMatch?.type === 'elimination' || parsedMatch?.type === 'final');
-	});
-	const eliminationOnDeckIndex = status.matches.findIndex((match) => {
-		const parsedMatch = parseMatchLabel(match.label);
-		return match.status === 'On deck' && (parsedMatch?.type === 'elimination' || parsedMatch?.type === 'final');
-	});
-	const currentMatchIndex =
-		competitionPhase === 'elimination' ? Math.max(eliminationOnFieldIndex, eliminationOnDeckIndex) : lastOnFieldIndex;
+	const { competitionPhase } = status;
+	const { currentMatchIndex, lastOnFieldIndex } = matchIndexes(status.matches, competitionPhase);
 
 	const currentMatch = status.matches[currentMatchIndex];
 	const parsedCurrentMatch = currentMatch ? parseMatchLabel(currentMatch.label) : null;
 	if (currentMatch && !parsedCurrentMatch) return null;
-	const currentMatchIsInPhase =
-		parsedCurrentMatch &&
-		((competitionPhase === 'qualification' &&
-			(parsedCurrentMatch.type === 'practice' || parsedCurrentMatch.type === 'qualification')) ||
-			(competitionPhase === 'elimination' &&
-				(parsedCurrentMatch.type === 'elimination' || parsedCurrentMatch.type === 'final')));
 
 	const lastOnFieldMatch = status.matches[lastOnFieldIndex];
 	const teamMatches = status.matches.slice(lastOnFieldIndex + 1).filter(includesTeam);
@@ -253,87 +330,17 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 	const parsedNextMatch = nextMatch ? parseMatchLabel(nextMatch.label) : null;
 	if (nextMatch && !parsedNextMatch) return null;
 
-	const upcomingMatches = teamMatches.flatMap((match, index): DashboardData['upcomingMatches'] => {
-		const parsedMatch = parseMatchLabel(match.label);
-		if (!parsedMatch) return [];
-
-		const alliance = match.redTeams.includes(TEAM_NUMBER_STRING) ? 'red' : 'blue';
-		const teams = (alliance === 'red' ? match.redTeams : match.blueTeams).map(Number);
-		if (teams.length < 3 || teams.length > 4 || teams.some((team) => !Number.isInteger(team))) return [];
-
-		const previousMatch =
-			teamMatches[index - 1] ?? (lastOnFieldMatch && includesTeam(lastOnFieldMatch) ? lastOnFieldMatch : undefined);
-		const previousParsedMatch = previousMatch ? parseMatchLabel(previousMatch.label) : null;
-		return [
-			{
-				key: match.label,
-				displayLabel: parsedMatch.displayLabel,
-				startTime: matchStart(match) ?? null,
-				warning: match.afterBreak
-					? breakWarning(match.afterBreak)
-					: previousMatch && previousParsedMatch
-						? turnaroundWarningForMatch(match, parsedMatch, previousMatch, previousParsedMatch)
-						: null,
-				break: eliminationBreakForMatch(match, status.matches),
-				alliance,
-				teams,
-			},
-		];
-	});
-	const mostRecentTeamEliminationMatch = status.matches.slice(0, currentMatchIndex + 1).findLast((match) => {
-		const parsedMatch = parseMatchLabel(match.label);
-		return includesTeam(match) && (parsedMatch?.type === 'elimination' || parsedMatch?.type === 'final');
-	});
-	const activeEliminationMatch =
-		nextMatch ?? (currentMatch && includesTeam(currentMatch) ? currentMatch : mostRecentTeamEliminationMatch);
-	const nextMatchBreak = nextMatch ? eliminationBreakForMatch(nextMatch, status.matches) : null;
-	const activeAwardsBreak =
-		competitionPhase === 'elimination' &&
-		nextMatchBreak?.label === 'Awards break' &&
-		nextMatchBreak.hasStarted &&
-		!nextMatchBreak.hasEnded &&
-		nextMatchBreak.durationMinutes !== null &&
-		nextMatchBreak.endTime !== null
-			? {
-					startedAt: nextMatchBreak.endTime - nextMatchBreak.durationMinutes * 60_000,
-					endsAt: nextMatchBreak.endTime,
-				}
-			: null;
+	const upcomingMatches = createUpcomingMatches(teamMatches, lastOnFieldMatch, status.matches);
+	const activeEliminationMatch = findActiveEliminationMatch(status.matches, currentMatchIndex, currentMatch, nextMatch);
+	const awardsEndsAt = competitionPhase === 'elimination' ? activeAwardsEndTime(nextMatch, status.matches) : null;
 
 	return {
 		eventKey: status.eventKey,
 		updatedAt: status.receivedAt,
 		competitionPhase,
-		alliancePartners: (status.alliancePartners ?? []).map(Number).filter(Number.isInteger),
-		currentMatch: activeAwardsBreak
-			? {
-					displayLabel: 'Awards',
-					startedAt: activeAwardsBreak.startedAt,
-					endsAt: activeAwardsBreak.endsAt,
-				}
-			: currentMatch && parsedCurrentMatch && currentMatchIsInPhase
-				? {
-						displayLabel: parsedCurrentMatch.displayLabel,
-						startedAt:
-							currentMatch.times.actualOnFieldTime ??
-							currentMatch.times.actualOnDeckTime ??
-							matchStart(currentMatch) ??
-							null,
-						endsAt: null,
-					}
-				: null,
-		nextMatch:
-			nextMatch && parsedNextMatch
-				? {
-						displayLabel: parsedNextMatch.displayLabel,
-						startTime: matchStart(nextMatch) ?? null,
-						milestones: [
-							milestone('Queued', nextMatch.times.estimatedQueueTime, nextMatch.times.actualQueueTime),
-							milestone('On deck', nextMatch.times.estimatedOnDeckTime, nextMatch.times.actualOnDeckTime),
-							milestone('Match start', matchStart(nextMatch), undefined),
-						],
-					}
-				: null,
+		alliancePartners: status.alliancePartners.map(Number).filter(Number.isInteger),
+		currentActivity: createCurrentActivity(currentMatch, parsedCurrentMatch, competitionPhase, awardsEndsAt),
+		nextMatch: createNextMatch(nextMatch, parsedNextMatch),
 		upcomingMatches,
 		eliminationPaths:
 			competitionPhase === 'elimination' ? eliminationPaths(activeEliminationMatch, status.matches) : [],
