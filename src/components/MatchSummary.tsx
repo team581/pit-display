@@ -2,8 +2,7 @@ import * as stylex from '@stylexjs/stylex';
 import { TextMorph } from 'torph/react';
 import type { Dashboard } from '../dashboard';
 import { formatTimingMilestoneTime, timingStatusMilestones } from '../dashboard-time';
-import { formatClock } from '../format-time';
-import { queueProgress } from '../match-progress';
+import { formatClock, formatRelativeTime } from '../format-time';
 import { MatchLabel } from './MatchLabel';
 import { styles } from './MatchSummary.stylex';
 import { panelStyles } from './Panel.stylex';
@@ -25,14 +24,31 @@ export function MatchSummary({
 		: 'Not available';
 	const matchStartText = nextMatch ? `Starts ${formatClock(nextMatch.startTime)}` : '';
 	const timingStatuses = nextMatch ? timingStatusMilestones(nextMatch.milestones) : [];
-	const nextQueueProgress = queueProgress(currentMatch?.startedAt, nextMatch?.milestones[0]?.time, now);
-	const queueWindowComplete = nextQueueProgress === 1;
 	const isAllianceSelection = competitionPhase === 'allianceSelection';
-	const showMatchProgress =
+	const awardsEndsAt = currentMatch?.displayLabel === 'Awards' ? currentMatch.endsAt : null;
+	const isAwardsBreak = awardsEndsAt !== null;
+	const awardsRemaining = awardsEndsAt === null ? '' : formatRelativeTime(awardsEndsAt, now, '', 'seconds');
+	const awardsEndText =
+		awardsEndsAt === null
+			? ''
+			: now >= awardsEndsAt
+				? 'Ends soon'
+				: `Ends ${awardsRemaining === 'now' ? '<1 sec' : awardsRemaining}`;
+	const showMatchCountdown =
 		currentMatch !== null &&
 		nextMatch !== null &&
+		!isAwardsBreak &&
 		currentMatch.displayLabel !== nextMatch.displayLabel &&
 		!isAllianceSelection;
+	const queueMilestone = nextMatch?.milestones.find(({ label }) => label === 'Queued');
+	const estimatedMatchEnd = queueMilestone ? formatTimingMilestoneTime(queueMilestone, now, '') : 'Not available';
+	const matchEndText =
+		estimatedMatchEnd === 'Not available'
+			? 'End unknown'
+			: estimatedMatchEnd === 'Soon' || queueMilestone?.isActual
+				? 'Ends soon'
+				: `Ends ${estimatedMatchEnd}`;
+	const currentStatusText = isAwardsBreak ? awardsEndText : showMatchCountdown ? matchEndText : '';
 
 	return (
 		<section {...stylex.props(styles.grid)} aria-label="Match summary">
@@ -47,24 +63,24 @@ export function MatchSummary({
 								<span aria-hidden="true">Alliance</span>
 								<span aria-hidden="true">selection</span>
 							</strong>
+						) : isAwardsBreak ? (
+							<strong {...stylex.props(styles.currentActivity)}>Awards</strong>
 						) : (
 							<MatchLabel displayLabel={currentMatch?.displayLabel} {...stylex.props(styles.matchNumber)} />
 						)}
 					</div>
 					<div {...stylex.props(styles.matchDetailSlot)}>
-						{showMatchProgress && (
-							<div
-								{...stylex.props(styles.matchDetail, styles.matchProgress)}
-								aria-label={`Progress until ${nextMatch.displayLabel} queues: ${Math.round(nextQueueProgress * 100)}%`}
-								role="progressbar"
-								aria-valuemin={0}
-								aria-valuemax={100}
-								aria-valuenow={Math.round(nextQueueProgress * 100)}
-							>
-								<div {...stylex.props(styles.matchProgressFill)} style={{ width: `${nextQueueProgress * 100}%` }} />
-								{queueWindowComplete && (
-									<strong {...stylex.props(styles.matchStartValue, styles.matchProgressMessage)}>Ending soon</strong>
-								)}
+						{currentStatusText && (
+							<div {...stylex.props(styles.matchDetail, styles.matchStartTime)}>
+								<TextMorph
+									as="strong"
+									{...stylex.props(
+										styles.activityEndValue,
+										currentStatusText.length > 16 && styles.activityEndValueLong,
+									)}
+								>
+									{currentStatusText}
+								</TextMorph>
 							</div>
 						)}
 					</div>

@@ -65,6 +65,14 @@ export const styles = stylex.create({
 		lineHeight: 0.95,
 		textAlign: 'center',
 	},
+	currentActivity: {
+		maxWidth: '100%',
+		fontSize: { default: 'clamp(4rem, 6.5vw, 6.5rem)', [portrait]: '4rem' },
+		fontWeight: 900,
+		fontVariationSettings: "'wdth' 92",
+		lineHeight: 1,
+		textAlign: 'center',
+	},
 	matchDetailSlot: {
 		display: 'flex',
 		width: '100%',
@@ -85,11 +93,18 @@ export const styles = stylex.create({
 		backgroundColor: colors.surfaceRaised,
 		containerType: 'inline-size',
 	},
-	matchStartValue: { fontSize: { default: '3rem', [portrait]: '2rem' } },
 	matchTimeValue: {
 		fontSize: 'clamp(2.5rem, 17cqw, 4.1875rem)',
 		letterSpacing: '-0.03em',
 		whiteSpace: 'nowrap',
+	},
+	activityEndValue: {
+		fontSize: 'clamp(3rem, 14cqw, 3.75rem)',
+		letterSpacing: '-0.03em',
+		whiteSpace: 'nowrap',
+	},
+	activityEndValueLong: {
+		fontSize: 'clamp(2rem, 12.5cqw, 3.35rem)',
 	},
 	matchTimeValueWithTwoDigitHour: {
 		fontSize: 'clamp(2.5rem, 15.75cqw, 3.875rem)',
@@ -97,23 +112,6 @@ export const styles = stylex.create({
 	matchTimeValueLong: {
 		fontSize: 'clamp(2rem, 9cqw, 3rem)',
 	},
-	matchProgress: {
-		position: 'relative',
-		minHeight: { default: '4rem', [portrait]: '3.5rem' },
-		overflow: 'hidden',
-		borderRadius: '9999px',
-		backgroundColor: colors.surfaceRaised,
-	},
-	matchProgressFill: {
-		position: 'absolute',
-		insetBlock: 0,
-		insetInlineStart: 0,
-		backgroundColor: colors.orange,
-		transitionProperty: 'width',
-		transitionDuration: '1s',
-		transitionTimingFunction: 'linear',
-	},
-	matchProgressMessage: { position: 'relative', color: colors.onAccent },
 	timingBody: {
 		alignItems: 'stretch',
 		gap: spacing.lg,

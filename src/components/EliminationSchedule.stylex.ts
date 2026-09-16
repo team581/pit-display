@@ -170,7 +170,7 @@ export const styles = stylex.create({
 		color: colors.onAccent,
 	},
 	activeBreakMarker: {
-		backgroundColor: colors.gold,
+		backgroundColor: colors.muted,
 	},
 	timelineDestination: {
 		color: colors.text,

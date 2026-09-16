@@ -227,6 +227,30 @@ describe('createDashboardData', () => {
 		});
 	});
 
+	it('shows an active awards break as the current field activity', () => {
+		const awardsEnd = now + 15 * minute;
+		const dashboard = createDashboardData({
+			eventKey: '2026test',
+			receivedAt: now,
+			competitionPhase: 'elimination',
+			alliancePartners: ['254', '1678'],
+			matches: [
+				match('Playoff 13', { status: 'On field' }),
+				match('Final 1', {
+					status: 'On deck',
+					redTeams: ['581', '254', '1678'],
+					afterBreak: { breakLabel: 'an awards break', durationMinutes: 15, position: 1 },
+					times: { estimatedOnFieldTime: awardsEnd, estimatedStartTime: awardsEnd + 3 * minute },
+				}),
+			],
+		});
+
+		expect(dashboard).toMatchObject({
+			currentMatch: { displayLabel: 'Awards', startedAt: now, endsAt: awardsEnd },
+			nextMatch: { displayLabel: 'F1' },
+		});
+	});
+
 	it('shows both possible next playoff matches with bumper colors, timing, and breaks', () => {
 		const dashboard = createDashboardData({
 			eventKey: '2026test',

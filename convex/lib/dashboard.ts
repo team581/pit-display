@@ -19,7 +19,9 @@ export const dashboardData = v.object({
 	updatedAt: v.number(),
 	competitionPhase: v.union(v.literal('qualification'), v.literal('allianceSelection'), v.literal('elimination')),
 	alliancePartners: v.array(v.number()),
-	currentMatch: v.nullable(v.object({ displayLabel: v.string(), startedAt: v.nullable(v.number()) })),
+	currentMatch: v.nullable(
+		v.object({ displayLabel: v.string(), startedAt: v.nullable(v.number()), endsAt: v.nullable(v.number()) }),
+	),
 	nextMatch: v.nullable(
 		v.object({
 			displayLabel: v.string(),
@@ -284,14 +286,32 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 	});
 	const activeEliminationMatch =
 		nextMatch ?? (currentMatch && includesTeam(currentMatch) ? currentMatch : mostRecentTeamEliminationMatch);
+	const nextMatchBreak = nextMatch ? eliminationBreakForMatch(nextMatch, status.matches) : null;
+	const activeAwardsBreak =
+		competitionPhase === 'elimination' &&
+		nextMatchBreak?.label === 'Awards break' &&
+		nextMatchBreak.hasStarted &&
+		!nextMatchBreak.hasEnded &&
+		nextMatchBreak.durationMinutes !== null &&
+		nextMatchBreak.endTime !== null
+			? {
+					startedAt: nextMatchBreak.endTime - nextMatchBreak.durationMinutes * 60_000,
+					endsAt: nextMatchBreak.endTime,
+				}
+			: null;
 
 	return {
 		eventKey: status.eventKey,
 		updatedAt: status.receivedAt,
 		competitionPhase,
 		alliancePartners: (status.alliancePartners ?? []).map(Number).filter(Number.isInteger),
-		currentMatch:
-			currentMatch && parsedCurrentMatch && currentMatchIsInPhase
+		currentMatch: activeAwardsBreak
+			? {
+					displayLabel: 'Awards',
+					startedAt: activeAwardsBreak.startedAt,
+					endsAt: activeAwardsBreak.endsAt,
+				}
+			: currentMatch && parsedCurrentMatch && currentMatchIsInPhase
 				? {
 						displayLabel: parsedCurrentMatch.displayLabel,
 						startedAt:
@@ -299,6 +319,7 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 							currentMatch.times.actualOnDeckTime ??
 							matchStart(currentMatch) ??
 							null,
+						endsAt: null,
 					}
 				: null,
 		nextMatch:
