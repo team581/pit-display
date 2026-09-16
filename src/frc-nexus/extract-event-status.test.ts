@@ -50,7 +50,7 @@ describe('extractEventStatus', () => {
 					status: 'Queuing soon',
 					redTeams: ['1', '2', '3'],
 					blueTeams: ['581', '5', '6'],
-					times: { scheduledStartTime: 200, actualOnFieldTime: 195 },
+					times: { scheduledStartTime: 200, estimatedOnFieldTime: 190, actualOnFieldTime: 195 },
 				},
 			],
 		});
@@ -162,10 +162,37 @@ describe('extractEventStatus', () => {
 			matches: [
 				match('Qualification 1', { status: 'On field', redTeams: ['581', '2', '3'] }),
 				match('Playoff 1', { status: 'Now queuing', redTeams: ['581', '254', '1678', '971'] }),
+				match('Playoff 2', { redTeams: null, blueTeams: null }),
 			],
 		});
 
 		expect(extracted?.competitionPhase).toBe('elimination');
+		expect(extracted?.matches.map(({ label }) => label)).toEqual(['Playoff 1', 'Playoff 2']);
+	});
+
+	it('preserves configured playoff break duration', () => {
+		const extracted = extractEventStatus(
+			{
+				eventKey: '2026test',
+				dataAsOfTime: 133,
+				matches: [
+					match('Qualification 1', { status: 'On field' }),
+					match('Playoff 1', {
+						status: 'Now queuing',
+						redTeams: ['581', '254', '1678'],
+						breakAfter: 'Break',
+					}),
+					match('Playoff 2'),
+				],
+			},
+			{ 'Playoff 1': 5 },
+		);
+
+		expect(extracted?.matches[1]?.afterBreak).toEqual({
+			breakLabel: 'a break',
+			durationMinutes: 5,
+			position: 1,
+		});
 	});
 
 	it('uses an on-deck elimination match instead of the last qualification match', () => {
@@ -180,5 +207,35 @@ describe('extractEventStatus', () => {
 		});
 
 		expect(extracted?.matches.map(({ label }) => label)).toEqual(['Playoff 1', 'Playoff 2']);
+	});
+
+	it('uses a newer on-deck playoff match after the previous match leaves the field', () => {
+		const extracted = extractEventStatus({
+			eventKey: '2026test',
+			dataAsOfTime: 132,
+			matches: [
+				match('Qualification 56', { status: 'On field', redTeams: ['581', '2', '3'] }),
+				match('Playoff 1', { status: 'On field' }),
+				match('Playoff 2', { status: 'On deck' }),
+				match('Playoff 5', { redTeams: ['581', '254', '1678'] }),
+			],
+		});
+
+		expect(extracted?.matches.map(({ label }) => label)).toEqual(['Playoff 1', 'Playoff 2', 'Playoff 5']);
+	});
+
+	it('retains our last playoff match while its result is unresolved', () => {
+		const extracted = extractEventStatus({
+			eventKey: '2026test',
+			dataAsOfTime: 134,
+			matches: [
+				match('Qualification 56', { status: 'On field' }),
+				match('Playoff 7', { status: 'On field', redTeams: ['581', '254', '1678'] }),
+				match('Playoff 8', { status: 'On field' }),
+				match('Playoff 9', { redTeams: null, blueTeams: null }),
+			],
+		});
+
+		expect(extracted?.matches.map(({ label }) => label)).toEqual(['Playoff 7', 'Playoff 8', 'Playoff 9']);
 	});
 });

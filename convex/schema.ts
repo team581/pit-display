@@ -12,6 +12,7 @@ export const MatchTimes = v.object({
 	scheduledStartTime: v.optional(v.number()),
 	estimatedQueueTime: v.optional(v.number()),
 	estimatedOnDeckTime: v.optional(v.number()),
+	estimatedOnFieldTime: v.optional(v.number()),
 	estimatedStartTime: v.optional(v.number()),
 	actualQueueTime: v.optional(v.number()),
 	actualOnDeckTime: v.optional(v.number()),
@@ -24,7 +25,9 @@ export const NexusMatch = v.object({
 	redTeams: v.array(v.string()),
 	blueTeams: v.array(v.string()),
 	times: MatchTimes,
-	afterBreak: v.optional(v.object({ breakLabel: v.string(), position: v.number() })),
+	afterBreak: v.optional(
+		v.object({ breakLabel: v.string(), durationMinutes: v.optional(v.number()), position: v.number() }),
+	),
 });
 
 export const CompetitionPhase = v.union(

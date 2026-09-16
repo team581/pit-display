@@ -26,6 +26,7 @@
 		"convex": "^1.45.0",
 		"convex-helpers": "0.1.124",
 		"envalid": "8.2.0",
+		"fetch-extras": "3.2.1",
 		"hono": "4.13.7",
 		"lucide-react": "^1.45.0",
 		"react": "19.3.0",

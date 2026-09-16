@@ -2,6 +2,18 @@ import { v, type Infer } from 'convex/values';
 import { TEAM_NUMBER_STRING } from '../../src/team';
 import type { Doc } from '../_generated/dataModel';
 
+const eliminationBreak = v.object({
+	label: v.string(),
+	durationMinutes: v.nullable(v.number()),
+	endTime: v.nullable(v.number()),
+	hasStarted: v.boolean(),
+	hasEnded: v.boolean(),
+	previousMatch: v.object({
+		displayLabel: v.string(),
+		startTime: v.nullable(v.number()),
+	}),
+});
+
 export const dashboardData = v.object({
 	eventKey: v.string(),
 	updatedAt: v.number(),
@@ -27,8 +39,18 @@ export const dashboardData = v.object({
 			displayLabel: v.string(),
 			startTime: v.nullable(v.number()),
 			warning: v.nullable(v.string()),
+			break: v.nullable(eliminationBreak),
 			alliance: v.union(v.literal('blue'), v.literal('red')),
 			teams: v.array(v.number()),
+		}),
+	),
+	eliminationPaths: v.array(
+		v.object({
+			outcome: v.union(v.literal('win'), v.literal('lose')),
+			displayLabel: v.nullable(v.string()),
+			startTime: v.nullable(v.number()),
+			break: v.nullable(eliminationBreak),
+			alliance: v.nullable(v.union(v.literal('blue'), v.literal('red'))),
 		}),
 	),
 });
@@ -41,6 +63,26 @@ type EventStatusSnapshot = Pick<
 >;
 type MatchType = 'elimination' | 'final' | 'practice' | 'qualification';
 type ParsedMatch = { number: number; type: MatchType; displayLabel: string };
+type AllianceColor = 'blue' | 'red';
+type EliminationDestination = { label: string; alliance: AllianceColor };
+
+// Nexus's public API omits advancement routes, so keep the official eight-alliance
+// double-elimination bracket destinations here and use Nexus for their live timing.
+const playoffAdvancement: Record<number, { win: EliminationDestination; lose?: EliminationDestination }> = {
+	1: { win: { label: 'Playoff 7', alliance: 'red' }, lose: { label: 'Playoff 5', alliance: 'red' } },
+	2: { win: { label: 'Playoff 7', alliance: 'blue' }, lose: { label: 'Playoff 5', alliance: 'blue' } },
+	3: { win: { label: 'Playoff 8', alliance: 'red' }, lose: { label: 'Playoff 6', alliance: 'red' } },
+	4: { win: { label: 'Playoff 8', alliance: 'blue' }, lose: { label: 'Playoff 6', alliance: 'blue' } },
+	5: { win: { label: 'Playoff 10', alliance: 'blue' } },
+	6: { win: { label: 'Playoff 9', alliance: 'blue' } },
+	7: { win: { label: 'Playoff 11', alliance: 'red' }, lose: { label: 'Playoff 9', alliance: 'red' } },
+	8: { win: { label: 'Playoff 11', alliance: 'blue' }, lose: { label: 'Playoff 10', alliance: 'red' } },
+	9: { win: { label: 'Playoff 12', alliance: 'blue' } },
+	10: { win: { label: 'Playoff 12', alliance: 'red' } },
+	11: { win: { label: 'Final 1', alliance: 'red' }, lose: { label: 'Playoff 13', alliance: 'red' } },
+	12: { win: { label: 'Playoff 13', alliance: 'blue' } },
+	13: { win: { label: 'Final 1', alliance: 'blue' } },
+};
 
 const ordinalPluralRules = new Intl.PluralRules('en', { type: 'ordinal' });
 const ordinalSuffixes: Record<Intl.LDMLPluralRule, string> = {
@@ -82,6 +124,39 @@ function breakWarning(afterBreak: NonNullable<NexusMatch['afterBreak']>): string
 	return `${ordinal} match after ${afterBreak.breakLabel}`;
 }
 
+function breakTitle(label: string): string {
+	const withoutArticle = label.replace(/^(?:a|an|the) /, '');
+	return withoutArticle.charAt(0).toUpperCase() + withoutArticle.slice(1);
+}
+
+function eliminationBreakForMatch(
+	match: NexusMatch,
+	matches: NexusMatch[],
+): DashboardData['eliminationPaths'][number]['break'] {
+	if (!match.afterBreak) return null;
+
+	const matchIndex = matches.indexOf(match);
+	const previousMatchIndex = matchIndex - match.afterBreak.position;
+	const previousMatch = matches[previousMatchIndex];
+	const firstMatchAfterBreak = matches[previousMatchIndex + 1];
+	const parsedPreviousMatch = previousMatch ? parseMatchLabel(previousMatch.label) : null;
+	if (!previousMatch || !parsedPreviousMatch) return null;
+
+	return {
+		label: breakTitle(match.afterBreak.breakLabel),
+		durationMinutes: match.afterBreak.durationMinutes ?? null,
+		hasStarted: previousMatch.status === 'On field',
+		hasEnded: firstMatchAfterBreak?.status === 'On field',
+		endTime:
+			firstMatchAfterBreak?.times.estimatedOnFieldTime ??
+			(firstMatchAfterBreak ? (matchStart(firstMatchAfterBreak) ?? null) : null),
+		previousMatch: {
+			displayLabel: parsedPreviousMatch.displayLabel,
+			startTime: matchStart(previousMatch) ?? null,
+		},
+	};
+}
+
 function milestone(
 	label: string,
 	estimated: number | undefined,
@@ -115,6 +190,31 @@ function turnaroundWarningForMatch(
 	return null;
 }
 
+function eliminationPaths(match: NexusMatch | undefined, matches: NexusMatch[]): DashboardData['eliminationPaths'] {
+	const parsedMatch = match ? parseMatchLabel(match.label) : null;
+	if (parsedMatch?.type !== 'elimination') return [];
+
+	const advancement = playoffAdvancement[parsedMatch.number];
+	if (!advancement) return [];
+
+	return (['win', 'lose'] as const).map((outcome) => {
+		const destination = advancement[outcome];
+		if (!destination) {
+			return { outcome, displayLabel: null, startTime: null, break: null, alliance: null };
+		}
+
+		const destinationMatch = matches.find((candidate) => candidate.label === destination.label);
+		const parsedDestination = parseMatchLabel(destination.label);
+		return {
+			outcome,
+			displayLabel: parsedDestination?.displayLabel ?? null,
+			startTime: destinationMatch ? (matchStart(destinationMatch) ?? null) : null,
+			break: destinationMatch ? eliminationBreakForMatch(destinationMatch, matches) : null,
+			alliance: destination.alliance,
+		};
+	});
+}
+
 export function createDashboardData(status: EventStatusSnapshot): DashboardData | null {
 	const competitionPhase = status.competitionPhase ?? 'qualification';
 	let lastOnFieldIndex = -1;
@@ -133,11 +233,7 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 		return match.status === 'On deck' && (parsedMatch?.type === 'elimination' || parsedMatch?.type === 'final');
 	});
 	const currentMatchIndex =
-		competitionPhase === 'elimination'
-			? eliminationOnFieldIndex === -1
-				? eliminationOnDeckIndex
-				: eliminationOnFieldIndex
-			: lastOnFieldIndex;
+		competitionPhase === 'elimination' ? Math.max(eliminationOnFieldIndex, eliminationOnDeckIndex) : lastOnFieldIndex;
 
 	const currentMatch = status.matches[currentMatchIndex];
 	const parsedCurrentMatch = currentMatch ? parseMatchLabel(currentMatch.label) : null;
@@ -176,11 +272,18 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 					: previousMatch && previousParsedMatch
 						? turnaroundWarningForMatch(match, parsedMatch, previousMatch, previousParsedMatch)
 						: null,
+				break: eliminationBreakForMatch(match, status.matches),
 				alliance,
 				teams,
 			},
 		];
 	});
+	const mostRecentTeamEliminationMatch = status.matches.slice(0, currentMatchIndex + 1).findLast((match) => {
+		const parsedMatch = parseMatchLabel(match.label);
+		return includesTeam(match) && (parsedMatch?.type === 'elimination' || parsedMatch?.type === 'final');
+	});
+	const activeEliminationMatch =
+		nextMatch ?? (currentMatch && includesTeam(currentMatch) ? currentMatch : mostRecentTeamEliminationMatch);
 
 	return {
 		eventKey: status.eventKey,
@@ -191,7 +294,11 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 			currentMatch && parsedCurrentMatch && currentMatchIsInPhase
 				? {
 						displayLabel: parsedCurrentMatch.displayLabel,
-						startedAt: currentMatch.times.actualOnFieldTime ?? matchStart(currentMatch) ?? null,
+						startedAt:
+							currentMatch.times.actualOnFieldTime ??
+							currentMatch.times.actualOnDeckTime ??
+							matchStart(currentMatch) ??
+							null,
 					}
 				: null,
 		nextMatch:
@@ -207,5 +314,7 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 					}
 				: null,
 		upcomingMatches,
+		eliminationPaths:
+			competitionPhase === 'elimination' ? eliminationPaths(activeEliminationMatch, status.matches) : [],
 	};
 }

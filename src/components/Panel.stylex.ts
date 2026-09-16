@@ -12,7 +12,7 @@ export const panelStyles = stylex.create({
 	},
 	heading: {
 		margin: 0,
-		fontSize: '1.75rem',
+		fontSize: '2.625rem',
 		fontWeight: 850,
 		letterSpacing: '0.02em',
 	},

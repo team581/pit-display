@@ -9,7 +9,7 @@ const breakLabels = {
 	'Awards break': 'an awards break',
 } as const;
 
-type AfterBreak = { breakLabel: string; position: number };
+type AfterBreak = { breakLabel: string; durationMinutes?: number; position: number };
 type CompetitionPhase = 'qualification' | 'allianceSelection' | 'elimination';
 
 const breakWarningWindow = 30 * 60_000;
@@ -24,6 +24,7 @@ function withoutNullTimes(times: Match['times']) {
 		...(times?.scheduledStartTime != null ? { scheduledStartTime: times.scheduledStartTime } : {}),
 		...(times?.estimatedQueueTime != null ? { estimatedQueueTime: times.estimatedQueueTime } : {}),
 		...(times?.estimatedOnDeckTime != null ? { estimatedOnDeckTime: times.estimatedOnDeckTime } : {}),
+		...(times?.estimatedOnFieldTime != null ? { estimatedOnFieldTime: times.estimatedOnFieldTime } : {}),
 		...(times?.estimatedStartTime != null ? { estimatedStartTime: times.estimatedStartTime } : {}),
 		...(times?.actualQueueTime != null ? { actualQueueTime: times.actualQueueTime } : {}),
 		...(times?.actualOnDeckTime != null ? { actualOnDeckTime: times.actualOnDeckTime } : {}),
@@ -54,10 +55,14 @@ function alliancePartners(matches: Match[]): string[] {
 	return withoutNullTeams(alliance).filter((team) => team !== TEAM_NUMBER_STRING);
 }
 
-function breakPositions(matches: Match[]): (AfterBreak | undefined)[] {
+function breakPositions(
+	matches: Match[],
+	breakDurations: Readonly<Record<string, number>>,
+): (AfterBreak | undefined)[] {
 	const positions: (AfterBreak | undefined)[] = [];
 	let matchesSinceBreak = Number.POSITIVE_INFINITY;
 	let lastBreakLabel = '';
+	let lastBreakDuration: number | undefined;
 	let firstMatchAfterBreakStartTime: number | undefined;
 
 	for (const match of matches) {
@@ -72,20 +77,27 @@ function breakPositions(matches: Match[]): (AfterBreak | undefined)[] {
 			startTime - firstMatchAfterBreakStartTime <= breakWarningWindow;
 
 		positions.push(
-			withinCountWindow || withinTimeWindow ? { breakLabel: lastBreakLabel, position: matchesSinceBreak } : undefined,
+			withinCountWindow || withinTimeWindow
+				? {
+						breakLabel: lastBreakLabel,
+						...(lastBreakDuration === undefined ? {} : { durationMinutes: lastBreakDuration }),
+						position: matchesSinceBreak,
+					}
+				: undefined,
 		);
 		matchesSinceBreak++;
 
 		if (match.breakAfter) {
 			matchesSinceBreak = 1;
 			lastBreakLabel = breakLabels[match.breakAfter];
+			lastBreakDuration = match.label ? breakDurations[match.label] : undefined;
 		}
 	}
 
 	return positions;
 }
 
-export function extractEventStatus(data: EventStatus) {
+export function extractEventStatus(data: EventStatus, breakDurations: Readonly<Record<string, number>> = {}) {
 	if (!data.eventKey || !data.dataAsOfTime || !data.matches) return;
 	const phase = competitionPhase(data.matches);
 	const lastOnFieldIndex = data.matches.findLastIndex((match) => match.status === 'On field');
@@ -96,12 +108,8 @@ export function extractEventStatus(data: EventStatus) {
 		(match) => match.status === 'On deck' && /^(Playoff|Final) /.test(match.label ?? ''),
 	);
 	const currentMatchIndex =
-		phase === 'elimination'
-			? eliminationOnFieldIndex === -1
-				? eliminationOnDeckIndex
-				: eliminationOnFieldIndex
-			: lastOnFieldIndex;
-	const afterBreakByMatch = breakPositions(data.matches);
+		phase === 'elimination' ? Math.max(eliminationOnFieldIndex, eliminationOnDeckIndex) : lastOnFieldIndex;
+	const afterBreakByMatch = breakPositions(data.matches, breakDurations);
 	const teamIsPresent = data.matches.some(
 		(match) => match.redTeams?.includes(TEAM_NUMBER_STRING) || match.blueTeams?.includes(TEAM_NUMBER_STRING),
 	);
@@ -115,7 +123,11 @@ export function extractEventStatus(data: EventStatus) {
 		matches: data.matches.flatMap((match, index) => {
 			const isTeamMatch =
 				match.redTeams?.includes(TEAM_NUMBER_STRING) || match.blueTeams?.includes(TEAM_NUMBER_STRING) || false;
-			const isRelevantMatch = index === currentMatchIndex || (index > currentMatchIndex && isTeamMatch);
+			const isEliminationMatch = /^(Playoff|Final) /.test(match.label ?? '');
+			const isRelevantMatch =
+				phase === 'elimination'
+					? isEliminationMatch
+					: index === currentMatchIndex || (index > currentMatchIndex && isTeamMatch);
 			let afterBreak = afterBreakByMatch[index];
 			const qualificationNumber = isTeamMatch ? match.label?.match(/^Qualification (\d+)$/)?.[1] : undefined;
 			if (qualificationNumber && Number(qualificationNumber) <= 3) {

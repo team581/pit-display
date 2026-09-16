@@ -1,5 +1,6 @@
 import { createRoute, z } from '@hono/zod-openapi';
 import { v } from 'convex/values';
+import { pipeline, withHttpError, withJsonResponse } from 'fetch-extras';
 import { extractEventStatus } from '../src/frc-nexus/extract-event-status';
 import { FrcNexus } from '../src/frc-nexus/generated/sdk.gen';
 import { zEventStatus } from '../src/frc-nexus/generated/zod.gen';
@@ -10,6 +11,36 @@ import { app } from './lib/hono';
 import { CompetitionPhase, NexusMatch } from './schema';
 
 const frcNexus = new FrcNexus();
+
+const matchSchedule = z.record(
+	z.string(),
+	z.looseObject({ breakDurationMinutes: z.number().int().nonnegative().optional() }),
+);
+const fetchMatchSchedule = pipeline(fetch, withHttpError(), withJsonResponse({ schema: matchSchedule }));
+
+function scheduleKeyToMatchLabel(key: string): string | undefined {
+	const playoff = /^de(\d+)$/.exec(key);
+	if (playoff) return `Playoff ${playoff[1]}`;
+
+	const final = /^f1m(\d+)$/.exec(key);
+	if (final) return `Final ${final[1]}`;
+	return undefined;
+}
+
+async function fetchBreakDurations(eventKey: string): Promise<Record<string, number>> {
+	// The documented event API only includes the break label. Nexus's live schedule
+	// store supplies the configured duration displayed by its own event UI.
+	const schedule = await fetchMatchSchedule(
+		`https://frc-virtual-queue-default-rtdb.firebaseio.com/events/${encodeURIComponent(eventKey)}/matches.json`,
+	);
+
+	return Object.fromEntries(
+		Object.entries(schedule).flatMap(([key, match]) => {
+			const label = scheduleKeyToMatchLabel(key);
+			return label && match.breakDurationMinutes !== undefined ? [[label, match.breakDurationMinutes]] : [];
+		}),
+	);
+}
 
 function includesTeam(matches: { redTeams?: (string | null)[] | null; blueTeams?: (string | null)[] | null }[]) {
 	return matches.some(
@@ -38,7 +69,8 @@ app.openapi(webhookRoute, async (c) => {
 	const data = c.req.valid('json');
 	if (!data.matches || !includesTeam(data.matches)) return c.text('OK', 200);
 
-	const eventStatus = extractEventStatus(data);
+	const breakDurations = data.eventKey ? await fetchBreakDurations(data.eventKey) : {};
+	const eventStatus = extractEventStatus(data, breakDurations);
 	if (eventStatus) await c.env.runMutation(internal.frcNexus.processEventStatus, eventStatus);
 	return c.text('OK', 200);
 });
@@ -51,7 +83,8 @@ export const pullEventStatus = internalAction({
 			auth: env.NEXUS_API_KEY,
 			path: { eventKey: args.eventKey },
 		});
-		const eventStatus = extractEventStatus(data);
+		const breakDurations = data.eventKey ? await fetchBreakDurations(data.eventKey) : {};
+		const eventStatus = extractEventStatus(data, breakDurations);
 		if (!eventStatus) throw new Error('FRC Nexus returned an incomplete event status');
 
 		await ctx.runMutation(internal.frcNexus.processEventStatus, eventStatus);

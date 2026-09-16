@@ -211,6 +211,9 @@ importers:
       envalid:
         specifier: 8.2.0
         version: 8.2.0
+      fetch-extras:
+        specifier: 3.2.1
+        version: 3.2.1
       hono:
         specifier: 4.13.7
         version: 4.13.7
@@ -3251,6 +3254,10 @@ packages:
     peerDependenciesMeta:
       picomatch:
         optional: true
+
+  fetch-extras@3.2.1:
+    resolution: {integrity: sha512-MuxNR+WUQiu6i4xEDrtoSzSwoqDR2QhN8KU5jlFdAyM3aJmPYwOVC/PwkL5tqyzFMoxz9aGzYyPKRrnSkJQsEA==}
+    engines: {node: '>=22'}
 
   fetchdts@0.1.7:
     resolution: {integrity: sha512-YoZjBdafyLIop9lSxXVI33oLD5kN31q4Td+CasofLLYeLXRFeOsuOw0Uo+XNRi9PZlbfdlN2GmRtm4tCEQ9/KA==}
@@ -7139,6 +7146,8 @@ snapshots:
   fdir@6.5.0(picomatch@4.0.7):
     optionalDependencies:
       picomatch: 4.0.7
+
+  fetch-extras@3.2.1: {}
 
   fetchdts@0.1.7: {}
 

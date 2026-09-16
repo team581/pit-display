@@ -213,13 +213,105 @@ describe('createDashboardData', () => {
 			alliancePartners: ['254', '1678'],
 			matches: [
 				match('Qualification 56', { status: 'On field' }),
-				match('Playoff 1', { status: 'On deck', redTeams: ['581', '254', '1678'] }),
+				match('Playoff 1', {
+					status: 'On deck',
+					redTeams: ['581', '254', '1678'],
+					times: { actualOnDeckTime: now - minute, estimatedStartTime: now + 5 * minute },
+				}),
 			],
 		});
 
 		expect(dashboard).toMatchObject({
-			currentMatch: { displayLabel: 'M1' },
+			currentMatch: { displayLabel: 'M1', startedAt: now - minute },
 			nextMatch: { displayLabel: 'M1' },
+		});
+	});
+
+	it('shows both possible next playoff matches with bumper colors, timing, and breaks', () => {
+		const dashboard = createDashboardData({
+			eventKey: '2026test',
+			receivedAt: now,
+			competitionPhase: 'elimination',
+			alliancePartners: ['254', '1678'],
+			matches: [
+				match('Playoff 1', { status: 'On deck', redTeams: ['581', '254', '1678'] }),
+				match('Playoff 4', { status: 'On field', times: { estimatedStartTime: now + 5 * minute } }),
+				match('Playoff 5', { times: { estimatedStartTime: now + 20 * minute } }),
+				match('Playoff 7', {
+					afterBreak: { breakLabel: 'a break', durationMinutes: 10, position: 2 },
+					times: { estimatedStartTime: now + 35 * minute },
+				}),
+			],
+		});
+
+		expect(dashboard?.eliminationPaths).toEqual([
+			{
+				outcome: 'win',
+				displayLabel: 'M7',
+				startTime: now + 35 * minute,
+				break: {
+					label: 'Break',
+					durationMinutes: 10,
+					endTime: now + 20 * minute,
+					hasStarted: true,
+					hasEnded: false,
+					previousMatch: { displayLabel: 'M4', startTime: now + 5 * minute },
+				},
+				alliance: 'red',
+			},
+			{
+				outcome: 'lose',
+				displayLabel: 'M5',
+				startTime: now + 20 * minute,
+				break: null,
+				alliance: 'red',
+			},
+		]);
+	});
+
+	it('shows elimination as the losing path from the lower bracket', () => {
+		const dashboard = createDashboardData({
+			eventKey: '2026test',
+			receivedAt: now,
+			competitionPhase: 'elimination',
+			matches: [
+				match('Playoff 5', { redTeams: ['581', '254', '1678'] }),
+				match('Playoff 10', { times: { estimatedStartTime: now + 30 * minute } }),
+			],
+		});
+
+		expect(dashboard?.eliminationPaths).toEqual([
+			{
+				outcome: 'win',
+				displayLabel: 'M10',
+				startTime: now + 30 * minute,
+				break: null,
+				alliance: 'blue',
+			},
+			{ outcome: 'lose', displayLabel: null, startTime: null, break: null, alliance: null },
+		]);
+	});
+
+	it('keeps unresolved paths after the field advances past our match', () => {
+		const dashboard = createDashboardData({
+			eventKey: '2026test',
+			receivedAt: now,
+			competitionPhase: 'elimination',
+			matches: [
+				match('Playoff 7', { status: 'On field', redTeams: ['581', '254', '1678'] }),
+				match('Playoff 8', { status: 'On field' }),
+				match('Playoff 9', { redTeams: [], blueTeams: [] }),
+				match('Playoff 11', { redTeams: [], blueTeams: [] }),
+			],
+		});
+
+		expect(dashboard).toMatchObject({
+			currentMatch: { displayLabel: 'M8' },
+			nextMatch: null,
+			eliminationPaths: [
+				{ outcome: 'win', displayLabel: 'M11', alliance: 'red' },
+				{ outcome: 'lose', displayLabel: 'M9', alliance: 'red' },
+			],
 		});
 	});
 });

@@ -8,6 +8,7 @@ import { TextMorph } from 'torph/react';
 import { api } from '../convex/_generated/api';
 import { styles } from './App.stylex';
 import { AlliancePartners } from './components/AlliancePartners';
+import { EliminationSchedule } from './components/EliminationSchedule';
 import { MatchSchedule } from './components/MatchSchedule';
 import { MatchSummary } from './components/MatchSummary';
 import { TeamIdentity } from './components/TeamIdentity';
@@ -52,6 +53,8 @@ function Dashboard({ dashboard, now }: { dashboard: DashboardData | null | undef
 					/>
 					{dashboard.competitionPhase === 'allianceSelection' ? (
 						<AlliancePartners eventKey={dashboard.eventKey} teams={dashboard.alliancePartners} />
+					) : dashboard.competitionPhase === 'elimination' ? (
+						<EliminationSchedule matches={dashboard.upcomingMatches} now={now} paths={dashboard.eliminationPaths} />
 					) : (
 						<MatchSchedule eventKey={dashboard.eventKey} matches={dashboard.upcomingMatches} now={now} />
 					)}

@@ -1,7 +1,7 @@
 import * as stylex from '@stylexjs/stylex';
 import { TextMorph } from 'torph/react';
 import type { Dashboard } from '../dashboard';
-import { activeTimingMilestoneIndex, formatTimingMilestoneTime } from '../dashboard-time';
+import { formatTimingMilestoneTime, timingStatusMilestones } from '../dashboard-time';
 import { formatClock } from '../format-time';
 import { queueProgress } from '../match-progress';
 import { MatchLabel } from './MatchLabel';
@@ -19,17 +19,26 @@ export function MatchSummary({
 	nextMatch: Dashboard['nextMatch'];
 	now: number;
 }) {
-	const activeTimingIndex = nextMatch ? activeTimingMilestoneIndex(nextMatch.milestones) : -1;
-	const hasActiveTiming = activeTimingIndex !== -1;
+	const matchStartMilestone = nextMatch?.milestones.find(({ label }) => label === 'Match start');
+	const matchStartCountdown = matchStartMilestone
+		? formatTimingMilestoneTime(matchStartMilestone, now, '')
+		: 'Not available';
+	const matchStartText = nextMatch ? `Starts ${formatClock(nextMatch.startTime)}` : '';
+	const timingStatuses = nextMatch ? timingStatusMilestones(nextMatch.milestones) : [];
 	const nextQueueProgress = queueProgress(currentMatch?.startedAt, nextMatch?.milestones[0]?.time, now);
 	const queueWindowComplete = nextQueueProgress === 1;
 	const isAllianceSelection = competitionPhase === 'allianceSelection';
+	const showMatchProgress =
+		currentMatch !== null &&
+		nextMatch !== null &&
+		currentMatch.displayLabel !== nextMatch.displayLabel &&
+		!isAllianceSelection;
 
 	return (
 		<section {...stylex.props(styles.grid)} aria-label="Match summary">
 			<article {...stylex.props(styles.card, styles.dividedCard)}>
 				<div {...stylex.props(panelStyles.header)}>
-					<h2 {...stylex.props(panelStyles.heading)}>On field</h2>
+					<h2 {...stylex.props(panelStyles.heading)}>Currently on field</h2>
 				</div>
 				<div {...stylex.props(styles.cardBody)}>
 					<div {...stylex.props(styles.matchNumberArea)}>
@@ -42,10 +51,8 @@ export function MatchSummary({
 							<MatchLabel displayLabel={currentMatch?.displayLabel} {...stylex.props(styles.matchNumber)} />
 						)}
 					</div>
-					{currentMatch &&
-						nextMatch &&
-						currentMatch.displayLabel !== nextMatch.displayLabel &&
-						!isAllianceSelection && (
+					<div {...stylex.props(styles.matchDetailSlot)}>
+						{showMatchProgress && (
 							<div
 								{...stylex.props(styles.matchDetail, styles.matchProgress)}
 								aria-label={`Progress until ${nextMatch.displayLabel} queues: ${Math.round(nextQueueProgress * 100)}%`}
@@ -60,6 +67,7 @@ export function MatchSummary({
 								)}
 							</div>
 						)}
+					</div>
 				</div>
 			</article>
 
@@ -67,16 +75,25 @@ export function MatchSummary({
 				<>
 					<article {...stylex.props(styles.card, styles.dividedCard)}>
 						<div {...stylex.props(panelStyles.header)}>
-							<h2 {...stylex.props(panelStyles.heading)}>Next match</h2>
+							<h2 {...stylex.props(panelStyles.heading)}>Our match</h2>
 						</div>
 						<div {...stylex.props(styles.cardBody)}>
 							<div {...stylex.props(styles.matchNumberArea)}>
 								<MatchLabel displayLabel={nextMatch.displayLabel} {...stylex.props(styles.matchNumber)} />
 							</div>
-							<div {...stylex.props(styles.matchDetail, styles.matchStartTime)}>
-								<TextMorph as="strong" {...stylex.props(styles.matchStartValue)}>
-									Starts {formatClock(nextMatch.startTime)}
-								</TextMorph>
+							<div {...stylex.props(styles.matchDetailSlot)}>
+								<div {...stylex.props(styles.matchDetail, styles.matchStartTime)}>
+									<TextMorph
+										as="strong"
+										{...stylex.props(
+											styles.matchTimeValue,
+											matchStartText.length > 14 && styles.matchTimeValueWithTwoDigitHour,
+											matchStartText.length > 16 && styles.matchTimeValueLong,
+										)}
+									>
+										{matchStartText}
+									</TextMorph>
+								</div>
 							</div>
 						</div>
 					</article>
@@ -86,33 +103,39 @@ export function MatchSummary({
 							<h2 {...stylex.props(panelStyles.heading)}>Timing</h2>
 						</div>
 						<div {...stylex.props(styles.cardBody, styles.timingBody)}>
-							{nextMatch.milestones.map((milestone, index) => {
-								const isActive = index === activeTimingIndex;
-								return (
-									<div
-										{...stylex.props(
-											styles.timingRow,
-											hasActiveTiming && styles.timingRowExpanded,
-											isActive && styles.timingActive,
-										)}
-										key={milestone.label}
-									>
-										<span {...stylex.props(styles.timingLabel, isActive && styles.timingLabelActive)}>
-											{milestone.label}
-										</span>
-										<TextMorph as="strong" {...stylex.props(styles.timingValue, isActive && styles.timingValueActive)}>
+							<div {...stylex.props(styles.matchCountdown)}>
+								<span {...stylex.props(styles.matchCountdownLabel)}>
+									{matchStartCountdown === 'Soon' ? 'Starts' : 'Starts in'}
+								</span>
+								<TextMorph
+									as="strong"
+									{...stylex.props(
+										styles.matchCountdownValue,
+										matchStartCountdown.length > 9 && styles.matchCountdownValueLong,
+										matchStartCountdown.includes('hr') && styles.matchCountdownValueWithHours,
+										matchStartCountdown.includes('sec') && styles.matchCountdownValueWithSeconds,
+									)}
+								>
+									{matchStartCountdown}
+								</TextMorph>
+							</div>
+							<div {...stylex.props(styles.timingStatuses)}>
+								{timingStatuses.map((milestone) => (
+									<div {...stylex.props(styles.timingRow)} key={milestone.label}>
+										<span {...stylex.props(styles.timingLabel)}>{milestone.label}</span>
+										<TextMorph as="strong" {...stylex.props(styles.timingValue)}>
 											{formatTimingMilestoneTime(milestone, now)}
 										</TextMorph>
 									</div>
-								);
-							})}
+								))}
+							</div>
 						</div>
 					</article>
 				</>
 			) : (
 				<article {...stylex.props(styles.card, styles.noNextCard)}>
 					<div {...stylex.props(panelStyles.header)}>
-						<h2 {...stylex.props(panelStyles.heading)}>Next match</h2>
+						<h2 {...stylex.props(panelStyles.heading)}>Our match</h2>
 					</div>
 					<div {...stylex.props(styles.cardBody)}>
 						<strong {...stylex.props(styles.noNextMessage)}>No more matches scheduled</strong>
