@@ -37,11 +37,15 @@ function BreakTimeline({ row, now }: { row: EliminationRow & { displayLabel: str
 			{...stylex.props(styles.breakTimeline)}
 			aria-label={`${row.break.label} after ${row.break.previousMatch.displayLabel} before ${row.displayLabel}`}
 		>
-			<div {...stylex.props(styles.timelineRow)}>
+			<div {...stylex.props(styles.timelineRow, styles.timelineStart)}>
 				<span {...stylex.props(styles.timelineMarker)} aria-hidden="true" />
 				<span {...stylex.props(styles.timelineConnector)} aria-hidden="true" />
 				<strong {...stylex.props(styles.timelineLabel)}>{row.break.previousMatch.displayLabel}</strong>
-				<span {...stylex.props(styles.timelineTime)}>Starts {formatClock(row.break.previousMatch.startTime)}</span>
+				<span {...stylex.props(styles.timelineTime)}>
+					{row.break.previousMatch.startTime === null
+						? 'Time TBD'
+						: `Starts ${formatClock(row.break.previousMatch.startTime)}`}
+				</span>
 			</div>
 			<div {...stylex.props(styles.timelineRow, styles.timelineBreak, isActive && styles.activeBreak)}>
 				<span {...stylex.props(styles.timelineMarker, isActive && styles.activeBreakMarker)} aria-hidden="true" />
@@ -52,7 +56,9 @@ function BreakTimeline({ row, now }: { row: EliminationRow & { displayLabel: str
 			<div {...stylex.props(styles.timelineRow, styles.timelineDestination)}>
 				<span {...stylex.props(styles.timelineMarker)} aria-hidden="true" />
 				<strong {...stylex.props(styles.timelineLabel)}>{row.displayLabel}</strong>
-				<span {...stylex.props(styles.timelineTime)}>Starts {formatClock(row.startTime)}</span>
+				<span {...stylex.props(styles.timelineTime)}>
+					{row.startTime === null ? 'Time TBD' : `Starts ${formatClock(row.startTime)}`}
+				</span>
 			</div>
 		</div>
 	);
@@ -77,31 +83,35 @@ export function EliminationSchedule({
 				) : (
 					rows.map((row, index) => (
 						<article {...stylex.props(styles.matchCard, index > 0 && styles.divider)} key={row.key}>
-							<div {...stylex.props(panelStyles.header)}>
+							<div
+								{...stylex.props(
+									panelStyles.header,
+									styles.cardHeader,
+									row.alliance === 'red' && styles.red,
+									row.alliance === 'blue' && styles.blue,
+								)}
+							>
 								<TextMorph as="h2" {...stylex.props(panelStyles.heading)}>
 									{row.context}
 								</TextMorph>
+								{row.displayLabel && row.alliance && (
+									<strong {...stylex.props(styles.allianceLabel)}>{row.alliance === 'red' ? 'Red' : 'Blue'}</strong>
+								)}
 							</div>
-							<div {...stylex.props(styles.cardBody)}>
+							<div {...stylex.props(styles.cardBody, row.break && styles.cardBodyWithTimeline)}>
 								{row.displayLabel ? (
 									<>
 										<div {...stylex.props(styles.primaryRow)}>
-											<div {...stylex.props(styles.destination)}>
-												<MatchLabel displayLabel={row.displayLabel} {...stylex.props(styles.matchNumber)} />
-												<div
-													{...stylex.props(styles.alliance, row.alliance === 'red' ? styles.red : styles.blue)}
-													aria-label={`${row.alliance} alliance`}
-												>
-													{row.alliance === 'red' ? 'Red' : 'Blue'}
-												</div>
-											</div>
+											<MatchLabel displayLabel={row.displayLabel} {...stylex.props(styles.matchNumber)} />
 											<div {...stylex.props(styles.matchTime)}>
 												<TextMorph as="strong" {...stylex.props(styles.startTime)}>
-													{row.break
-														? formatRelativeTime(row.startTime, now, 'in ')
-														: `Starts ${formatClock(row.startTime)}`}
+													{row.startTime === null
+														? 'Time TBD'
+														: row.break
+															? formatRelativeTime(row.startTime, now, 'in ')
+															: `Starts ${formatClock(row.startTime)}`}
 												</TextMorph>
-												{!row.break && (
+												{!row.break && row.startTime !== null && (
 													<TextMorph as="span" {...stylex.props(styles.relativeTime)}>
 														{formatRelativeTime(row.startTime, now, 'in ')}
 													</TextMorph>

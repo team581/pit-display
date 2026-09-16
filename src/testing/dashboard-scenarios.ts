@@ -118,6 +118,15 @@ const activeEliminationBreak = {
 	hasStarted: true,
 } satisfies NonNullable<Dashboard['eliminationPaths'][number]['break']>;
 
+const activeAwardsBreak = {
+	label: 'Awards break',
+	durationMinutes: 15,
+	endTime: minutesFromNow(12),
+	hasStarted: true,
+	hasEnded: false,
+	previousMatch: { displayLabel: 'M13', startTime: minutesFromNow(-4) },
+} satisfies NonNullable<Dashboard['eliminationPaths'][number]['break']>;
+
 const eliminationPaths = {
 	...eliminationPending,
 	currentMatch: { displayLabel: 'M7', startedAt: minutesFromNow(-3), endsAt: null },
@@ -176,23 +185,8 @@ const awardsBreak = {
 		startTime: minutesFromNow(18),
 		milestones: [milestone('Queued', 8), milestone('On deck', 13), milestone('Match start', 18)],
 	},
-	eliminationPaths: [
-		{
-			outcome: 'win',
-			displayLabel: 'F1',
-			startTime: minutesFromNow(18),
-			break: {
-				label: 'Awards break',
-				durationMinutes: 15,
-				endTime: minutesFromNow(12),
-				hasStarted: true,
-				hasEnded: false,
-				previousMatch: { displayLabel: 'M13', startTime: minutesFromNow(-4) },
-			},
-			alliance: 'blue',
-		},
-		{ outcome: 'lose', displayLabel: null, startTime: null, break: null, alliance: null },
-	],
+	upcomingMatches: [{ ...upcomingMatch('F1', 18, 'blue', [581, 254, 1678]), break: activeAwardsBreak }],
+	eliminationPaths: [],
 } satisfies Dashboard;
 
 export type DashboardScenario = {

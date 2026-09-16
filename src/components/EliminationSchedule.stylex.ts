@@ -45,6 +45,11 @@ export const styles = stylex.create({
 		borderInlineStartStyle: 'solid',
 		borderInlineStartColor: colors.line,
 	},
+	cardHeader: {
+		justifyContent: 'space-between',
+		gap: spacing.lg,
+		color: 'white',
+	},
 	cardBody: {
 		display: 'flex',
 		minHeight: 0,
@@ -52,8 +57,14 @@ export const styles = stylex.create({
 		flexDirection: 'column',
 		justifyContent: 'center',
 		gap: spacing.xs,
-		paddingBlock: spacing.xs,
+		paddingBlockStart: spacing.xs,
+		paddingBlockEnd: spacing.xs,
 		paddingInline: { default: spacing.xl, [compact]: spacing.lg, [narrow]: spacing.md },
+	},
+	cardBodyWithTimeline: {
+		gap: 0,
+		paddingBlockStart: spacing.md,
+		paddingBlockEnd: 0,
 	},
 	primaryRow: {
 		display: 'flex',
@@ -61,12 +72,6 @@ export const styles = stylex.create({
 		minWidth: 0,
 		alignItems: 'center',
 		justifyContent: 'space-between',
-		gap: spacing.lg,
-	},
-	destination: {
-		display: 'flex',
-		minWidth: 0,
-		alignItems: 'center',
 		gap: spacing.lg,
 	},
 	matchNumber: {
@@ -98,17 +103,11 @@ export const styles = stylex.create({
 		fontWeight: 700,
 		whiteSpace: 'nowrap',
 	},
-	alliance: {
-		display: 'flex',
-		minWidth: '7.5rem',
-		minHeight: '4.75rem',
-		alignItems: 'center',
-		justifyContent: 'center',
-		paddingInline: spacing.md,
-		borderRadius: spacing.sm,
-		color: 'white',
-		fontSize: { default: '2.5rem', [portrait]: '2.1rem' },
+	allianceLabel: {
+		fontSize: { default: '1.75rem', [portrait]: '1.5rem' },
 		fontWeight: 850,
+		letterSpacing: '0.02em',
+		whiteSpace: 'nowrap',
 	},
 	red: { backgroundColor: colors.redAlliance },
 	blue: { backgroundColor: colors.blueAlliance },
@@ -131,6 +130,9 @@ export const styles = stylex.create({
 		gap: spacing.md,
 		paddingBlock: spacing.sm,
 		paddingInline: spacing.sm,
+	},
+	timelineStart: {
+		paddingBlockStart: 0,
 	},
 	timelineMarker: {
 		position: 'absolute',

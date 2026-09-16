@@ -235,6 +235,7 @@ describe('createDashboardData', () => {
 		expect(dashboard).toMatchObject({
 			currentMatch: { displayLabel: 'Awards', startedAt: now, endsAt: awardsEnd },
 			nextMatch: { displayLabel: 'F1' },
+			eliminationPaths: [],
 		});
 	});
 
