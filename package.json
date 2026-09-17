@@ -43,7 +43,7 @@
 	"devDependencies": {
 		"@hey-api/openapi-ts": "0.99.0",
 		"@storybook/react-vite": "10.6.0",
-		"@stylexjs/unplugin": "0.19.0",
+		"@stylexjs/unplugin": "0.19.1",
 		"@types/node": "24.13.4",
 		"@types/react": "19.3.0",
 		"@types/react-dom": "19.3.0",
