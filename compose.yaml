@@ -1,16 +1,23 @@
 services:
-  visual-tests:
+  playwright:
     build:
       context: .
       dockerfile: Dockerfile.visual-tests
-    environment:
-      CI: '1'
-      VISUAL_TESTS: 'true'
+      args:
+        PNPM_VERSION: ${PNPM_VERSION:?Set PNPM_VERSION from package.json}
+        PLAYWRIGHT_VERSION: ${PLAYWRIGHT_VERSION:?Set PLAYWRIGHT_VERSION from package.json}
+    init: true
     platform: linux/amd64
-    volumes:
-      - .:/work
-      # Keep Linux packages separate from the host's node_modules.
-      - visual-test-vp-node-modules:/work/node_modules
-
-volumes:
-  visual-test-vp-node-modules:
+    ports:
+      - '127.0.0.1:30781:3000'
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "const socket = require('node:net').connect(3000, '127.0.0.1', () => socket.end()); socket.on('error', () => process.exit(1));",
+        ]
+      interval: 1s
+      timeout: 2s
+      retries: 30

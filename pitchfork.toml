@@ -1,0 +1,7 @@
+#:schema https://pitchfork.jdx.dev/schema.json
+
+[daemons.playwright]
+run = '''PLAYWRIGHT_VERSION=$(node -p "require('./package.json').devDependencies.playwright") PNPM_VERSION=$(node -p "require('./package.json').packageManager.split('@')[1]") exec docker compose up --build playwright'''
+auto = ["start", "stop"]
+ready_port = 30781
+port = 30781

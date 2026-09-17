@@ -17,6 +17,10 @@ vp run dev
 This starts the Convex function watcher and frontend together. Open the Portless URL shown in the terminal and use
 landscape orientation for the intended display layout.
 
+With [Pitchfork](https://pitchfork.jdx.dev/) activated in your shell, entering the project directory automatically
+starts its Docker-based development services and leaving stops them. Run `pitchfork start playwright` to start the
+Playwright server manually.
+
 ### Visual states
 
 Open the Storybook catalog to inspect complete dashboard states and focused tile variants without running Convex or
@@ -29,8 +33,8 @@ vp run storybook
 The catalog uses deterministic dashboard fixtures from `src/testing/dashboard-scenarios.ts`. Raw Nexus fixtures in
 `src/testing/nexus-fixtures.ts` cover the separate Nexus-to-dashboard transformation boundary.
 
-Local screenshot comparisons run in a pinned Linux/AMD64 Vite+ container, so macOS can compare and update the Linux
-baselines directly:
+Local screenshot comparisons run Vitest on the host and connect to a Playwright server in a pinned Linux/AMD64
+container, so macOS can compare and update the Linux baselines directly:
 
 ```sh
 vp run test:visual
@@ -40,10 +44,9 @@ vp run test:visual:update
 Review and commit the updated PNGs after running the update command. CI runs natively on a pinned Ubuntu runner with
 the same Playwright and WebKit versions. A manual **Generate Linux visual baselines** workflow remains available as a
 fallback if the runner environment ever produces a different rendering. Failed comparison runs attach a Vitest HTML
-report containing the actual and diff images. The local container derives from the exact project version of the
-official Vite+ image, provisions Node from `devEngines`, and installs the lockfile's WebKit revision into a cached image
-layer. Its BuildKit cache retains pnpm's content-addressable store between image builds, while a separate
-`node_modules` volume keeps Linux-native packages out of the macOS working tree.
+report containing the actual and diff images. Pitchfork automatically manages the local server through Docker Compose.
+The Docker build derives its Playwright and pnpm versions from `package.json`, and its BuildKit cache retains pnpm's
+content-addressable store between image builds.
 
 ## Deploy
 

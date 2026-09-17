@@ -2,6 +2,7 @@ import react from '@vitejs/plugin-react';
 import { unplugin as stylex } from '@stylexjs/unplugin';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import { cleanEnv, url } from 'envalid';
+import { resolve } from 'node:path';
 import { defineConfig, lazyPlugins, loadEnv, type TestProjectConfiguration } from 'vite-plus';
 import { playwright } from 'vite-plus/test/browser-playwright';
 
@@ -22,6 +23,8 @@ export default defineConfig(({ command, mode }) => {
 	];
 
 	if (process.env.VISUAL_TESTS === 'true') {
+		const playwrightWsEndpoint = process.env.PLAYWRIGHT_WS_ENDPOINT;
+
 		testProjects.push({
 			extends: true,
 			plugins: [stylex.vite()],
@@ -32,9 +35,39 @@ export default defineConfig(({ command, mode }) => {
 				setupFiles: ['./src/testing/visual-setup.ts'],
 				browser: {
 					enabled: true,
+					expect: playwrightWsEndpoint
+						? {
+								toMatchScreenshot: {
+									resolveDiffPath: ({ arg, ext, root, attachmentsDir, testFileDirectory, testFileName, browserName }) =>
+										resolve(root, attachmentsDir, testFileDirectory, testFileName, `${arg}-${browserName}-linux${ext}`),
+									resolveScreenshotPath: ({
+										arg,
+										ext,
+										root,
+										screenshotDirectory,
+										testFileDirectory,
+										testFileName,
+										browserName,
+									}) =>
+										resolve(
+											root,
+											testFileDirectory,
+											screenshotDirectory,
+											testFileName,
+											`${arg}-${browserName}-linux${ext}`,
+										),
+								},
+							}
+						: undefined,
 					headless: true,
 					ui: false,
 					provider: playwright({
+						connectOptions: playwrightWsEndpoint
+							? {
+									exposeNetwork: '<loopback>',
+									wsEndpoint: playwrightWsEndpoint,
+								}
+							: undefined,
 						contextOptions: {
 							colorScheme: 'dark',
 							deviceScaleFactor: 1,

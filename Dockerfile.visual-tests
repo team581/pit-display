@@ -1,13 +1,23 @@
 # syntax=docker/dockerfile:1
 
-FROM ghcr.io/voidzero-dev/vite-plus:0.3.2
+ARG PNPM_VERSION
+ARG PLAYWRIGHT_VERSION
 
-WORKDIR /work
+FROM ghcr.io/pnpm/pnpm:${PNPM_VERSION} AS dependencies
 
-COPY --chown=vp:vp package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN --mount=type=cache,id=pit-display-pnpm,target=/home/vp/.local/share/pnpm/store,uid=1000,gid=1000 \
-	vp install --frozen-lockfile
-RUN vp exec playwright install --with-deps webkit
+ARG PLAYWRIGHT_VERSION
 
-ENTRYPOINT ["bash", "-lc", "vp install --frozen-lockfile && exec \"$@\"", "--"]
-CMD ["vp", "test", "--project", "visual", "--reporter=default", "--reporter=html", "--outputFile.html=.vitest/html/index.html"]
+WORKDIR /server
+
+RUN --mount=type=cache,id=pit-display-playwright-pnpm,target=/pnpm/store \
+	pnpm add --config.enable-global-virtual-store=false --save-exact playwright@${PLAYWRIGHT_VERSION}
+
+FROM mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-noble
+
+COPY --from=dependencies --chown=pwuser:pwuser /server/node_modules /server/node_modules
+
+USER pwuser
+WORKDIR /server
+
+ENTRYPOINT ["node", "node_modules/playwright/cli.js", "run-server"]
+CMD ["--port", "3000", "--host", "0.0.0.0"]

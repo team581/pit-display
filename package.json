@@ -16,8 +16,8 @@
 		"storybook": "storybook dev -p 6006 --no-open",
 		"storybook:build": "storybook build",
 		"test:unit": "vp test --project unit",
-		"test:visual": "docker compose run --build --rm visual-tests",
-		"test:visual:update": "docker compose run --build --rm visual-tests pnpm exec vp test --project visual --update"
+		"test:visual": "VISUAL_TESTS=true PLAYWRIGHT_WS_ENDPOINT=ws://127.0.0.1:30781/ vp test --project visual --reporter=default --reporter=html --outputFile.html=.vitest/html/index.html",
+		"test:visual:update": "VISUAL_TESTS=true PLAYWRIGHT_WS_ENDPOINT=ws://127.0.0.1:30781/ vp test --project visual --update"
 	},
 	"dependencies": {
 		"@convex-dev/react-query": "^0.1.0",
