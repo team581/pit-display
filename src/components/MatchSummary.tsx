@@ -96,72 +96,65 @@ function CurrentActivityCard({
 	);
 }
 
-function NextMatchCard({ nextMatch }: { nextMatch: NonNullable<NextMatch> }) {
+function OurMatchCard({ nextMatch, now }: { nextMatch: NonNullable<NextMatch>; now: number }) {
 	const startText =
 		nextMatch.startTime === null ? 'Start time unavailable' : `Starts ${formatClock(nextMatch.startTime)}`;
-	return (
-		<article {...stylex.props(styles.card, styles.dividedCard)}>
-			<div {...stylex.props(panelStyles.header)}>
-				<h2 {...stylex.props(panelStyles.heading)}>Our match</h2>
-			</div>
-			<div {...stylex.props(styles.cardBody)}>
-				<div {...stylex.props(styles.matchNumberArea)}>
-					<MatchLabel displayLabel={nextMatch.displayLabel} {...stylex.props(styles.matchNumber)} />
-				</div>
-				<div {...stylex.props(styles.matchDetailSlot)}>
-					<div {...stylex.props(styles.matchDetail, styles.matchStartTime)}>
-						<TextMorph
-							as="strong"
-							{...stylex.props(
-								styles.matchTimeValue,
-								startText.length > 14 && styles.matchTimeValueWithTwoDigitHour,
-								startText.length > 16 && styles.matchTimeValueLong,
-							)}
-						>
-							{startText}
-						</TextMorph>
-					</div>
-				</div>
-			</div>
-		</article>
-	);
-}
-
-function TimingCard({ nextMatch, now }: { nextMatch: NonNullable<NextMatch>; now: number }) {
 	const countdown =
 		nextMatch.startTime === null ? 'TBD' : formatMatchTiming({ time: nextMatch.startTime, isActual: false }, now, '');
 	const statuses = timingStatusMilestones(nextMatch.timing);
+
 	return (
-		<article {...stylex.props(styles.card)}>
+		<article {...stylex.props(styles.card, styles.ourMatchCard)}>
 			<div {...stylex.props(panelStyles.header)}>
-				<h2 {...stylex.props(panelStyles.heading)}>Timing</h2>
+				<h2 {...stylex.props(panelStyles.heading)}>Our match</h2>
 			</div>
-			<div {...stylex.props(styles.cardBody, styles.timingBody)}>
-				<div {...stylex.props(styles.matchCountdown)}>
-					<span {...stylex.props(styles.matchCountdownLabel)}>
-						{countdown === 'Soon' || countdown === 'TBD' ? 'Starts' : 'Starts in'}
-					</span>
-					<TextMorph
-						as="strong"
-						{...stylex.props(
-							styles.matchCountdownValue,
-							countdown.length > 9 && styles.matchCountdownValueLong,
-							countdown.includes('hr') && styles.matchCountdownValueWithHours,
-							countdown.includes('sec') && styles.matchCountdownValueWithSeconds,
-						)}
-					>
-						{countdown}
-					</TextMorph>
+			<div {...stylex.props(styles.ourMatchBody)}>
+				<div {...stylex.props(styles.cardBody, styles.ourMatchPane, styles.leadingPane, styles.timingBody)}>
+					<div {...stylex.props(styles.matchCountdown)}>
+						<span {...stylex.props(styles.matchCountdownLabel)}>
+							{countdown === 'Soon' || countdown === 'TBD' ? 'Starts' : 'Starts in'}
+						</span>
+						<TextMorph
+							as="strong"
+							{...stylex.props(
+								styles.matchCountdownValue,
+								countdown.length > 9 && styles.matchCountdownValueLong,
+								countdown.includes('hr') && styles.matchCountdownValueWithHours,
+								countdown.includes('sec') && styles.matchCountdownValueWithSeconds,
+							)}
+						>
+							{countdown}
+						</TextMorph>
+					</div>
+					<div {...stylex.props(styles.timingStatuses)}>
+						{statuses.map((status) => (
+							<div {...stylex.props(styles.timingRow)} key={status.label}>
+								<span {...stylex.props(styles.timingLabel)}>{status.label}</span>
+								<TextMorph as="strong" {...stylex.props(styles.timingValue)}>
+									{formatMatchTiming(status, now)}
+								</TextMorph>
+							</div>
+						))}
+					</div>
 				</div>
-				<div {...stylex.props(styles.timingStatuses)}>
-					{statuses.map((status) => (
-						<div {...stylex.props(styles.timingRow)} key={status.label}>
-							<span {...stylex.props(styles.timingLabel)}>{status.label}</span>
-							<TextMorph as="strong" {...stylex.props(styles.timingValue)}>
-								{formatMatchTiming(status, now)}
+				<div {...stylex.props(styles.cardBody, styles.ourMatchPane)}>
+					<div {...stylex.props(styles.matchNumberArea)}>
+						<MatchLabel displayLabel={nextMatch.displayLabel} {...stylex.props(styles.matchNumber)} />
+					</div>
+					<div {...stylex.props(styles.matchDetailSlot)}>
+						<div {...stylex.props(styles.matchDetail, styles.matchStartTime)}>
+							<TextMorph
+								as="strong"
+								{...stylex.props(
+									styles.matchTimeValue,
+									startText.length > 14 && styles.matchTimeValueWithTwoDigitHour,
+									startText.length > 16 && styles.matchTimeValueLong,
+								)}
+							>
+								{startText}
 							</TextMorph>
 						</div>
-					))}
+					</div>
 				</div>
 			</div>
 		</article>
@@ -200,14 +193,7 @@ export function MatchSummary({
 				nextMatch={nextMatch}
 				now={now}
 			/>
-			{nextMatch ? (
-				<>
-					<NextMatchCard nextMatch={nextMatch} />
-					<TimingCard nextMatch={nextMatch} now={now} />
-				</>
-			) : (
-				<NoNextMatchCard />
-			)}
+			{nextMatch ? <OurMatchCard nextMatch={nextMatch} now={now} /> : <NoNextMatchCard />}
 		</section>
 	);
 }

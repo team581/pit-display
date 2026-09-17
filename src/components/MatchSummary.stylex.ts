@@ -26,6 +26,27 @@ export const styles = stylex.create({
 		borderInlineEndStyle: 'solid',
 		borderInlineEndColor: colors.line,
 	},
+	ourMatchCard: {
+		height: { default: '100%', [portrait]: 'auto' },
+		gridColumn: { default: 'span 2', [portrait]: 'auto' },
+	},
+	ourMatchBody: {
+		display: 'grid',
+		minHeight: 0,
+		flex: 1,
+		gridTemplateColumns: { default: 'repeat(2, minmax(0, 1fr))', [portrait]: '1fr' },
+	},
+	ourMatchPane: {
+		minHeight: { default: 0, [portrait]: '19.5rem' },
+	},
+	leadingPane: {
+		borderInlineEndWidth: { default: '1px', [portrait]: 0 },
+		borderInlineEndStyle: 'solid',
+		borderInlineEndColor: colors.line,
+		borderBottomWidth: { default: 0, [portrait]: '1px' },
+		borderBottomStyle: 'solid',
+		borderBottomColor: colors.line,
+	},
 	noNextCard: { gridColumn: { default: 'span 2', [portrait]: 'auto' } },
 	cardBody: {
 		display: 'flex',
@@ -152,7 +173,9 @@ export const styles = stylex.create({
 	timingStatuses: {
 		display: 'flex',
 		width: '100%',
+		minHeight: { default: '8.5rem', [portrait]: '7.5rem' },
 		flexDirection: 'column',
+		justifyContent: 'flex-end',
 		gap: spacing.sm,
 	},
 	timingRow: {
