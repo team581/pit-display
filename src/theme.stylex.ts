@@ -11,8 +11,8 @@ export const colors = stylex.defineVars({
 	line: '#534342',
 	text: '#f1dedd',
 	muted: '#d8c2c0',
-	redAlliance: '#5f0e10',
-	blueAlliance: '#072948',
+	redAlliance: '#591616',
+	blueAlliance: '#0a2b43',
 });
 
 export const spacing = stylex.defineVars({
