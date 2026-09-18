@@ -7,7 +7,7 @@ export function updateHealthState(
 	receivedAt: number | undefined,
 	now: number,
 ): { label: string; hasProblem: boolean } {
-	const updateAge = receivedAt === undefined ? null : formatRelativeTime(receivedAt, now, 'in ', 'seconds');
+	const updateAge = receivedAt === undefined ? null : formatRelativeTime(receivedAt, now, 'in ');
 	const nexusIsStale = receivedAt === undefined || now - receivedAt >= nexusStaleAfter;
 
 	if (connected && !nexusIsStale) return { label: `Nexus updated ${updateAge}`, hasProblem: false };
