@@ -1,0 +1,25 @@
+amends "package://github.com/jdx/hk/releases/download/v2.0.1/hk@2.0.1#/Config.pkl"
+
+import "package://github.com/jdx/hk/releases/download/v2.0.1/hk@2.0.1#/Builtins.pkl"
+
+steps {
+  ["vp-check"] = Builtins.vp_check
+  ["knip"] = (Builtins.knip) {
+    fix = null
+    prefix = "vp exec"
+  }
+  ["visual-snapshots"] {
+    check = "vp run test:visual"
+    fix = "vp run test:visual:update"
+    stage = "src/testing/__screenshots__/**"
+    exclusive = true
+  }
+}
+
+hooks {
+  ["pre-commit"] {
+    fix = true
+    stage = true
+    stash = "git"
+  }
+}

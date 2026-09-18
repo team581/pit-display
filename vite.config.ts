@@ -34,6 +34,7 @@ export default defineConfig(({ command, mode }) => {
 				include: ['src/**/*.visual.test.tsx'],
 				setupFiles: ['./src/testing/visual-setup.ts'],
 				browser: {
+					api: { port: 0 },
 					enabled: true,
 					expect: playwrightWsEndpoint
 						? {
@@ -85,9 +86,6 @@ export default defineConfig(({ command, mode }) => {
 	}
 
 	return {
-		staged: {
-			'*': 'vp check --fix',
-		},
 		fmt: {
 			ignorePatterns: ['.wrangler/**', 'convex/_generated/**', 'src/frc-nexus/generated/**', 'src/routeTree.gen.ts'],
 			printWidth: 120,
