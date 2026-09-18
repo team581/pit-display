@@ -11,6 +11,16 @@
 * {
 	box-sizing: border-box;
 }
+
+/* Give Torph's mask room to fade without overlapping settled glyphs.
+ * Negative margins keep the larger slot from changing the line box.
+ * https://github.com/lochie/torph/issues/56
+ */
+[torph-slot] {
+	padding-block: var(--torph-fade, 0.15em);
+	margin-block: calc(0px - var(--torph-fade, 0.15em));
+}
+
 html,
 body {
 	min-width: 320px;
