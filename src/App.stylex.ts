@@ -9,8 +9,8 @@ const statusBarClearance = '1.25rem';
 export const styles = stylex.create({
 	dashboard: {
 		minHeight: '100svh',
-		backgroundColor: colors.surface,
-		color: colors.text,
+		backgroundColor: colors.surfaceContainer,
+		color: colors.onSurface,
 		fontFamily: typefaces.body,
 		overflow: {
 			default: 'hidden',
@@ -29,13 +29,13 @@ export const styles = stylex.create({
 			default: spacing['2xl'],
 			[narrow]: spacing.lg,
 		},
-		backgroundColor: colors.maroon,
-		borderBottomColor: colors.line,
+		backgroundColor: colors.primaryContainer,
+		borderBottomColor: colors.outlineVariant,
 		borderBottomStyle: 'solid',
 		borderBottomWidth: '1px',
 	},
 	clock: {
-		color: 'white',
+		color: colors.onSurface,
 		fontSize: {
 			default: '3.5rem',
 			[portrait]: '2.75rem',
@@ -72,7 +72,7 @@ export const styles = stylex.create({
 	emptyStateText: {
 		marginBlockStart: spacing.sm,
 		marginBlockEnd: 0,
-		color: colors.muted,
+		color: colors.onSurfaceVariant,
 		fontSize: '1.25rem',
 	},
 });

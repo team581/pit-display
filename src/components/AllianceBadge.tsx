@@ -17,7 +17,10 @@ export function AllianceBadge({
 			<div {...stylex.props(styles.teams, teams.length === 4 && styles.fourTeams)}>
 				{teams.map((team) => (
 					<a
-						{...stylex.props(styles.team, team === TEAM_NUMBER && styles.ourTeam)}
+						{...stylex.props(
+							styles.team,
+							team === TEAM_NUMBER && (alliance === 'red' ? styles.ourTeamRed : styles.ourTeamBlue),
+						)}
 						href={nexusTeamUrl(eventKey, team)}
 						key={team}
 						rel="noreferrer"

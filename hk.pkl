@@ -3,7 +3,10 @@ amends "package://github.com/jdx/hk/releases/download/v2.0.1/hk@2.0.1#/Config.pk
 import "package://github.com/jdx/hk/releases/download/v2.0.1/hk@2.0.1#/Builtins.pkl"
 
 steps {
-  ["vp-check"] = Builtins.vp_check
+  ["vp-check"] = (Builtins.vp_check) {
+    check = "vp check"
+    fix = "vp check --fix"
+  }
   ["knip"] = (Builtins.knip) {
     fix = null
     prefix = "vp exec"

@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
-import { spacing, typefaces } from '../theme.stylex';
+import { colors, spacing, typefaces } from '../theme.stylex';
 
 export const styles = stylex.create({
 	container: {
@@ -15,7 +15,7 @@ export const styles = stylex.create({
 	teamNumber: {
 		paddingBlock: spacing.xs,
 		paddingInline: spacing.sm,
-		color: 'white',
+		color: colors.onSurface,
 		fontFamily: typefaces.display,
 		fontSize: '2rem',
 		fontWeight: 900,

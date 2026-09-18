@@ -13,9 +13,9 @@ export const panelStyles = stylex.create({
 		borderInlineWidth: { default: 0, [portrait]: '1px' },
 		borderBottomWidth: { default: 0, [portrait]: '1px' },
 		borderStyle: 'solid',
-		borderColor: colors.line,
+		borderColor: colors.outlineVariant,
 		borderRadius: { default: 0, [portrait]: spacing.md },
-		backgroundColor: colors.surface,
+		backgroundColor: colors.surfaceContainer,
 		gridColumn: '1 / -1',
 	},
 	scrollArea: {
@@ -23,7 +23,7 @@ export const panelStyles = stylex.create({
 		flex: 1,
 		overflowY: 'auto',
 		overscrollBehavior: 'contain',
-		scrollbarColor: `${colors.orange} ${colors.surface}`,
+		scrollbarColor: `${colors.tertiary} ${colors.surfaceContainer}`,
 		scrollbarWidth: 'thin',
 	},
 	header: {
@@ -32,7 +32,7 @@ export const panelStyles = stylex.create({
 		flex: '0 0 auto',
 		alignItems: 'center',
 		paddingInline: spacing.xl,
-		backgroundColor: colors.surfaceRaised,
+		backgroundColor: colors.surfaceContainerHigh,
 	},
 	heading: {
 		margin: 0,

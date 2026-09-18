@@ -2,6 +2,7 @@ import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext } from '@tanstack/react-router';
 import bodyFontCss from '@fontsource-variable/ibm-plex-sans?url';
 import fontCss from '@fontsource-variable/source-sans-3?url';
+import { themeColors } from '../../theme-colors';
 import { RootDocument } from '../components/RootDocument';
 import appCss from '../index.css?url';
 
@@ -10,8 +11,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 		meta: [
 			{ charSet: 'utf-8' },
 			{ name: 'viewport', content: 'width=device-width, initial-scale=1.0, viewport-fit=cover' },
+			{ name: 'color-scheme', content: 'dark' },
 			{ name: 'description', content: "Team 581's live match and queue dashboard." },
-			{ name: 'theme-color', content: '#591616' },
+			{ name: 'theme-color', content: themeColors.primaryContainer },
 			{ name: 'mobile-web-app-capable', content: 'yes' },
 			{ name: 'apple-mobile-web-app-capable', content: 'yes' },
 			{ name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },

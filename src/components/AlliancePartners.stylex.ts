@@ -13,9 +13,9 @@ export const styles = stylex.create({
 		borderInlineWidth: { default: 0, [portrait]: '1px' },
 		borderBottomWidth: { default: 0, [portrait]: '1px' },
 		borderStyle: 'solid',
-		borderColor: colors.line,
+		borderColor: colors.outlineVariant,
 		borderRadius: { default: 0, [portrait]: spacing.md },
-		backgroundColor: colors.surface,
+		backgroundColor: colors.surfaceContainer,
 		gridColumn: '1 / -1',
 	},
 	body: {
@@ -26,7 +26,7 @@ export const styles = stylex.create({
 		padding: spacing['2xl'],
 		borderTopWidth: '1px',
 		borderTopStyle: 'solid',
-		borderTopColor: colors.line,
+		borderTopColor: colors.outlineVariant,
 	},
 	teams: {
 		display: 'flex',
@@ -37,7 +37,7 @@ export const styles = stylex.create({
 		flexWrap: 'wrap',
 	},
 	team: {
-		color: colors.text,
+		color: colors.onSurface,
 		fontFamily: typefaces.display,
 		fontSize: { default: '6rem', [portrait]: '4.5rem', [narrow]: '3.5rem' },
 		fontWeight: 900,
@@ -46,7 +46,7 @@ export const styles = stylex.create({
 		textDecoration: 'none',
 	},
 	waiting: {
-		color: colors.muted,
+		color: colors.onSurfaceVariant,
 		fontSize: { default: '3rem', [portrait]: '2.25rem', [narrow]: '1.75rem' },
 		textAlign: 'center',
 	},

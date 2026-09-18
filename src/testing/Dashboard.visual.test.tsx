@@ -2,6 +2,7 @@ import { beforeEach, expect, test } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser/context';
 import type { ReactNode } from 'react';
 import { render } from 'vitest-browser-react';
+import { themeColors } from '../../theme-colors';
 import { DashboardView } from '../App';
 import { AllianceBadge } from '../components/AllianceBadge';
 import { AlliancePartners } from '../components/AlliancePartners';
@@ -45,7 +46,7 @@ function TilePreview({ children, height }: { children: ReactNode; height?: strin
 	return (
 		<div
 			data-testid="visual-target"
-			style={{ width: '100%', minHeight: height, padding: '2rem', background: '#171717' }}
+			style={{ width: '100%', minHeight: height, padding: '2rem', background: themeColors.background }}
 		>
 			{children}
 		</div>
@@ -58,7 +59,7 @@ for (const scenario of dashboardScenarios) {
 		await waitForAssets();
 		expect(document.querySelector('main')?.getBoundingClientRect().width).toBe(1376);
 		if (scenario.dashboard === null || scenario.dashboard === undefined) {
-			expect(getComputedStyle(document.querySelector('main')!).backgroundColor).toBe('rgb(39, 29, 29)');
+			expect(getComputedStyle(document.querySelector('main')!).backgroundColor).toBe('rgb(38, 30, 29)');
 			await expect(page.getByRole('main')).toMatchScreenshot(scenario.id, {
 				comparatorName: 'pixelmatch',
 				comparatorOptions: { threshold: 0.01 },

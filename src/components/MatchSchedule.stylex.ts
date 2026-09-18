@@ -24,7 +24,7 @@ export const styles = stylex.create({
 		paddingInline: { default: spacing['2xl'], [portrait]: spacing.lg, [narrow]: spacing.md },
 		borderTopWidth: '1px',
 		borderTopStyle: 'solid',
-		borderTopColor: colors.line,
+		borderTopColor: colors.outlineVariant,
 	},
 	matchNumber: {
 		fontSize: '4rem',

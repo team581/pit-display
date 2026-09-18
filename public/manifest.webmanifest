@@ -7,7 +7,7 @@
 	"scope": "/",
 	"display": "standalone",
 	"orientation": "landscape",
-	"background_color": "#271d1d",
+	"background_color": "#261E1D",
 	"theme_color": "#591616",
 	"icons": [
 		{ "src": "/pwa-64x64.png", "sizes": "64x64", "type": "image/png" },

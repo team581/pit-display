@@ -1,6 +1,5 @@
 import { defaultAssetName, defineConfig, minimal2023Preset } from '@vite-pwa/assets-generator/config';
-
-const appIconBackground = '#271d1d';
+import { themeColors } from './theme-colors.ts';
 
 export default defineConfig({
 	manifestIconsEntry: false,
@@ -19,14 +18,14 @@ export default defineConfig({
 			sizes: minimal2023Preset.transparent.sizes,
 			padding: 0.3,
 			resizeOptions: {
-				background: appIconBackground,
+				background: themeColors.surfaceContainer,
 			},
 		},
 		apple: {
 			...minimal2023Preset.apple,
 			padding: 0.3,
 			resizeOptions: {
-				background: appIconBackground,
+				background: themeColors.surfaceContainer,
 			},
 		},
 	},

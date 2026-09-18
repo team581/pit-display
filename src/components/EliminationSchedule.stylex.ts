@@ -21,18 +21,17 @@ export const styles = stylex.create({
 		flexDirection: 'column',
 		borderTopWidth: '1px',
 		borderTopStyle: 'solid',
-		borderTopColor: colors.line,
+		borderTopColor: colors.outlineVariant,
 		containerType: 'inline-size',
 	},
 	divider: {
 		borderInlineStartWidth: { default: '1px', [narrow]: 0 },
 		borderInlineStartStyle: 'solid',
-		borderInlineStartColor: colors.line,
+		borderInlineStartColor: colors.outlineVariant,
 	},
 	cardHeader: {
 		justifyContent: 'space-between',
 		gap: spacing.lg,
-		color: 'white',
 	},
 	cardBody: {
 		display: 'flex',
@@ -83,7 +82,7 @@ export const styles = stylex.create({
 		whiteSpace: 'nowrap',
 	},
 	relativeTime: {
-		color: colors.muted,
+		color: colors.onSurfaceVariant,
 		fontSize: { default: '1.65rem', [compact]: '1.4rem' },
 		fontWeight: 700,
 		fontVariantNumeric: 'tabular-nums',
@@ -95,8 +94,14 @@ export const styles = stylex.create({
 		letterSpacing: '0.02em',
 		whiteSpace: 'nowrap',
 	},
-	red: { backgroundColor: colors.redAlliance },
-	blue: { backgroundColor: colors.blueAlliance },
+	red: {
+		backgroundColor: colors.redAllianceContainer,
+		color: colors.onRedAllianceContainer,
+	},
+	blue: {
+		backgroundColor: colors.blueAllianceContainer,
+		color: colors.onBlueAllianceContainer,
+	},
 	breakTimeline: {
 		display: 'flex',
 		position: 'relative',
@@ -129,9 +134,9 @@ export const styles = stylex.create({
 		height: '1rem',
 		borderWidth: '4px',
 		borderStyle: 'solid',
-		borderColor: colors.muted,
+		borderColor: colors.onSurfaceVariant,
 		borderRadius: '999px',
-		backgroundColor: colors.surface,
+		backgroundColor: colors.surfaceContainer,
 		transform: 'translateY(-50%)',
 	},
 	timelineConnector: {
@@ -140,7 +145,7 @@ export const styles = stylex.create({
 		insetInlineStart: 'calc(-1.25rem - 2px)',
 		width: '4px',
 		height: 'calc(100% + 0.25rem)',
-		backgroundColor: colors.muted,
+		backgroundColor: colors.onSurfaceVariant,
 	},
 	timelineLabel: {
 		fontSize: { default: '2.3rem', [compact]: '2rem' },
@@ -155,14 +160,14 @@ export const styles = stylex.create({
 		borderRadius: spacing.sm,
 	},
 	activeBreak: {
-		backgroundColor: colors.gold,
-		color: colors.onAccent,
+		backgroundColor: colors.tertiary,
+		color: colors.onTertiary,
 	},
 	activeBreakMarker: {
-		backgroundColor: colors.muted,
+		backgroundColor: colors.onSurfaceVariant,
 	},
 	timelineDestination: {
-		color: colors.text,
+		color: colors.onSurface,
 	},
 	empty: {
 		display: 'grid',
@@ -171,7 +176,7 @@ export const styles = stylex.create({
 		margin: 0,
 		placeItems: 'center',
 		padding: spacing['2xl'],
-		color: colors.muted,
+		color: colors.onSurfaceVariant,
 		fontSize: '1.5rem',
 	},
 });

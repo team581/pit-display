@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ReactNode } from 'react';
+import { themeColors } from '../../theme-colors';
 import { AllianceBadge } from './AllianceBadge';
 import { AlliancePartners } from './AlliancePartners';
 import { EliminationSchedule } from './EliminationSchedule';
@@ -10,7 +11,7 @@ import { UpdateHealth } from './UpdateHealth';
 import { dashboardScenario, SCENARIO_NOW } from '../testing/dashboard-scenarios';
 
 function TileFrame({ children, height }: { children: ReactNode; height?: string }) {
-	return <div style={{ width: '100%', height, padding: '2rem', background: '#171717' }}>{children}</div>;
+	return <div style={{ width: '100%', height, padding: '2rem', background: themeColors.background }}>{children}</div>;
 }
 
 const meta = {

@@ -26,11 +26,11 @@ export const styles = stylex.create({
 		fontVariantNumeric: 'tabular-nums',
 	},
 	healthy: {
-		color: colors.muted,
+		color: colors.onSurfaceVariant,
 	},
 	problem: {
-		backgroundColor: 'white',
-		color: 'black',
+		backgroundColor: colors.inverseSurface,
+		color: colors.inverseOnSurface,
 		fontWeight: 700,
 	},
 	icon: {

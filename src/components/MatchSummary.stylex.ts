@@ -19,12 +19,12 @@ export const styles = stylex.create({
 		flexDirection: 'column',
 		overflow: 'hidden',
 		borderRadius: { default: 0, [portrait]: spacing.md },
-		backgroundColor: colors.surface,
+		backgroundColor: colors.surfaceContainer,
 	},
 	dividedCard: {
 		borderInlineEndWidth: { default: '1px', [portrait]: 0 },
 		borderInlineEndStyle: 'solid',
-		borderInlineEndColor: colors.line,
+		borderInlineEndColor: colors.outlineVariant,
 	},
 	ourMatchCard: {
 		height: { default: '100%', [portrait]: 'auto' },
@@ -42,10 +42,10 @@ export const styles = stylex.create({
 	leadingPane: {
 		borderInlineEndWidth: { default: '1px', [portrait]: 0 },
 		borderInlineEndStyle: 'solid',
-		borderInlineEndColor: colors.line,
+		borderInlineEndColor: colors.outlineVariant,
 		borderBottomWidth: { default: 0, [portrait]: '1px' },
 		borderBottomStyle: 'solid',
-		borderBottomColor: colors.line,
+		borderBottomColor: colors.outlineVariant,
 	},
 	noNextCard: { gridColumn: { default: 'span 2', [portrait]: 'auto' } },
 	cardBody: {
@@ -115,7 +115,7 @@ export const styles = stylex.create({
 	matchStartTime: {
 		minHeight: { default: '8.5rem', [portrait]: '7.5rem' },
 		paddingInline: spacing.lg,
-		backgroundColor: colors.surfaceRaised,
+		backgroundColor: colors.surfaceContainerHigh,
 		containerType: 'inline-size',
 	},
 	matchTimeValue: {
@@ -140,7 +140,7 @@ export const styles = stylex.create({
 		textAlign: 'center',
 	},
 	matchCountdownLabel: {
-		color: colors.muted,
+		color: colors.onSurfaceVariant,
 		fontSize: { default: '2.5rem', [portrait]: '2rem' },
 		fontWeight: 700,
 		letterSpacing: '0.035em',
@@ -179,12 +179,12 @@ export const styles = stylex.create({
 		paddingInline: spacing.lg,
 		borderWidth: '2px',
 		borderStyle: 'solid',
-		borderColor: colors.line,
+		borderColor: colors.outlineVariant,
 		borderRadius: spacing.sm,
-		backgroundColor: colors.surfaceRaised,
+		backgroundColor: colors.surfaceContainerHigh,
 	},
 	timingLabel: {
-		color: colors.muted,
+		color: colors.onSurfaceVariant,
 		fontSize: '1.5rem',
 		fontWeight: 700,
 		letterSpacing: '0.035em',

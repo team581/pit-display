@@ -1,6 +1,11 @@
 import '@fontsource-variable/source-sans-3';
 import type { Preview } from '@storybook/react-vite';
 import '../src/index.css';
+import { rootThemeCss } from '../theme-colors';
+
+const themeStyle = document.createElement('style');
+themeStyle.textContent = rootThemeCss;
+document.head.append(themeStyle);
 
 const preview: Preview = {
 	parameters: {

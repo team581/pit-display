@@ -16,8 +16,14 @@ export const styles = stylex.create({
 			[narrow]: '1 / -1',
 		},
 	},
-	red: { backgroundColor: colors.redAlliance },
-	blue: { backgroundColor: colors.blueAlliance },
+	red: {
+		backgroundColor: colors.redAllianceContainer,
+		color: colors.onRedAllianceContainer,
+	},
+	blue: {
+		backgroundColor: colors.blueAllianceContainer,
+		color: colors.onBlueAllianceContainer,
+	},
 	teams: {
 		display: 'grid',
 		width: '100%',
@@ -30,7 +36,7 @@ export const styles = stylex.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		paddingInline: { default: spacing.sm, [narrow]: spacing.xs },
-		color: 'white',
+		color: 'inherit',
 		fontFamily: typefaces.display,
 		fontSize: { default: '2rem', [narrow]: '1.75rem' },
 		fontWeight: 800,
@@ -38,7 +44,12 @@ export const styles = stylex.create({
 		textAlign: 'center',
 		textDecoration: 'none',
 	},
-	ourTeam: {
-		backgroundColor: 'rgb(255 255 255 / 10%)',
+	ourTeamRed: {
+		backgroundColor: colors.redAlliance,
+		color: colors.onRedAlliance,
+	},
+	ourTeamBlue: {
+		backgroundColor: colors.blueAlliance,
+		color: colors.onBlueAlliance,
 	},
 });
