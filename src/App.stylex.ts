@@ -16,11 +16,11 @@ export const styles = stylex.create({
 		},
 	},
 	topbar: {
-		display: 'flex',
+		display: 'grid',
 		height: '5rem',
 		alignItems: 'center',
-		justifyContent: 'space-between',
 		fontFamily: typefaces.display,
+		gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)',
 		paddingBlock: spacing.sm,
 		paddingInline: {
 			default: spacing['2xl'],
@@ -30,6 +30,18 @@ export const styles = stylex.create({
 		borderBottomColor: colors.line,
 		borderBottomStyle: 'solid',
 		borderBottomWidth: '1px',
+	},
+	clock: {
+		color: 'white',
+		fontSize: {
+			default: '3.5rem',
+			[portrait]: '2.75rem',
+			[narrow]: '2rem',
+		},
+		fontVariantNumeric: 'tabular-nums',
+		fontWeight: 800,
+		lineHeight: 1,
+		whiteSpace: 'nowrap',
 	},
 	dashboardContent: {
 		display: { default: 'grid', [portrait]: 'flex' },

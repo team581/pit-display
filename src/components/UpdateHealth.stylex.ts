@@ -6,12 +6,14 @@ const narrow = '@media (max-width: 620px)';
 export const styles = stylex.create({
 	container: {
 		display: 'flex',
+		maxWidth: '100%',
 		minWidth: {
 			default: '11rem',
 			[narrow]: 0,
 		},
 		alignItems: 'center',
 		justifyContent: 'center',
+		justifySelf: 'end',
 		gap: spacing.sm,
 		paddingBlock: spacing.sm,
 		paddingInline: {

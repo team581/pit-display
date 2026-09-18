@@ -1,9 +1,19 @@
 import { Temporal } from 'temporal-polyfill';
 
+const clockWithSecondsFormatter = new Intl.DateTimeFormat(undefined, {
+	hour: 'numeric',
+	minute: '2-digit',
+	second: '2-digit',
+});
+
 export function formatClock(time: number | null): string {
 	return time === null
 		? 'Not available'
 		: new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(time);
+}
+
+export function formatClockWithSeconds(time: number): string {
+	return clockWithSecondsFormatter.format(time);
 }
 
 const durationFormatter = new Intl.DurationFormat(undefined, { style: 'short' });

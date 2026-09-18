@@ -14,6 +14,7 @@ import { MatchSummary } from './components/MatchSummary';
 import { TeamIdentity } from './components/TeamIdentity';
 import { UpdateHealth } from './components/UpdateHealth';
 import type { Dashboard as DashboardData } from './dashboard';
+import { formatClockWithSeconds } from './format-time';
 import { TEAM_NUMBER } from './team';
 
 function App({ loadedAt }: { loadedAt: number }) {
@@ -83,6 +84,9 @@ export function DashboardView({
 		<main {...stylex.props(styles.dashboard)}>
 			<header {...stylex.props(styles.topbar)}>
 				<TeamIdentity />
+				<time {...stylex.props(styles.clock)} dateTime={new Date(now).toISOString()}>
+					{formatClockWithSeconds(now)}
+				</time>
 				<UpdateHealth connected={connected} receivedAt={dashboard?.updatedAt} now={now} />
 			</header>
 
