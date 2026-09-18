@@ -3,6 +3,8 @@ import { colors, spacing, typefaces } from './theme.stylex';
 
 const portrait = '@media (max-width: 850px), (orientation: portrait)';
 const narrow = '@media (max-width: 620px)';
+// Measured in PWA running on 13" iPad
+const statusBarClearance = '1.25rem';
 
 export const styles = stylex.create({
 	dashboard: {
@@ -17,11 +19,12 @@ export const styles = stylex.create({
 	},
 	topbar: {
 		display: 'grid',
-		height: '5rem',
+		height: `calc(5rem + env(safe-area-inset-top, 0px) + min(${statusBarClearance}, env(safe-area-inset-top, 0px)))`,
 		alignItems: 'center',
 		fontFamily: typefaces.display,
 		gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)',
-		paddingBlock: spacing.sm,
+		paddingTop: `calc(0.5rem + env(safe-area-inset-top, 0px) + min(${statusBarClearance}, env(safe-area-inset-top, 0px)))`,
+		paddingBottom: spacing.sm,
 		paddingInline: {
 			default: spacing['2xl'],
 			[narrow]: spacing.lg,
@@ -45,7 +48,10 @@ export const styles = stylex.create({
 	},
 	dashboardContent: {
 		display: { default: 'grid', [portrait]: 'flex' },
-		height: { default: 'calc(100svh - 5rem)', [portrait]: 'auto' },
+		height: {
+			default: `calc(100svh - 5rem - env(safe-area-inset-top, 0px) - min(${statusBarClearance}, env(safe-area-inset-top, 0px)))`,
+			[portrait]: 'auto',
+		},
 		gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
 		gridTemplateRows: 'repeat(2, minmax(0, 1fr))',
 		flexDirection: 'column',
@@ -54,7 +60,7 @@ export const styles = stylex.create({
 	},
 	emptyState: {
 		display: 'grid',
-		minHeight: 'calc(100svh - 5rem)',
+		minHeight: `calc(100svh - 5rem - env(safe-area-inset-top, 0px) - min(${statusBarClearance}, env(safe-area-inset-top, 0px)))`,
 		placeContent: 'center',
 		padding: spacing['2xl'],
 		textAlign: 'center',

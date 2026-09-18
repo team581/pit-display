@@ -9,7 +9,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 	head: () => ({
 		meta: [
 			{ charSet: 'utf-8' },
-			{ name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
+			{ name: 'viewport', content: 'width=device-width, initial-scale=1.0, viewport-fit=cover' },
 			{ name: 'description', content: "Team 581's live match and queue dashboard." },
 			{ name: 'theme-color', content: '#591616' },
 			{ name: 'mobile-web-app-capable', content: 'yes' },
