@@ -27,7 +27,7 @@ export const dashboardData = v.object({
 	alliancePartners: v.array(v.number()),
 	currentActivity: v.nullable(
 		v.union(
-			v.object({ type: v.literal('match'), displayLabel: v.string() }),
+			v.object({ type: v.literal('match'), displayLabel: v.string(), endsAt: v.nullable(v.number()) }),
 			v.object({ type: v.literal('awards'), endsAt: v.number() }),
 		),
 	),
@@ -73,6 +73,8 @@ type EliminationDestination = { label: string; alliance: AllianceColor };
 type CurrentActivity = DashboardData['currentActivity'];
 type NextMatch = NonNullable<DashboardData['nextMatch']>;
 type UpcomingMatch = DashboardData['upcomingMatches'][number];
+
+const matchDuration = 2.5 * 60_000;
 
 // Nexus's public API omits advancement routes, so keep the official eight-alliance
 // double-elimination bracket destinations here and use Nexus for their live timing.
@@ -301,7 +303,14 @@ function createCurrentActivity(
 ): CurrentActivity {
 	if (awardsEndsAt !== null) return { type: 'awards', endsAt: awardsEndsAt };
 	if (!currentMatch || !parsedCurrentMatch || !matchIsInPhase(parsedCurrentMatch, phase)) return null;
-	return { type: 'match', displayLabel: parsedCurrentMatch.displayLabel };
+	return {
+		type: 'match',
+		displayLabel: parsedCurrentMatch.displayLabel,
+		endsAt:
+			currentMatch.times.estimatedStartTime === undefined
+				? null
+				: currentMatch.times.estimatedStartTime + matchDuration,
+	};
 }
 
 function createNextMatch(nextMatch: NexusMatch | undefined, parsedNextMatch: ParsedMatch | null): NextMatch | null {

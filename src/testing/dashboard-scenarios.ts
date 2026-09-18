@@ -35,7 +35,7 @@ const qualificationNormal = {
 	updatedAt: minutesFromNow(-1),
 	competitionPhase: 'qualification',
 	alliancePartners: [],
-	currentActivity: { type: 'match', displayLabel: 'Q36' },
+	currentActivity: { type: 'match', displayLabel: 'Q36', endsAt: minutesFromNow(2) },
 	nextMatch: {
 		displayLabel: 'Q42',
 		startTime: minutesFromNow(14),
@@ -67,7 +67,7 @@ const qualificationBeforeStart = {
 const qualificationUrgent = {
 	...qualificationNormal,
 	updatedAt: minutesFromNow(-7),
-	currentActivity: { type: 'match', displayLabel: 'Q50' },
+	currentActivity: { type: 'match', displayLabel: 'Q50', endsAt: minutesFromNow(-1) },
 	nextMatch: {
 		displayLabel: 'Q51',
 		startTime: minutesFromNow(-1),
@@ -78,7 +78,7 @@ const qualificationUrgent = {
 
 const qualificationComplete = {
 	...qualificationNormal,
-	currentActivity: { type: 'match', displayLabel: 'Q70' },
+	currentActivity: { type: 'match', displayLabel: 'Q70', endsAt: minutesFromNow(-1) },
 	nextMatch: null,
 	upcomingMatches: [],
 } satisfies Dashboard;
@@ -129,7 +129,7 @@ const activeAwardsBreak = {
 
 const eliminationPaths = {
 	...eliminationPending,
-	currentActivity: { type: 'match', displayLabel: 'M7' },
+	currentActivity: { type: 'match', displayLabel: 'M7', endsAt: minutesFromNow(2) },
 	nextMatch: {
 		displayLabel: 'M11',
 		startTime: minutesFromNow(28),
@@ -164,7 +164,7 @@ const eliminationScheduledBreak = {
 
 const eliminationWithEliminatedPath = {
 	...eliminationPaths,
-	currentActivity: { type: 'match', displayLabel: 'M13' },
+	currentActivity: { type: 'match', displayLabel: 'M13', endsAt: minutesFromNow(2) },
 	nextMatch: {
 		displayLabel: 'F1',
 		startTime: minutesFromNow(34),

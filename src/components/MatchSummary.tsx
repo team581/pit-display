@@ -16,17 +16,15 @@ function awardsEndText(endsAt: number, now: number): string {
 	return `Ends ${remaining === 'now' ? '<1 sec' : remaining}`;
 }
 
-function matchEndText(nextMatch: NonNullable<NextMatch>, now: number): string {
-	const estimatedEnd = formatMatchTiming(nextMatch.timing.queued, now, '');
-	if (estimatedEnd === 'Not available') return 'End unknown';
-	if (estimatedEnd === 'Soon' || nextMatch.timing.queued.isActual) return 'Ends soon';
-	return `Ends ${estimatedEnd}`;
+function matchEndText(endsAt: number | null, now: number): string {
+	if (endsAt === null) return 'End unknown';
+	if (endsAt <= now) return 'Ends soon';
+	return `Ends ${formatRelativeTime(endsAt, now, '', 'seconds')}`;
 }
 
 function currentActivityState(
 	competitionPhase: Dashboard['competitionPhase'],
 	currentActivity: CurrentActivity,
-	nextMatch: NextMatch,
 	now: number,
 ) {
 	if (competitionPhase === 'allianceSelection') {
@@ -41,26 +39,23 @@ function currentActivityState(
 	}
 
 	const displayLabel = currentActivity?.displayLabel;
-	const showCountdown = displayLabel !== undefined && nextMatch !== null && displayLabel !== nextMatch.displayLabel;
 	return {
 		kind: 'match' as const,
 		displayLabel,
-		statusText: showCountdown ? matchEndText(nextMatch, now) : '',
+		statusText: currentActivity?.type === 'match' ? matchEndText(currentActivity.endsAt, now) : '',
 	};
 }
 
 function CurrentActivityCard({
 	competitionPhase,
 	currentActivity,
-	nextMatch,
 	now,
 }: {
 	competitionPhase: Dashboard['competitionPhase'];
 	currentActivity: CurrentActivity;
-	nextMatch: NextMatch;
 	now: number;
 }) {
-	const state = currentActivityState(competitionPhase, currentActivity, nextMatch, now);
+	const state = currentActivityState(competitionPhase, currentActivity, now);
 	return (
 		<article {...stylex.props(styles.card, styles.dividedCard)}>
 			<div {...stylex.props(panelStyles.header)}>
@@ -187,12 +182,7 @@ export function MatchSummary({
 }) {
 	return (
 		<section {...stylex.props(styles.grid)} aria-label="Match summary">
-			<CurrentActivityCard
-				competitionPhase={competitionPhase}
-				currentActivity={currentActivity}
-				nextMatch={nextMatch}
-				now={now}
-			/>
+			<CurrentActivityCard competitionPhase={competitionPhase} currentActivity={currentActivity} now={now} />
 			{nextMatch ? <OurMatchCard nextMatch={nextMatch} now={now} /> : <NoNextMatchCard />}
 		</section>
 	);
