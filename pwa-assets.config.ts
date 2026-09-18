@@ -14,7 +14,7 @@ export default defineConfig({
 		},
 		apple: {
 			...minimal2023Preset.apple,
-			padding: 0.15,
+			padding: 0.3,
 			resizeOptions: {
 				background: appIconBackground,
 			},
