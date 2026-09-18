@@ -1,4 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
+import { ClientOnly } from '@tanstack/react-router';
 import { TextMorph } from 'torph/react';
 import type { Dashboard, UpcomingMatch } from '../dashboard';
 import { formatClock, formatRelativeTime } from '../format-time';
@@ -42,9 +43,11 @@ function BreakTimeline({ row, now }: { row: EliminationRow & { displayLabel: str
 				<span {...stylex.props(styles.timelineConnector)} aria-hidden="true" />
 				<strong {...stylex.props(styles.timelineLabel)}>{row.break.previousMatch.displayLabel}</strong>
 				<span {...stylex.props(styles.timelineTime)}>
-					{row.break.previousMatch.startTime === null
-						? 'Time TBD'
-						: `Starts ${formatClock(row.break.previousMatch.startTime)}`}
+					{row.break.previousMatch.startTime === null ? (
+						'Time TBD'
+					) : (
+						<ClientOnly fallback="Starts —">Starts {formatClock(row.break.previousMatch.startTime)}</ClientOnly>
+					)}
 				</span>
 			</div>
 			<div {...stylex.props(styles.timelineRow, styles.timelineBreak, isActive && styles.activeBreak)}>
@@ -57,7 +60,11 @@ function BreakTimeline({ row, now }: { row: EliminationRow & { displayLabel: str
 				<span {...stylex.props(styles.timelineMarker)} aria-hidden="true" />
 				<strong {...stylex.props(styles.timelineLabel)}>{row.displayLabel}</strong>
 				<span {...stylex.props(styles.timelineTime)}>
-					{row.startTime === null ? 'Time TBD' : `Starts ${formatClock(row.startTime)}`}
+					{row.startTime === null ? (
+						'Time TBD'
+					) : (
+						<ClientOnly fallback="Starts —">Starts {formatClock(row.startTime)}</ClientOnly>
+					)}
 				</span>
 			</div>
 		</div>
@@ -108,9 +115,17 @@ export function EliminationSchedule({
 													{row.startTime === null ? 'Time TBD' : formatRelativeTime(row.startTime, now, 'in ')}
 												</TextMorph>
 												{!row.break && row.startTime !== null && (
-													<TextMorph as="span" {...stylex.props(styles.relativeTime)}>
-														Starts {formatClock(row.startTime)}
-													</TextMorph>
+													<ClientOnly
+														fallback={
+															<TextMorph as="span" {...stylex.props(styles.relativeTime)}>
+																Starts —
+															</TextMorph>
+														}
+													>
+														<TextMorph as="span" {...stylex.props(styles.relativeTime)}>
+															Starts {formatClock(row.startTime)}
+														</TextMorph>
+													</ClientOnly>
 												)}
 											</div>
 										</div>

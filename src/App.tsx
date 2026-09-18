@@ -84,9 +84,11 @@ export function DashboardView({
 		<main {...stylex.props(styles.dashboard)}>
 			<header {...stylex.props(styles.topbar)}>
 				<TeamIdentity />
-				<time {...stylex.props(styles.clock)} dateTime={new Date(now).toISOString()}>
-					{formatClockWithSeconds(now)}
-				</time>
+				<ClientOnly fallback={<time {...stylex.props(styles.clock)}>--:--:--</time>}>
+					<time {...stylex.props(styles.clock)} dateTime={new Date(now).toISOString()}>
+						{formatClockWithSeconds(now)}
+					</time>
+				</ClientOnly>
 				<UpdateHealth connected={connected} receivedAt={dashboard?.updatedAt} now={now} />
 			</header>
 

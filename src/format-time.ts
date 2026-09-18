@@ -16,8 +16,8 @@ export function formatClockWithSeconds(time: number): string {
 	return clockWithSecondsFormatter.format(time);
 }
 
-const durationFormatter = new Intl.DurationFormat(undefined, { style: 'short' });
-const secondDurationFormatter = new Intl.DurationFormat(undefined, {
+const durationFormatter = new Intl.DurationFormat('en-US', { style: 'short' });
+const secondDurationFormatter = new Intl.DurationFormat('en-US', {
 	style: 'short',
 	seconds: 'short',
 	secondsDisplay: 'always',

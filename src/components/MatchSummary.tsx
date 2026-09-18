@@ -1,4 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
+import { ClientOnly } from '@tanstack/react-router';
 import { TextMorph } from 'torph/react';
 import type { Dashboard } from '../dashboard';
 import { formatMatchTiming, timingStatusMilestones } from '../dashboard-time';
@@ -136,9 +137,23 @@ function OurMatchCard({ nextMatch, now }: { nextMatch: NonNullable<NextMatch>; n
 					</div>
 					<div {...stylex.props(styles.matchDetailSlot)}>
 						<div {...stylex.props(styles.matchDetail, styles.matchStartTime)} data-testid="our-match-start-time">
-							<FittedText className={stylex.props(styles.matchTimeValue).className} maxFontSize="4.1875rem">
-								{startText}
-							</FittedText>
+							{nextMatch.startTime === null ? (
+								<FittedText className={stylex.props(styles.matchTimeValue).className} maxFontSize="4.1875rem">
+									{startText}
+								</FittedText>
+							) : (
+								<ClientOnly
+									fallback={
+										<FittedText className={stylex.props(styles.matchTimeValue).className} maxFontSize="4.1875rem">
+											Starts —
+										</FittedText>
+									}
+								>
+									<FittedText className={stylex.props(styles.matchTimeValue).className} maxFontSize="4.1875rem">
+										{startText}
+									</FittedText>
+								</ClientOnly>
+							)}
 						</div>
 					</div>
 				</div>

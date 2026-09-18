@@ -1,4 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
+import { ClientOnly } from '@tanstack/react-router';
 import { TextMorph } from 'torph/react';
 import type { Dashboard } from '../dashboard';
 import { formatMatchStart } from '../format-time';
@@ -29,9 +30,23 @@ export function MatchSchedule({
 					<article {...stylex.props(styles.matchRow)} key={match.key}>
 						<MatchLabel displayLabel={match.displayLabel} {...stylex.props(styles.matchNumber)} />
 						<div {...stylex.props(styles.matchTime)}>
-							<TextMorph as="strong" {...stylex.props(styles.startTime)}>
-								{formatMatchStart(match.startTime, now)}
-							</TextMorph>
+							{match.startTime === null ? (
+								<TextMorph as="strong" {...stylex.props(styles.startTime)}>
+									{formatMatchStart(match.startTime, now)}
+								</TextMorph>
+							) : (
+								<ClientOnly
+									fallback={
+										<TextMorph as="strong" {...stylex.props(styles.startTime)}>
+											Starts —
+										</TextMorph>
+									}
+								>
+									<TextMorph as="strong" {...stylex.props(styles.startTime)}>
+										{formatMatchStart(match.startTime, now)}
+									</TextMorph>
+								</ClientOnly>
+							)}
 						</div>
 						{match.warning && <MatchWarning warning={match.warning} />}
 						<AllianceBadge alliance={match.alliance} eventKey={eventKey} teams={match.teams} />
