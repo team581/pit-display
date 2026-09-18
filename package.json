@@ -9,6 +9,7 @@
 		"dev": "pnpm run \"/^dev:.*/\"",
 		"dev:backend": "convex dev",
 		"dev:frontend": "portless pit.frc581.com vp dev",
+		"generate:pwa-assets": "pwa-assets-generator && pwa-assets-generator --config maskable-assets.config.ts",
 		"lint": "vp lint",
 		"openapi-ts": "openapi-ts",
 		"prepare": "vp config --no-hooks",

@@ -7,6 +7,7 @@ const config: KnipConfig = {
 		// Loaded by the visual project only when the container sets VISUAL_TESTS.
 		'src/testing/visual-setup.ts',
 		'src/frc-nexus/generated/**',
+		'maskable-assets.config.ts',
 	],
 	ignoreDependencies: [
 		// Provides the HTML reporter selected by the test:visual:ci script.
