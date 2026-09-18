@@ -109,6 +109,7 @@ export const styles = stylex.create({
 		width: '100%',
 		alignItems: 'center',
 		justifyContent: 'center',
+		overflow: 'hidden',
 		borderRadius: spacing.sm,
 	},
 	matchStartTime: {
@@ -118,19 +119,9 @@ export const styles = stylex.create({
 		containerType: 'inline-size',
 	},
 	matchTimeValue: {
-		fontSize: 'clamp(2.5rem, 17cqw, 4.1875rem)',
 		fontVariantNumeric: 'tabular-nums',
 		letterSpacing: '-0.03em',
 		whiteSpace: 'nowrap',
-	},
-	activityEndValueLong: {
-		fontSize: 'clamp(2rem, 12.5cqw, 3.35rem)',
-	},
-	matchTimeValueWithTwoDigitHour: {
-		fontSize: 'clamp(2.5rem, 14cqw, 3.5rem)',
-	},
-	matchTimeValueLong: {
-		fontSize: 'clamp(2rem, 9cqw, 3rem)',
 	},
 	timingBody: {
 		alignItems: 'stretch',

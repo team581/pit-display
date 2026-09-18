@@ -3,6 +3,7 @@ import { TextMorph } from 'torph/react';
 import type { Dashboard } from '../dashboard';
 import { formatMatchTiming, timingStatusMilestones } from '../dashboard-time';
 import { formatClock, formatRelativeTime } from '../format-time';
+import { FittedText } from './FittedText';
 import { MatchLabel } from './MatchLabel';
 import { styles } from './MatchSummary.stylex';
 import { panelStyles } from './Panel.stylex';
@@ -76,13 +77,10 @@ function CurrentActivityCard({
 				</div>
 				{state.statusText && (
 					<div {...stylex.props(styles.matchDetailSlot)}>
-						<div {...stylex.props(styles.matchDetail, styles.matchStartTime)}>
-							<TextMorph
-								as="strong"
-								{...stylex.props(styles.matchTimeValue, state.statusText.length > 16 && styles.activityEndValueLong)}
-							>
+						<div {...stylex.props(styles.matchDetail, styles.matchStartTime)} data-testid="current-activity-status">
+							<FittedText className={stylex.props(styles.matchTimeValue).className} maxFontSize="4.1875rem">
 								{state.statusText}
-							</TextMorph>
+							</FittedText>
 						</div>
 					</div>
 				)}
@@ -137,17 +135,10 @@ function OurMatchCard({ nextMatch, now }: { nextMatch: NonNullable<NextMatch>; n
 						<MatchLabel displayLabel={nextMatch.displayLabel} {...stylex.props(styles.matchNumber)} />
 					</div>
 					<div {...stylex.props(styles.matchDetailSlot)}>
-						<div {...stylex.props(styles.matchDetail, styles.matchStartTime)}>
-							<TextMorph
-								as="strong"
-								{...stylex.props(
-									styles.matchTimeValue,
-									startText.length > 14 && styles.matchTimeValueWithTwoDigitHour,
-									startText.length > 16 && styles.matchTimeValueLong,
-								)}
-							>
+						<div {...stylex.props(styles.matchDetail, styles.matchStartTime)} data-testid="our-match-start-time">
+							<FittedText className={stylex.props(styles.matchTimeValue).className} maxFontSize="4.1875rem">
 								{startText}
-							</TextMorph>
+							</FittedText>
 						</div>
 					</div>
 				</div>

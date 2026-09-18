@@ -148,3 +148,53 @@ for (const tile of tileCases) {
 		await expect(page.getByTestId('visual-target')).toMatchScreenshot(`tile-${tile.name}`);
 	});
 }
+
+test('match summary status text fills its panels without overflowing as values and sizes change', async () => {
+	const dashboard = requireDashboard('qualification-normal');
+	const currentActivity = { type: 'match' as const, displayLabel: 'Q18', endsAt: SCENARIO_NOW + 2 * 60_000 };
+	const nextMatch = {
+		...dashboard.nextMatch!,
+		displayLabel: 'Q24',
+		startTime: Date.UTC(2026, 2, 15, 2, 21),
+	};
+	const view = await render(
+		<MatchSummary
+			competitionPhase="qualification"
+			currentActivity={currentActivity}
+			nextMatch={nextMatch}
+			now={SCENARIO_NOW}
+		/>,
+	);
+	await waitForAssets();
+
+	function expectFillsWithoutOverflow(testId: string) {
+		const container = document.querySelector<HTMLElement>(`[data-testid="${testId}"]`);
+		const value = container?.querySelector<HTMLElement>('strong');
+		expect(container).not.toBeNull();
+		expect(value).not.toBeNull();
+		const containerBounds = container!.getBoundingClientRect();
+		const valueBounds = value!.getBoundingClientRect();
+		expect(valueBounds.left).toBeGreaterThanOrEqual(containerBounds.left);
+		expect(valueBounds.right).toBeLessThanOrEqual(containerBounds.right);
+		expect(valueBounds.width / containerBounds.width).toBeGreaterThan(0.75);
+	}
+
+	expectFillsWithoutOverflow('current-activity-status');
+	expectFillsWithoutOverflow('our-match-start-time');
+
+	await view.rerender(
+		<MatchSummary
+			competitionPhase="qualification"
+			currentActivity={currentActivity}
+			nextMatch={nextMatch}
+			now={SCENARIO_NOW + 1_000}
+		/>,
+	);
+	expectFillsWithoutOverflow('current-activity-status');
+	expectFillsWithoutOverflow('our-match-start-time');
+
+	await page.viewport(1000, 884);
+	await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+	expectFillsWithoutOverflow('current-activity-status');
+	expectFillsWithoutOverflow('our-match-start-time');
+});
