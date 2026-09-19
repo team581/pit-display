@@ -46,6 +46,7 @@ describe('createDashboardData', () => {
 				displayLabel: 'Q12',
 				startTime: now + 15 * minute,
 				alliance: 'red',
+				requiresBumperChange: false,
 				timing: {
 					queued: { time: now + 5 * minute, isActual: false },
 					onDeck: { time: now + 10 * minute, isActual: false },
@@ -70,6 +71,36 @@ describe('createDashboardData', () => {
 				},
 			],
 		});
+	});
+
+	it('requires a bumper change when the next team match has a different alliance color', () => {
+		const dashboard = createDashboardData({
+			eventKey: '2026test',
+			receivedAt: now,
+			matches: [
+				match('Qualification 8', { status: 'On field', redTeams: ['581', '2', '3'] }),
+				match('Qualification 9', { status: 'On field' }),
+				match('Qualification 12', { blueTeams: ['581', '5', '6'] }),
+			],
+		});
+
+		expect(dashboard?.nextMatch).toMatchObject({
+			alliance: 'blue',
+			requiresBumperChange: true,
+		});
+	});
+
+	it('does not require a bumper change when the alliance color stays the same', () => {
+		const dashboard = createDashboardData({
+			eventKey: '2026test',
+			receivedAt: now,
+			matches: [
+				match('Qualification 8', { status: 'On field', blueTeams: ['581', '2', '3'] }),
+				match('Qualification 12', { blueTeams: ['581', '5', '6'] }),
+			],
+		});
+
+		expect(dashboard?.nextMatch?.requiresBumperChange).toBe(false);
 	});
 
 	it('warns about a short turnaround after another Team 581 match', () => {

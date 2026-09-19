@@ -36,6 +36,7 @@ export const dashboardData = v.object({
 			displayLabel: v.string(),
 			startTime: v.nullable(v.number()),
 			alliance: v.union(v.literal('blue'), v.literal('red')),
+			requiresBumperChange: v.boolean(),
 			timing: v.object({ queued: matchTiming, onDeck: matchTiming }),
 		}),
 	),
@@ -128,6 +129,10 @@ function matchStart(match: NexusMatch): number | undefined {
 
 function includesTeam(match: NexusMatch): boolean {
 	return match.redTeams.includes(TEAM_NUMBER_STRING) || match.blueTeams.includes(TEAM_NUMBER_STRING);
+}
+
+function teamAlliance(match: NexusMatch): AllianceColor {
+	return match.redTeams.includes(TEAM_NUMBER_STRING) ? 'red' : 'blue';
 }
 
 function breakWarning(afterBreak: NonNullable<NexusMatch['afterBreak']>): string {
@@ -314,12 +319,18 @@ function createCurrentActivity(
 	};
 }
 
-function createNextMatch(nextMatch: NexusMatch | undefined, parsedNextMatch: ParsedMatch | null): NextMatch | null {
+function createNextMatch(
+	nextMatch: NexusMatch | undefined,
+	parsedNextMatch: ParsedMatch | null,
+	previousTeamMatch: NexusMatch | undefined,
+): NextMatch | null {
 	if (!nextMatch || !parsedNextMatch) return null;
+	const alliance = teamAlliance(nextMatch);
 	return {
 		displayLabel: parsedNextMatch.displayLabel,
 		startTime: matchStart(nextMatch) ?? null,
-		alliance: nextMatch.redTeams.includes(TEAM_NUMBER_STRING) ? 'red' : 'blue',
+		alliance,
+		requiresBumperChange: previousTeamMatch !== undefined && teamAlliance(previousTeamMatch) !== alliance,
 		timing: {
 			queued: timing(nextMatch.times.estimatedQueueTime, nextMatch.times.actualQueueTime),
 			onDeck: timing(nextMatch.times.estimatedOnDeckTime, nextMatch.times.actualOnDeckTime),
@@ -340,6 +351,9 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 	const nextMatch = teamMatches[0];
 	const parsedNextMatch = nextMatch ? parseMatchLabel(nextMatch.label) : null;
 	if (nextMatch && !parsedNextMatch) return null;
+	const previousTeamMatch = nextMatch
+		? status.matches.slice(0, status.matches.indexOf(nextMatch)).findLast(includesTeam)
+		: undefined;
 
 	const upcomingMatches = createUpcomingMatches(teamMatches, lastOnFieldMatch, status.matches);
 	const activeEliminationMatch = findActiveEliminationMatch(status.matches, currentMatchIndex, currentMatch, nextMatch);
@@ -351,7 +365,7 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 		competitionPhase,
 		alliancePartners: status.alliancePartners.map(Number).filter(Number.isInteger),
 		currentActivity: createCurrentActivity(currentMatch, parsedCurrentMatch, competitionPhase, awardsEndsAt),
-		nextMatch: createNextMatch(nextMatch, parsedNextMatch),
+		nextMatch: createNextMatch(nextMatch, parsedNextMatch, previousTeamMatch),
 		upcomingMatches,
 		eliminationPaths:
 			competitionPhase === 'elimination' ? eliminationPaths(activeEliminationMatch, status.matches) : [],

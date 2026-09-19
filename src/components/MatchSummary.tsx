@@ -107,6 +107,7 @@ function OurMatchCard({
 	const countdown =
 		nextMatch.startTime === null ? 'TBD' : formatMatchTiming({ time: nextMatch.startTime, isActual: false }, now, '');
 	const statuses = timingStatusMilestones(nextMatch.timing);
+	const startTimeMaxFontSize = nextMatch.requiresBumperChange ? '2.5rem' : '5rem';
 
 	return (
 		<article {...stylex.props(styles.card, styles.ourMatchCard)}>
@@ -150,28 +151,53 @@ function OurMatchCard({
 							{...stylex.props(styles.matchNumber, styles.nextMatchNumber)}
 						/>
 					</div>
-					<div {...stylex.props(styles.matchDetailSlot)}>
+					<div {...stylex.props(styles.matchDetailSlot, nextMatch.requiresBumperChange && styles.splitMatchDetailSlot)}>
+						{nextMatch.requiresBumperChange && (
+							<div
+								{...stylex.props(
+									styles.matchDetail,
+									styles.matchStartTime,
+									styles.compactMatchDetail,
+									nextMatch.alliance === 'red' ? styles.redAllianceStartTime : styles.blueAllianceStartTime,
+								)}
+								data-testid="bumper-change"
+							>
+								<FittedText className={stylex.props(styles.matchTimeValue).className} maxFontSize="2.25rem">
+									{`Swap to ${nextMatch.alliance}`}
+								</FittedText>
+							</div>
+						)}
 						<div
 							{...stylex.props(
 								styles.matchDetail,
 								styles.matchStartTime,
+								nextMatch.requiresBumperChange && styles.compactMatchDetail,
 								nextMatch.alliance === 'red' ? styles.redAllianceStartTime : styles.blueAllianceStartTime,
 							)}
 							data-testid="our-match-start-time"
 						>
 							{nextMatch.startTime === null ? (
-								<FittedText className={stylex.props(styles.matchTimeValue).className} maxFontSize="5rem">
+								<FittedText
+									className={stylex.props(styles.matchTimeValue).className}
+									maxFontSize={startTimeMaxFontSize}
+								>
 									{startText}
 								</FittedText>
 							) : (
 								<ClientOnly
 									fallback={
-										<FittedText className={stylex.props(styles.matchTimeValue).className} maxFontSize="5rem">
+										<FittedText
+											className={stylex.props(styles.matchTimeValue).className}
+											maxFontSize={startTimeMaxFontSize}
+										>
 											Starts —
 										</FittedText>
 									}
 								>
-									<FittedText className={stylex.props(styles.matchTimeValue).className} maxFontSize="5rem">
+									<FittedText
+										className={stylex.props(styles.matchTimeValue).className}
+										maxFontSize={startTimeMaxFontSize}
+									>
 										{startText}
 									</FittedText>
 								</ClientOnly>

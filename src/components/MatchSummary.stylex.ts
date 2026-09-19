@@ -118,8 +118,13 @@ export const styles = stylex.create({
 		display: 'flex',
 		width: '100%',
 		minHeight: { default: '8.5rem', [portrait]: '7.5rem' },
+		flexDirection: 'column',
 		alignItems: 'center',
 		justifyContent: 'center',
+		gap: spacing.sm,
+	},
+	splitMatchDetailSlot: {
+		minHeight: { default: '9.5rem', [portrait]: '7.5rem' },
 	},
 	matchDetail: {
 		display: 'flex',
@@ -134,6 +139,9 @@ export const styles = stylex.create({
 		paddingInline: spacing.lg,
 		backgroundColor: colors.surfaceContainerHigh,
 		containerType: 'inline-size',
+	},
+	compactMatchDetail: {
+		minHeight: { default: '4.5rem', [portrait]: '3.5rem' },
 	},
 	redAllianceStartTime: {
 		backgroundColor: colors.redAlliance,
