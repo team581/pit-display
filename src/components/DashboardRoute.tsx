@@ -19,6 +19,8 @@ export function DashboardRoute() {
 		if (import.meta.hot || !('serviceWorker' in navigator)) return;
 
 		let disposed = false;
+		let hasController = navigator.serviceWorker.controller !== null;
+		let reloadTimeout: number | undefined;
 		let updateInterval: number | undefined;
 		let updateInProgress = false;
 		let registration: ServiceWorkerRegistration | undefined;
@@ -38,6 +40,18 @@ export function DashboardRoute() {
 
 		const handleVisibilityChange = () => void checkForUpdate();
 		const handleOnline = () => void checkForUpdate();
+		const handleControllerChange = () => {
+			if (!hasController) {
+				hasController = true;
+				return;
+			}
+			if (reloadTimeout !== undefined) return;
+
+			// Give the transitional service-worker activation hook a chance to navigate first.
+			reloadTimeout = window.setTimeout(() => window.location.reload(), 100);
+		};
+
+		navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange);
 
 		void navigator.serviceWorker
 			.register('/sw.js', { updateViaCache: 'none' })
@@ -56,7 +70,9 @@ export function DashboardRoute() {
 
 		return () => {
 			disposed = true;
+			if (reloadTimeout !== undefined) window.clearTimeout(reloadTimeout);
 			if (updateInterval !== undefined) window.clearInterval(updateInterval);
+			navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
 			document.removeEventListener('visibilitychange', handleVisibilityChange);
 			window.removeEventListener('online', handleOnline);
 		};
