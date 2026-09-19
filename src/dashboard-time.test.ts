@@ -21,12 +21,12 @@ describe('dashboard time state', () => {
 
 	it('shows overdue estimates as soon until the milestone actually happens', () => {
 		const timing = { time: 5 * minute, isActual: false };
-		expect(formatMatchTiming(timing, 4 * minute)).toBe('in 1 min 0 sec');
-		expect(formatMatchTiming(timing, 4 * minute, '')).toBe('1 min 0 sec');
+		expect(formatMatchTiming(timing, 4 * minute)).toBe('in 1m 0s');
+		expect(formatMatchTiming(timing, 4 * minute, '')).toBe('1m 0s');
 		expect(formatMatchTiming(timing, 5 * minute)).toBe('Soon');
 		expect(formatMatchTiming(timing, 6 * minute)).toBe('Soon');
 
 		timing.isActual = true;
-		expect(formatMatchTiming(timing, 6 * minute)).toBe('1 min 0 sec ago');
+		expect(formatMatchTiming(timing, 6 * minute)).toBe('1m 0s ago');
 	});
 });

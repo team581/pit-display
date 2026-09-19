@@ -184,7 +184,7 @@ function turnaroundWarningForMatch(
 	if (start !== undefined && previousStart !== undefined) {
 		const turnaroundMinutes = Math.round((start - previousStart) / 60_000);
 		if (turnaroundMinutes >= 0 && turnaroundMinutes <= 20) {
-			return `${turnaroundMinutes} min turnaround`;
+			return `${turnaroundMinutes}m turnaround`;
 		}
 	}
 

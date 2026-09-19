@@ -16,10 +16,16 @@ export function formatClockWithSeconds(time: number): string {
 	return clockWithSecondsFormatter.format(time);
 }
 
-const durationFormatter = new Intl.DurationFormat('en-US', { style: 'short' });
+const durationFormatter = new Intl.DurationFormat('en-US', {
+	style: 'short',
+	minutes: 'narrow',
+	minutesDisplay: 'auto',
+});
 const secondDurationFormatter = new Intl.DurationFormat('en-US', {
 	style: 'short',
-	seconds: 'short',
+	minutes: 'narrow',
+	minutesDisplay: 'auto',
+	seconds: 'narrow',
 	secondsDisplay: 'always',
 });
 const wholeHoursThreshold = 6 * 60 * 60_000;

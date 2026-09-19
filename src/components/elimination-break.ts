@@ -22,7 +22,7 @@ export function breakStatusText(breakStatus: BreakStatus, now: number): string {
 	if (breakStatus.durationMinutes === null) return 'Time unavailable';
 	if (isBreakActive(breakStatus, now) && breakStatus.endTime !== null) {
 		const remaining = formatRelativeTime(breakStatus.endTime, now, '');
-		return `Ends in ${remaining === 'now' ? '<1 min' : remaining}`;
+		return `Ends in ${remaining === 'now' ? '<1m' : remaining}`;
 	}
-	return `${breakStatus.durationMinutes} min`;
+	return `${breakStatus.durationMinutes}m`;
 }

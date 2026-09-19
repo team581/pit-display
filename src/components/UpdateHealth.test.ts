@@ -7,18 +7,18 @@ const second = 1000;
 describe('updateHealthState', () => {
 	it('keeps a healthy connection quiet while showing the Nexus update age in minutes', () => {
 		expect(updateHealthState(true, 0, 2 * minute + 14 * second)).toEqual({
-			label: 'Nexus updated 2 min ago',
+			label: 'Nexus updated 2m ago',
 			hasProblem: false,
 		});
 	});
 
 	it('calls out outdated Nexus data and server disconnections', () => {
 		expect(updateHealthState(true, 0, 5 * minute)).toEqual({
-			label: 'Nexus outdated · updated 5 min ago',
+			label: 'Nexus outdated · updated 5m ago',
 			hasProblem: true,
 		});
 		expect(updateHealthState(false, 0, 6 * minute)).toEqual({
-			label: 'Server disconnected · Nexus outdated · updated 6 min ago',
+			label: 'Server disconnected · Nexus outdated · updated 6m ago',
 			hasProblem: true,
 		});
 		expect(updateHealthState(false, undefined, 0)).toEqual({

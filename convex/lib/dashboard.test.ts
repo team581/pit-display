@@ -89,7 +89,7 @@ describe('createDashboardData', () => {
 			],
 		});
 
-		expect(dashboard?.upcomingMatches[0]?.warning).toBe('15 min turnaround');
+		expect(dashboard?.upcomingMatches[0]?.warning).toBe('15m turnaround');
 	});
 
 	it('estimates the current match end from its live start estimate', () => {

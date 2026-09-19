@@ -15,7 +15,7 @@ type NextMatch = Dashboard['nextMatch'];
 function awardsEndText(endsAt: number, now: number): string {
 	if (now >= endsAt) return 'Ends soon';
 	const remaining = formatRelativeTime(endsAt, now, '', 'seconds');
-	return `Ends ${remaining === 'now' ? '<1 sec' : remaining}`;
+	return `Ends ${remaining === 'now' ? '<1s' : remaining}`;
 }
 
 function matchEndText(endsAt: number | null, now: number): string {
