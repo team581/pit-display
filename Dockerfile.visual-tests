@@ -12,7 +12,7 @@ WORKDIR /server
 RUN --mount=type=cache,id=pit-display-playwright-pnpm,target=/pnpm/store \
 	pnpm add --config.enable-global-virtual-store=false --save-exact playwright@${PLAYWRIGHT_VERSION}
 
-FROM mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-noble
+FROM mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-resolute
 
 COPY --from=dependencies --chown=pwuser:pwuser /server/node_modules /server/node_modules
 
