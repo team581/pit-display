@@ -8,6 +8,7 @@ const config: KnipConfig = {
 		'src/testing/visual-setup.ts',
 		'src/frc-nexus/generated/**',
 		'maskable-assets.config.ts',
+		'public/sw-update.js',
 	],
 	ignoreDependencies: [
 		// Provides the HTML reporter selected by the test:visual:ci script.
