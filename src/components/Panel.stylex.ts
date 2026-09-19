@@ -9,7 +9,7 @@ export const panelStyles = stylex.create({
 		minHeight: 0,
 		flexDirection: 'column',
 		overflow: 'hidden',
-		borderTopWidth: '1px',
+		borderTopWidth: { default: 0, [portrait]: '1px' },
 		borderInlineWidth: { default: 0, [portrait]: '1px' },
 		borderBottomWidth: { default: 0, [portrait]: '1px' },
 		borderStyle: 'solid',
