@@ -20,7 +20,7 @@ jobs:
       VITE_CONVEX_URL: https://stoic-mouse-746.convex.cloud
     steps:
       - uses: actions/checkout@v7
-      - uses: voidzero-dev/setup-vp@v1.20.0
+      - uses: voidzero-dev/setup-vp@v1.21.0
         with:
           cache: true
       - run: vp check
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
-      - uses: voidzero-dev/setup-vp@v1.20.0
+      - uses: voidzero-dev/setup-vp@v1.21.0
         with:
           cache: true
       - name: Install WebKit
