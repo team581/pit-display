@@ -6,7 +6,6 @@ const { count, size, warnings } = await generateSW({
 	swDest: 'dist/client/sw.js',
 	cleanupOutdatedCaches: true,
 	clientsClaim: true,
-	importScripts: ['/sw-update.js'],
 	navigateFallback: 'index.html',
 	skipWaiting: true,
 });

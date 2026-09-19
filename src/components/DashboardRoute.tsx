@@ -20,7 +20,7 @@ export function DashboardRoute() {
 
 		let disposed = false;
 		let hasController = navigator.serviceWorker.controller !== null;
-		let reloadTimeout: number | undefined;
+		let reloading = false;
 		let updateInterval: number | undefined;
 		let updateInProgress = false;
 		let registration: ServiceWorkerRegistration | undefined;
@@ -45,10 +45,10 @@ export function DashboardRoute() {
 				hasController = true;
 				return;
 			}
-			if (reloadTimeout !== undefined) return;
+			if (reloading) return;
 
-			// Give the transitional service-worker activation hook a chance to navigate first.
-			reloadTimeout = window.setTimeout(() => window.location.reload(), 100);
+			reloading = true;
+			window.location.reload();
 		};
 
 		navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange);
@@ -70,7 +70,6 @@ export function DashboardRoute() {
 
 		return () => {
 			disposed = true;
-			if (reloadTimeout !== undefined) window.clearTimeout(reloadTimeout);
 			if (updateInterval !== undefined) window.clearInterval(updateInterval);
 			navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
 			document.removeEventListener('visibilitychange', handleVisibilityChange);
