@@ -30,36 +30,39 @@ export default defineConfig(({ command, mode }) => {
 			plugins: [stylex.vite()],
 			test: {
 				name: 'visual',
-				maxWorkers: 1,
 				include: ['src/**/*.visual.test.tsx'],
 				setupFiles: ['./src/testing/visual-setup.ts'],
 				browser: {
 					api: { port: 0 },
 					enabled: true,
-					expect: playwrightWsEndpoint
-						? {
-								toMatchScreenshot: {
-									resolveDiffPath: ({ arg, ext, root, attachmentsDir, testFileDirectory, testFileName, browserName }) =>
-										resolve(root, attachmentsDir, testFileDirectory, testFileName, `${arg}-${browserName}-linux${ext}`),
-									resolveScreenshotPath: ({
-										arg,
-										ext,
-										root,
-										screenshotDirectory,
-										testFileDirectory,
-										testFileName,
-										browserName,
-									}) =>
-										resolve(
-											root,
-											testFileDirectory,
-											screenshotDirectory,
-											testFileName,
-											`${arg}-${browserName}-linux${ext}`,
-										),
-								},
-							}
-						: undefined,
+					expect: {
+						toMatchScreenshot: {
+							resolveDiffPath: ({ arg, ext, root, attachmentsDir, testFileDirectory, browserName, platform }) =>
+								resolve(
+									root,
+									attachmentsDir,
+									testFileDirectory,
+									'Dashboard.visual.test.tsx',
+									`${arg}-${browserName}-${playwrightWsEndpoint ? 'linux' : platform}${ext}`,
+								),
+							resolveScreenshotPath: ({
+								arg,
+								ext,
+								root,
+								screenshotDirectory,
+								testFileDirectory,
+								browserName,
+								platform,
+							}) =>
+								resolve(
+									root,
+									testFileDirectory,
+									screenshotDirectory,
+									'Dashboard.visual.test.tsx',
+									`${arg}-${browserName}-${playwrightWsEndpoint ? 'linux' : platform}${ext}`,
+								),
+						},
+					},
 					headless: true,
 					ui: false,
 					provider: playwright({
@@ -118,6 +121,7 @@ export default defineConfig(({ command, mode }) => {
 		},
 		test: {
 			attachmentsDir: '.vitest/attachments',
+			...(process.env.PLAYWRIGHT_WS_ENDPOINT ? { teardownTimeout: 1_000 } : {}),
 			projects: testProjects,
 		},
 		plugins: lazyPlugins(() => [
