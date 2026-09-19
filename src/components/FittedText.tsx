@@ -5,6 +5,7 @@ import { TextMorph } from 'torph/react';
 const styles = stylex.create({
 	root: {
 		display: 'flex',
+		position: 'relative',
 		width: '100%',
 		alignItems: 'center',
 		justifyContent: 'center',

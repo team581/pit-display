@@ -42,6 +42,8 @@ export function testDashboardScenarios(ids: readonly Parameters<typeof dashboard
 			await render(<DashboardView connected={scenario.connected} dashboard={scenario.dashboard} now={SCENARIO_NOW} />);
 			await waitForAssets();
 			expect(document.querySelector('main')?.getBoundingClientRect().width).toBe(1376);
+			expect(document.documentElement.scrollWidth).toBe(window.innerWidth);
+			expect(document.documentElement.scrollHeight).toBe(window.innerHeight);
 			if (scenario.dashboard === null || scenario.dashboard === undefined) {
 				expect(getComputedStyle(document.querySelector('main')!).backgroundColor).toBe('rgb(38, 30, 29)');
 				await expect(page.getByRole('main')).toMatchScreenshot(scenario.id, {
