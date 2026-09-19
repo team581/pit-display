@@ -45,6 +45,7 @@ describe('createDashboardData', () => {
 			nextMatch: {
 				displayLabel: 'Q12',
 				startTime: now + 15 * minute,
+				alliance: 'red',
 				timing: {
 					queued: { time: now + 5 * minute, isActual: false },
 					onDeck: { time: now + 10 * minute, isActual: false },

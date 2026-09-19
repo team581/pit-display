@@ -39,6 +39,14 @@ export const styles = stylex.create({
 	ourMatchPane: {
 		minHeight: { default: 0, [portrait]: '19.5rem' },
 	},
+	redAlliance: {
+		backgroundColor: colors.redAllianceContainer,
+		color: colors.onRedAllianceContainer,
+	},
+	blueAlliance: {
+		backgroundColor: colors.blueAllianceContainer,
+		color: colors.onBlueAllianceContainer,
+	},
 	leadingPane: {
 		borderInlineEndWidth: { default: '1px', [portrait]: 0 },
 		borderInlineEndStyle: 'solid',
@@ -126,6 +134,14 @@ export const styles = stylex.create({
 		paddingInline: spacing.lg,
 		backgroundColor: colors.surfaceContainerHigh,
 		containerType: 'inline-size',
+	},
+	redAllianceStartTime: {
+		backgroundColor: colors.redAlliance,
+		color: colors.onRedAlliance,
+	},
+	blueAllianceStartTime: {
+		backgroundColor: colors.blueAlliance,
+		color: colors.onBlueAlliance,
 	},
 	matchTimeValue: {
 		fontVariantNumeric: 'tabular-nums',

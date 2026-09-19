@@ -39,6 +39,7 @@ const qualificationNormal = {
 	nextMatch: {
 		displayLabel: 'Q42',
 		startTime: minutesFromNow(14),
+		alliance: 'red',
 		timing: { queued: timing(-1, true), onDeck: timing(5) },
 	},
 	upcomingMatches: [
@@ -56,6 +57,7 @@ const qualificationBeforeStart = {
 	nextMatch: {
 		displayLabel: 'Q3',
 		startTime: minutesFromNow(18),
+		alliance: 'red',
 		timing: { queued: timing(6), onDeck: timing(12) },
 	},
 	upcomingMatches: [
@@ -71,6 +73,7 @@ const qualificationUrgent = {
 	nextMatch: {
 		displayLabel: 'Q51',
 		startTime: minutesFromNow(-1),
+		alliance: 'blue',
 		timing: { queued: timing(-8, true), onDeck: timing(-4, true) },
 	},
 	upcomingMatches: [upcomingMatch('Q51', -1, 'blue', [581, 604, 9408], 'Back to back')],
@@ -133,6 +136,7 @@ const eliminationPaths = {
 	nextMatch: {
 		displayLabel: 'M11',
 		startTime: minutesFromNow(28),
+		alliance: 'red',
 		timing: { queued: timing(16), onDeck: timing(22) },
 	},
 	upcomingMatches: [upcomingMatch('M11', 28, 'red', [581, 254, 1678, 9408])],
@@ -168,6 +172,7 @@ const eliminationWithEliminatedPath = {
 	nextMatch: {
 		displayLabel: 'F1',
 		startTime: minutesFromNow(34),
+		alliance: 'blue',
 		timing: { queued: timing(22), onDeck: timing(28) },
 	},
 	upcomingMatches: [upcomingMatch('F1', 34, 'blue', [581, 254, 1678])],
@@ -183,6 +188,7 @@ const awardsBreak = {
 	nextMatch: {
 		displayLabel: 'F1',
 		startTime: minutesFromNow(18),
+		alliance: 'blue',
 		timing: { queued: timing(8), onDeck: timing(13) },
 	},
 	upcomingMatches: [{ ...upcomingMatch('F1', 18, 'blue', [581, 254, 1678]), break: activeAwardsBreak }],

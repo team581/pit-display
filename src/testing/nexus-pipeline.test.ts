@@ -14,7 +14,7 @@ describe('Nexus to dashboard fixture pipeline', () => {
 		expect(dashboardFromNexus(nexusScenarios.qualification)).toMatchObject({
 			competitionPhase: 'qualification',
 			currentActivity: { type: 'match', displayLabel: 'Q10' },
-			nextMatch: { displayLabel: 'Q12' },
+			nextMatch: { displayLabel: 'Q12', alliance: 'red' },
 			upcomingMatches: [{ alliance: 'red' }, { alliance: 'blue' }],
 		});
 	});
@@ -31,7 +31,7 @@ describe('Nexus to dashboard fixture pipeline', () => {
 		expect(dashboard).toMatchObject({
 			competitionPhase: 'elimination',
 			currentActivity: { type: 'match', displayLabel: 'M8' },
-			nextMatch: { displayLabel: 'M9' },
+			nextMatch: { displayLabel: 'M9', alliance: 'blue' },
 		});
 		expect(dashboard?.upcomingMatches[0]?.break).toMatchObject({
 			label: 'Break',

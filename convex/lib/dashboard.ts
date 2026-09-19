@@ -35,6 +35,7 @@ export const dashboardData = v.object({
 		v.object({
 			displayLabel: v.string(),
 			startTime: v.nullable(v.number()),
+			alliance: v.union(v.literal('blue'), v.literal('red')),
 			timing: v.object({ queued: matchTiming, onDeck: matchTiming }),
 		}),
 	),
@@ -318,6 +319,7 @@ function createNextMatch(nextMatch: NexusMatch | undefined, parsedNextMatch: Par
 	return {
 		displayLabel: parsedNextMatch.displayLabel,
 		startTime: matchStart(nextMatch) ?? null,
+		alliance: nextMatch.redTeams.includes(TEAM_NUMBER_STRING) ? 'red' : 'blue',
 		timing: {
 			queued: timing(nextMatch.times.estimatedQueueTime, nextMatch.times.actualQueueTime),
 			onDeck: timing(nextMatch.times.estimatedOnDeckTime, nextMatch.times.actualOnDeckTime),

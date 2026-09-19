@@ -137,7 +137,13 @@ function OurMatchCard({
 						))}
 					</div>
 				</div>
-				<div {...stylex.props(styles.cardBody, styles.ourMatchPane)}>
+				<div
+					{...stylex.props(
+						styles.cardBody,
+						styles.ourMatchPane,
+						nextMatch.alliance === 'red' ? styles.redAlliance : styles.blueAlliance,
+					)}
+				>
 					<div {...stylex.props(styles.matchNumberArea)}>
 						<MatchLabel
 							displayLabel={nextMatch.displayLabel}
@@ -145,7 +151,14 @@ function OurMatchCard({
 						/>
 					</div>
 					<div {...stylex.props(styles.matchDetailSlot)}>
-						<div {...stylex.props(styles.matchDetail, styles.matchStartTime)} data-testid="our-match-start-time">
+						<div
+							{...stylex.props(
+								styles.matchDetail,
+								styles.matchStartTime,
+								nextMatch.alliance === 'red' ? styles.redAllianceStartTime : styles.blueAllianceStartTime,
+							)}
+							data-testid="our-match-start-time"
+						>
 							{nextMatch.startTime === null ? (
 								<FittedText className={stylex.props(styles.matchTimeValue).className} maxFontSize="5rem">
 									{startText}
