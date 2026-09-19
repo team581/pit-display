@@ -22,6 +22,8 @@ const secondDurationFormatter = new Intl.DurationFormat('en-US', {
 	seconds: 'short',
 	secondsDisplay: 'always',
 });
+const wholeHoursThreshold = 6 * 60 * 60_000;
+
 function formatDuration(duration: Temporal.Duration, precision: 'minutes' | 'seconds'): string {
 	const formatter = precision === 'minutes' ? durationFormatter : secondDurationFormatter;
 	return formatter.format(duration).replaceAll(',', '');
@@ -36,13 +38,19 @@ export function formatRelativeTime(
 	if (time === null) return 'Not available';
 	const difference = time - now;
 	if (Math.abs(difference) < (precision === 'seconds' ? 1000 : 30_000)) return 'now';
-	const displayedPrecision = precision === 'seconds' && Math.abs(difference) < 10 * 60_000 ? 'seconds' : 'minutes';
+	const absoluteDifference = Math.abs(difference);
+	const displayedPrecision =
+		absoluteDifference >= wholeHoursThreshold
+			? 'hours'
+			: precision === 'seconds' && absoluteDifference < 10 * 60_000
+				? 'seconds'
+				: 'minutes';
 	const duration = Temporal.Duration.from({ milliseconds: Math.abs(difference) }).round({
 		largestUnit: 'hours',
 		smallestUnit: displayedPrecision,
 		roundingMode: displayedPrecision === 'seconds' ? 'floor' : 'halfExpand',
 	});
-	const formattedDuration = formatDuration(duration, displayedPrecision);
+	const formattedDuration = formatDuration(duration, displayedPrecision === 'seconds' ? 'seconds' : 'minutes');
 	return difference < 0 ? `${formattedDuration} ago` : `${futurePrefix}${formattedDuration}`;
 }
 

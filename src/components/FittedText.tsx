@@ -10,6 +10,9 @@ const styles = stylex.create({
 		justifyContent: 'center',
 		overflow: 'hidden',
 	},
+	startAligned: {
+		justifyContent: 'flex-start',
+	},
 	measurement: {
 		position: 'absolute',
 		visibility: 'hidden',
@@ -19,13 +22,15 @@ const styles = stylex.create({
 });
 
 export function FittedText({
+	align = 'center',
 	children,
 	className,
 	maxFontSize,
 }: {
+	align?: 'center' | 'start';
 	children: string;
 	className?: string;
-	maxFontSize: string;
+	maxFontSize?: string;
 }) {
 	const rootRef = useRef<HTMLSpanElement>(null);
 	const measurementRef = useRef<HTMLElement>(null);
@@ -64,15 +69,15 @@ export function FittedText({
 	const measurementClassName = `${stylex.props(styles.measurement).className} ${className ?? ''}`;
 
 	return (
-		<span {...stylex.props(styles.root)} ref={rootRef}>
-			<TextMorph as="strong" className={className} style={{ fontSize }}>
+		<span {...stylex.props(styles.root, align === 'start' && styles.startAligned)} ref={rootRef}>
+			<TextMorph as="strong" className={className} style={fontSize ? { fontSize } : undefined}>
 				{children}
 			</TextMorph>
 			<strong
 				aria-hidden="true"
 				className={measurementClassName}
 				ref={measurementRef}
-				style={{ fontSize: maxFontSize }}
+				style={maxFontSize ? { fontSize: maxFontSize } : undefined}
 			>
 				{children}
 			</strong>

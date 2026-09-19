@@ -104,21 +104,13 @@ function OurMatchCard({ nextMatch, now }: { nextMatch: NonNullable<NextMatch>; n
 			</div>
 			<div {...stylex.props(styles.ourMatchBody)}>
 				<div {...stylex.props(styles.cardBody, styles.ourMatchPane, styles.leadingPane, styles.timingBody)}>
-					<div {...stylex.props(styles.matchCountdown)}>
+					<div {...stylex.props(styles.matchCountdown)} data-testid="our-match-countdown">
 						<span {...stylex.props(styles.matchCountdownLabel)}>
 							{countdown === 'Soon' || countdown === 'TBD' ? 'Starts' : 'Starts in'}
 						</span>
-						<TextMorph
-							as="strong"
-							{...stylex.props(
-								styles.matchCountdownValue,
-								countdown.length > 9 && styles.matchCountdownValueLong,
-								countdown.includes('hr') && styles.matchCountdownValueWithHours,
-								countdown.includes('sec') && styles.matchCountdownValueWithSeconds,
-							)}
-						>
+						<FittedText className={stylex.props(styles.matchCountdownValue).className} maxFontSize="7rem">
 							{countdown}
-						</TextMorph>
+						</FittedText>
 					</div>
 					<div {...stylex.props(styles.timingStatuses)}>
 						{statuses.map((status) => (

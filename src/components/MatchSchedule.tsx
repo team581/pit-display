@@ -1,9 +1,9 @@
 import * as stylex from '@stylexjs/stylex';
 import { ClientOnly } from '@tanstack/react-router';
-import { TextMorph } from 'torph/react';
 import type { Dashboard } from '../dashboard';
 import { formatMatchStart } from '../format-time';
 import { AllianceBadge } from './AllianceBadge';
+import { FittedText } from './FittedText';
 import { MatchLabel } from './MatchLabel';
 import { styles } from './MatchSchedule.stylex';
 import { MatchWarning } from './MatchWarning';
@@ -29,22 +29,22 @@ export function MatchSchedule({
 				{matches.map((match) => (
 					<article {...stylex.props(styles.matchRow)} key={match.key}>
 						<MatchLabel displayLabel={match.displayLabel} {...stylex.props(styles.matchNumber)} />
-						<div {...stylex.props(styles.matchTime)}>
+						<div {...stylex.props(styles.matchTime)} data-testid="schedule-match-start">
 							{match.startTime === null ? (
-								<TextMorph as="strong" {...stylex.props(styles.startTime)}>
+								<FittedText align="start" className={stylex.props(styles.startTime).className}>
 									{formatMatchStart(match.startTime, now)}
-								</TextMorph>
+								</FittedText>
 							) : (
 								<ClientOnly
 									fallback={
-										<TextMorph as="strong" {...stylex.props(styles.startTime)}>
+										<FittedText align="start" className={stylex.props(styles.startTime).className}>
 											Starts —
-										</TextMorph>
+										</FittedText>
 									}
 								>
-									<TextMorph as="strong" {...stylex.props(styles.startTime)}>
+									<FittedText align="start" className={stylex.props(styles.startTime).className}>
 										{formatMatchStart(match.startTime, now)}
-									</TextMorph>
+									</FittedText>
 								</ClientOnly>
 							)}
 						</div>

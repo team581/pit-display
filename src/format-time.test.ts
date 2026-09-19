@@ -24,6 +24,11 @@ describe('formatRelativeTime', () => {
 		expect(formatRelativeTime(10 * minute, 0, 'in ', 'seconds')).toBe('in 10 min');
 		expect(formatRelativeTime(75 * minute + 20 * second, 0, '', 'seconds')).toBe('1 hr 15 min');
 	});
+
+	it('rounds durations of at least six hours to whole hours', () => {
+		expect(formatRelativeTime((12 * 60 + 53) * minute, 0, 'in ')).toBe('in 13 hr');
+		expect(formatRelativeTime(0, (6 * 60 + 20) * minute, '')).toBe('6 hr ago');
+	});
 });
 
 describe('formatMatchStart', () => {

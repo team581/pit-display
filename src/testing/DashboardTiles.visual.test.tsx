@@ -18,6 +18,9 @@ setupVisualTests();
 const qualification = requireDashboard('qualification-normal');
 const elimination = requireDashboard('elimination-paths');
 const allianceSelection = requireDashboard('alliance-selection-assigned');
+const longStartTime = SCENARIO_NOW + (12 * 60 + 53) * 60_000;
+const longNextMatch = { ...qualification.nextMatch!, startTime: longStartTime };
+const longUpcomingMatch = { ...qualification.upcomingMatches[1], startTime: longStartTime };
 
 function TilePreview({ children, height }: { children: ReactNode; height?: string }) {
 	return (
@@ -30,7 +33,7 @@ function TilePreview({ children, height }: { children: ReactNode; height?: strin
 	);
 }
 
-const tileCases: { name: string; render: () => ReactNode }[] = [
+const tileCases: { name: string; overflowTestId?: string; render: () => ReactNode }[] = [
 	{
 		name: 'match-summary',
 		render: () => (
@@ -49,6 +52,29 @@ const tileCases: { name: string; render: () => ReactNode }[] = [
 		render: () => (
 			<TilePreview height="34rem">
 				<MatchSchedule eventKey={qualification.eventKey} matches={qualification.upcomingMatches} now={SCENARIO_NOW} />
+			</TilePreview>
+		),
+	},
+	{
+		name: 'match-summary-long-countdown',
+		overflowTestId: 'our-match-countdown',
+		render: () => (
+			<TilePreview>
+				<MatchSummary
+					competitionPhase={qualification.competitionPhase}
+					currentActivity={qualification.currentActivity}
+					nextMatch={longNextMatch}
+					now={SCENARIO_NOW}
+				/>
+			</TilePreview>
+		),
+	},
+	{
+		name: 'qualification-schedule-long-countdown',
+		overflowTestId: 'schedule-match-start',
+		render: () => (
+			<TilePreview height="18rem">
+				<MatchSchedule eventKey={qualification.eventKey} matches={[longUpcomingMatch]} now={SCENARIO_NOW} />
 			</TilePreview>
 		),
 	},
@@ -102,6 +128,17 @@ for (const tile of tileCases) {
 	test(`tiles: ${tile.name}`, async () => {
 		await render(tile.render());
 		await waitForAssets();
+		if (tile.overflowTestId) {
+			const container = document.querySelector<HTMLElement>(`[data-testid="${tile.overflowTestId}"]`);
+			const value = container?.querySelector<HTMLElement>('strong:not([aria-hidden="true"])');
+			expect(container).not.toBeNull();
+			expect(value).not.toBeNull();
+			const containerBounds = container!.getBoundingClientRect();
+			const valueBounds = value!.getBoundingClientRect();
+			expect(valueBounds.left).toBeGreaterThanOrEqual(containerBounds.left);
+			expect(valueBounds.right).toBeLessThanOrEqual(containerBounds.right);
+			expect(value!.scrollWidth).toBeLessThanOrEqual(container!.clientWidth);
+		}
 		await expect(page.getByTestId('visual-target')).toMatchScreenshot(`tile-${tile.name}`);
 	});
 }

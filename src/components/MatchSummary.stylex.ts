@@ -146,20 +146,10 @@ export const styles = stylex.create({
 		letterSpacing: '0.035em',
 	},
 	matchCountdownValue: {
-		fontSize: 'clamp(3.5rem, 26cqw, 7rem)',
 		fontVariantNumeric: 'tabular-nums',
 		lineHeight: 1,
 		letterSpacing: '-0.03em',
 		whiteSpace: 'nowrap',
-	},
-	matchCountdownValueLong: {
-		fontSize: 'clamp(2.5rem, 16cqw, 6rem)',
-	},
-	matchCountdownValueWithHours: {
-		fontSize: 'clamp(2.5rem, 21.5cqw, 6rem)',
-	},
-	matchCountdownValueWithSeconds: {
-		fontSize: 'clamp(2.5rem, 19.5cqw, 6rem)',
 	},
 	timingStatuses: {
 		display: 'flex',
