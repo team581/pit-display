@@ -8,7 +8,7 @@ export const styles = stylex.create({
 		display: 'grid',
 		minHeight: 0,
 		height: { default: '100%', [portrait]: 'auto' },
-		gridTemplateColumns: { default: 'repeat(3, minmax(0, 1fr))', [portrait]: '1fr' },
+		gridTemplateColumns: { default: 'repeat(4, minmax(0, 1fr))', [portrait]: '1fr' },
 		gridColumn: '1 / -1',
 		gap: { default: 0, [portrait]: spacing.lg },
 	},
@@ -28,13 +28,13 @@ export const styles = stylex.create({
 	},
 	ourMatchCard: {
 		height: { default: '100%', [portrait]: 'auto' },
-		gridColumn: { default: 'span 2', [portrait]: 'auto' },
+		gridColumn: { default: 'span 3', [portrait]: 'auto' },
 	},
 	ourMatchBody: {
 		display: 'grid',
 		minHeight: 0,
 		flex: 1,
-		gridTemplateColumns: { default: 'repeat(2, minmax(0, 1fr))', [portrait]: '1fr' },
+		gridTemplateColumns: { default: '2fr 1fr', [portrait]: '1fr' },
 	},
 	ourMatchPane: {
 		minHeight: { default: 0, [portrait]: '19.5rem' },
@@ -47,7 +47,7 @@ export const styles = stylex.create({
 		borderBottomStyle: 'solid',
 		borderBottomColor: colors.outlineVariant,
 	},
-	noNextCard: { gridColumn: { default: 'span 2', [portrait]: 'auto' } },
+	noNextCard: { gridColumn: { default: 'span 3', [portrait]: 'auto' } },
 	cardBody: {
 		display: 'flex',
 		minHeight: 0,
@@ -74,12 +74,21 @@ export const styles = stylex.create({
 		padding: spacing.lg,
 	},
 	matchNumber: {
-		fontSize: { default: 'clamp(8rem, 12vw, 12rem)', [portrait]: '7rem' },
 		fontWeight: 700,
 		fontVariantNumeric: 'tabular-nums',
 		lineHeight: 0.82,
 		letterSpacing: '-0.045em',
 		whiteSpace: 'nowrap',
+	},
+	currentMatchNumber: {
+		fontSize: { default: 'clamp(7rem, 10.5vw, 10rem)', [portrait]: '7rem' },
+	},
+	currentHeading: {
+		fontSize: { default: '2rem', [portrait]: '2.625rem' },
+		whiteSpace: 'nowrap',
+	},
+	nextMatchNumber: {
+		fontSize: { default: 'clamp(7rem, 10.5vw, 10rem)', [portrait]: '7rem' },
 	},
 	currentStage: {
 		display: 'flex',
@@ -141,7 +150,7 @@ export const styles = stylex.create({
 	},
 	matchCountdownLabel: {
 		color: colors.onSurfaceVariant,
-		fontSize: { default: '2.5rem', [portrait]: '2rem' },
+		fontSize: { default: '3.25rem', [portrait]: '2rem' },
 		fontWeight: 700,
 		letterSpacing: '0.035em',
 	},
@@ -154,14 +163,14 @@ export const styles = stylex.create({
 	timingStatuses: {
 		display: 'flex',
 		width: '100%',
-		minHeight: { default: '8.5rem', [portrait]: '7.5rem' },
+		minHeight: { default: '9.5rem', [portrait]: '7.5rem' },
 		flexDirection: 'column',
 		justifyContent: 'flex-end',
 		gap: spacing.sm,
 	},
 	timingRow: {
 		display: 'flex',
-		minHeight: { default: '4rem', [portrait]: '3.5rem' },
+		minHeight: { default: '4.5rem', [portrait]: '3.5rem' },
 		alignItems: 'center',
 		justifyContent: 'space-between',
 		gap: spacing.md,
@@ -175,13 +184,13 @@ export const styles = stylex.create({
 	},
 	timingLabel: {
 		color: colors.onSurfaceVariant,
-		fontSize: '1.5rem',
+		fontSize: { default: '1.75rem', [portrait]: '1.5rem' },
 		fontWeight: 700,
 		letterSpacing: '0.035em',
 		whiteSpace: 'nowrap',
 	},
 	timingValue: {
-		fontSize: '1.75rem',
+		fontSize: { default: '2.25rem', [portrait]: '1.75rem' },
 		fontVariantNumeric: 'tabular-nums',
 		whiteSpace: 'nowrap',
 	},

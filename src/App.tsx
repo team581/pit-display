@@ -93,7 +93,12 @@ export function DashboardView({
 			</header>
 
 			{dashboard ? (
-				<div {...stylex.props(styles.dashboardContent)}>
+				<div
+					{...stylex.props(
+						styles.dashboardContent,
+						dashboard.competitionPhase === 'qualification' ? styles.qualificationContent : undefined,
+					)}
+				>
 					<MatchSummary
 						competitionPhase={dashboard.competitionPhase}
 						currentActivity={dashboard.currentActivity}

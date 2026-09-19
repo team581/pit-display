@@ -58,6 +58,9 @@ export const styles = stylex.create({
 		gap: { default: 0, [portrait]: spacing.lg },
 		padding: { default: 0, [portrait]: spacing.lg },
 	},
+	qualificationContent: {
+		gridTemplateRows: 'minmax(0, 1fr) 22rem',
+	},
 	emptyState: {
 		display: 'grid',
 		minHeight: `calc(100svh - 5rem - env(safe-area-inset-top, 0px) - min(${statusBarClearance}, env(safe-area-inset-top, 0px)))`,

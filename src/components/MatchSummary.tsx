@@ -61,7 +61,7 @@ function CurrentActivityCard({
 	return (
 		<article {...stylex.props(styles.card, styles.dividedCard)}>
 			<div {...stylex.props(panelStyles.header)}>
-				<h2 {...stylex.props(panelStyles.heading)}>Currently on field</h2>
+				<h2 {...stylex.props(panelStyles.heading, styles.currentHeading)}>Currently on field</h2>
 			</div>
 			<div {...stylex.props(styles.cardBody)}>
 				<div {...stylex.props(styles.matchNumberArea)}>
@@ -73,7 +73,10 @@ function CurrentActivityCard({
 					) : state.kind === 'awards' ? (
 						<strong {...stylex.props(styles.currentActivity)}>Awards</strong>
 					) : (
-						<MatchLabel displayLabel={state.displayLabel} {...stylex.props(styles.matchNumber)} />
+						<MatchLabel
+							displayLabel={state.displayLabel}
+							{...stylex.props(styles.matchNumber, styles.currentMatchNumber)}
+						/>
 					)}
 				</div>
 				{state.statusText && (
@@ -90,7 +93,15 @@ function CurrentActivityCard({
 	);
 }
 
-function OurMatchCard({ nextMatch, now }: { nextMatch: NonNullable<NextMatch>; now: number }) {
+function OurMatchCard({
+	countdownMaxFontSize,
+	nextMatch,
+	now,
+}: {
+	countdownMaxFontSize: string;
+	nextMatch: NonNullable<NextMatch>;
+	now: number;
+}) {
 	const startText =
 		nextMatch.startTime === null ? 'Start time unavailable' : `Starts ${formatClock(nextMatch.startTime)}`;
 	const countdown =
@@ -108,7 +119,10 @@ function OurMatchCard({ nextMatch, now }: { nextMatch: NonNullable<NextMatch>; n
 						<span {...stylex.props(styles.matchCountdownLabel)}>
 							{countdown === 'Soon' || countdown === 'TBD' ? 'Starts' : 'Starts in'}
 						</span>
-						<FittedText className={stylex.props(styles.matchCountdownValue).className} maxFontSize="7rem">
+						<FittedText
+							className={stylex.props(styles.matchCountdownValue).className}
+							maxFontSize={countdownMaxFontSize}
+						>
 							{countdown}
 						</FittedText>
 					</div>
@@ -125,23 +139,26 @@ function OurMatchCard({ nextMatch, now }: { nextMatch: NonNullable<NextMatch>; n
 				</div>
 				<div {...stylex.props(styles.cardBody, styles.ourMatchPane)}>
 					<div {...stylex.props(styles.matchNumberArea)}>
-						<MatchLabel displayLabel={nextMatch.displayLabel} {...stylex.props(styles.matchNumber)} />
+						<MatchLabel
+							displayLabel={nextMatch.displayLabel}
+							{...stylex.props(styles.matchNumber, styles.nextMatchNumber)}
+						/>
 					</div>
 					<div {...stylex.props(styles.matchDetailSlot)}>
 						<div {...stylex.props(styles.matchDetail, styles.matchStartTime)} data-testid="our-match-start-time">
 							{nextMatch.startTime === null ? (
-								<FittedText className={stylex.props(styles.matchTimeValue).className} maxFontSize="4.1875rem">
+								<FittedText className={stylex.props(styles.matchTimeValue).className} maxFontSize="5rem">
 									{startText}
 								</FittedText>
 							) : (
 								<ClientOnly
 									fallback={
-										<FittedText className={stylex.props(styles.matchTimeValue).className} maxFontSize="4.1875rem">
+										<FittedText className={stylex.props(styles.matchTimeValue).className} maxFontSize="5rem">
 											Starts —
 										</FittedText>
 									}
 								>
-									<FittedText className={stylex.props(styles.matchTimeValue).className} maxFontSize="4.1875rem">
+									<FittedText className={stylex.props(styles.matchTimeValue).className} maxFontSize="5rem">
 										{startText}
 									</FittedText>
 								</ClientOnly>
@@ -181,7 +198,15 @@ export function MatchSummary({
 	return (
 		<section {...stylex.props(styles.grid)} aria-label="Match summary">
 			<CurrentActivityCard competitionPhase={competitionPhase} currentActivity={currentActivity} now={now} />
-			{nextMatch ? <OurMatchCard nextMatch={nextMatch} now={now} /> : <NoNextMatchCard />}
+			{nextMatch ? (
+				<OurMatchCard
+					countdownMaxFontSize={competitionPhase === 'qualification' ? '12.5rem' : '10rem'}
+					nextMatch={nextMatch}
+					now={now}
+				/>
+			) : (
+				<NoNextMatchCard />
+			)}
 		</section>
 	);
 }
