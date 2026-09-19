@@ -19,12 +19,7 @@ export function MatchSchedule({
 	now: number;
 }) {
 	return (
-		<section {...stylex.props(panelStyles.schedule)} aria-labelledby="schedule-heading">
-			<div {...stylex.props(panelStyles.header)}>
-				<h2 {...stylex.props(panelStyles.heading)} id="schedule-heading">
-					Next matches
-				</h2>
-			</div>
+		<section {...stylex.props(panelStyles.schedule)} aria-label="Next matches">
 			<div {...stylex.props(panelStyles.scrollArea, styles.rows)}>
 				{matches.map((match) => (
 					<article {...stylex.props(styles.matchRow)} key={match.key}>
