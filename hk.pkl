@@ -11,10 +11,14 @@ steps {
     fix = null
     prefix = "vp exec"
   }
+  ["playwright-daemon"] {
+    check = "pitchfork start playwright"
+  }
   ["visual-snapshots"] {
     check = "vp run test:visual"
     fix = "vp run test:visual:update"
     stage = "src/testing/__screenshots__/**"
+    depends = "playwright-daemon"
     exclusive = true
   }
 }
