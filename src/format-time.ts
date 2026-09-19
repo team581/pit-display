@@ -18,11 +18,15 @@ export function formatClockWithSeconds(time: number): string {
 
 const durationFormatter = new Intl.DurationFormat('en-US', {
 	style: 'short',
+	hours: 'narrow',
+	hoursDisplay: 'auto',
 	minutes: 'narrow',
 	minutesDisplay: 'auto',
 });
 const secondDurationFormatter = new Intl.DurationFormat('en-US', {
 	style: 'short',
+	hours: 'narrow',
+	hoursDisplay: 'auto',
 	minutes: 'narrow',
 	minutesDisplay: 'auto',
 	seconds: 'narrow',

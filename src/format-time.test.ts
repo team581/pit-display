@@ -8,7 +8,7 @@ describe('formatRelativeTime', () => {
 	it('formats future and past timestamps for their display context', () => {
 		expect(formatRelativeTime(15 * minute, 0, '')).toBe('15m');
 		expect(formatRelativeTime(15 * minute, 0, '~')).toBe('~15m');
-		expect(formatRelativeTime(75 * minute, 0, 'in ')).toBe('in 1 hr 15m');
+		expect(formatRelativeTime(75 * minute, 0, 'in ')).toBe('in 1h 15m');
 		expect(formatRelativeTime(0, 15 * minute, '~')).toBe('15m ago');
 		expect(formatRelativeTime(null, 0, '~')).toBe('Not available');
 	});
@@ -23,12 +23,12 @@ describe('formatRelativeTime', () => {
 	it('omits seconds for durations of at least ten minutes', () => {
 		expect(formatRelativeTime(9 * minute + 59 * second, 0, 'in ', 'seconds')).toBe('in 9m 59s');
 		expect(formatRelativeTime(10 * minute, 0, 'in ', 'seconds')).toBe('in 10m');
-		expect(formatRelativeTime(75 * minute + 20 * second, 0, '', 'seconds')).toBe('1 hr 15m');
+		expect(formatRelativeTime(75 * minute + 20 * second, 0, '', 'seconds')).toBe('1h 15m');
 	});
 
 	it('rounds durations of at least six hours to whole hours', () => {
-		expect(formatRelativeTime((12 * 60 + 53) * minute, 0, 'in ')).toBe('in 13 hr');
-		expect(formatRelativeTime(0, (6 * 60 + 20) * minute, '')).toBe('6 hr ago');
+		expect(formatRelativeTime((12 * 60 + 53) * minute, 0, 'in ')).toBe('in 13h');
+		expect(formatRelativeTime(0, (6 * 60 + 20) * minute, '')).toBe('6h ago');
 	});
 });
 
