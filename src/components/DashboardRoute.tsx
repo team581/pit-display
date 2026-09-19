@@ -2,6 +2,8 @@ import { useLoaderData } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import App from '../App';
 
+const serviceWorkerUpdateIntervalMs = 60_000;
+
 export function DashboardRoute() {
 	const { loadedAt } = useLoaderData({ from: '/' });
 
@@ -14,7 +16,50 @@ export function DashboardRoute() {
 			document.head.append(script);
 		}
 
-		if (!import.meta.hot && 'serviceWorker' in navigator) void navigator.serviceWorker.register('/sw.js');
+		if (import.meta.hot || !('serviceWorker' in navigator)) return;
+
+		let disposed = false;
+		let updateInterval: number | undefined;
+		let updateInProgress = false;
+		let registration: ServiceWorkerRegistration | undefined;
+
+		const checkForUpdate = async () => {
+			if (!registration || updateInProgress || !navigator.onLine || document.visibilityState !== 'visible') return;
+
+			updateInProgress = true;
+			try {
+				await registration.update();
+			} catch {
+				// The next interval or online event will retry the update check.
+			} finally {
+				updateInProgress = false;
+			}
+		};
+
+		const handleVisibilityChange = () => void checkForUpdate();
+		const handleOnline = () => void checkForUpdate();
+
+		void navigator.serviceWorker
+			.register('/sw.js', { updateViaCache: 'none' })
+			.then((nextRegistration) => {
+				if (disposed) return;
+
+				registration = nextRegistration;
+				void checkForUpdate();
+				updateInterval = window.setInterval(() => void checkForUpdate(), serviceWorkerUpdateIntervalMs);
+				document.addEventListener('visibilitychange', handleVisibilityChange);
+				window.addEventListener('online', handleOnline);
+			})
+			.catch(() => {
+				// Registration will be retried on the next page load.
+			});
+
+		return () => {
+			disposed = true;
+			if (updateInterval !== undefined) window.clearInterval(updateInterval);
+			document.removeEventListener('visibilitychange', handleVisibilityChange);
+			window.removeEventListener('online', handleOnline);
+		};
 	}, []);
 
 	return <App loadedAt={loadedAt} />;
