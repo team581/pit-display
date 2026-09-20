@@ -224,7 +224,7 @@ test('match countdown fits vertically in short qualification and elimination sum
 	const view = await render(<DashboardView connected dashboard={singleStatusQualification} now={SCENARIO_NOW} />);
 	await waitForAssets();
 
-	function expectCountdownFits(onDeckVisible: boolean) {
+	function expectCountdownFits(onDeckVisible: boolean, minimumFontSize: number) {
 		const container = document.querySelector<HTMLElement>('[data-testid="our-match-countdown"]');
 		const value = container?.querySelector<HTMLElement>('strong:not([aria-hidden="true"])');
 		expect(container).not.toBeNull();
@@ -235,16 +235,16 @@ test('match countdown fits vertically in short qualification and elimination sum
 		const valueBounds = value!.getBoundingClientRect();
 		expect(valueBounds.top).toBeGreaterThanOrEqual(containerBounds.top);
 		expect(valueBounds.bottom).toBeLessThanOrEqual(containerBounds.bottom);
-		expect(Number.parseFloat(getComputedStyle(value!).fontSize)).toBeGreaterThan(24);
+		expect(Number.parseFloat(getComputedStyle(value!).fontSize)).toBeGreaterThan(minimumFontSize);
 	}
 
-	expectCountdownFits(false);
+	expectCountdownFits(false, 150);
 	await view.rerender(<DashboardView connected dashboard={eliminationSingleStatusDashboard} now={SCENARIO_NOW} />);
 	await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
-	expectCountdownFits(false);
+	expectCountdownFits(false, 150);
 	await view.rerender(<DashboardView connected dashboard={eliminationOnDeckDashboard} now={SCENARIO_NOW} />);
 	await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
-	expectCountdownFits(true);
+	expectCountdownFits(true, 24);
 	await expect(page.getByRole('main')).toMatchScreenshot('elimination-on-deck-queued-short');
 	await page.viewport(1376, 1032);
 });

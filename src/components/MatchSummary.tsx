@@ -130,9 +130,16 @@ function OurMatchCard({
 						highlightCountdown && styles.highlightedTimingBody,
 					)}
 				>
-					<div {...stylex.props(styles.matchCountdown)} data-testid="our-match-countdown">
+					<div
+						{...stylex.props(styles.matchCountdown, statuses.length === 1 && styles.singleStatusMatchCountdown)}
+						data-testid="our-match-countdown"
+					>
 						<span
-							{...stylex.props(styles.matchCountdownLabel, highlightCountdown && styles.highlightedMatchCountdownLabel)}
+							{...stylex.props(
+								styles.matchCountdownLabel,
+								statuses.length === 1 && styles.singleStatusMatchCountdownLabel,
+								highlightCountdown && styles.highlightedMatchCountdownLabel,
+							)}
 						>
 							{countdown === 'Soon' || countdown === 'TBD' ? 'Starts' : 'Starts in'}
 						</span>
@@ -145,7 +152,7 @@ function OurMatchCard({
 							{countdown}
 						</FittedText>
 					</div>
-					<div {...stylex.props(styles.timingStatuses)}>
+					<div {...stylex.props(styles.timingStatuses, statuses.length === 1 && styles.singleTimingStatus)}>
 						{statuses.map((status) => (
 							<div
 								{...stylex.props(styles.timingRow, highlightCountdown && styles.highlightedTimingRow)}
