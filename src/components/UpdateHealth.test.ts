@@ -13,12 +13,16 @@ describe('updateHealthState', () => {
 	});
 
 	it('calls out outdated Nexus data and server disconnections', () => {
-		expect(updateHealthState(true, 0, 5 * minute)).toEqual({
-			label: 'Nexus outdated · updated 5m ago',
+		expect(updateHealthState(true, 0, 10 * minute)).toEqual({
+			label: 'Nexus updated 10m ago',
+			hasProblem: false,
+		});
+		expect(updateHealthState(true, 0, 10 * minute + 1)).toEqual({
+			label: 'Nexus outdated · updated 10m ago',
 			hasProblem: true,
 		});
-		expect(updateHealthState(false, 0, 6 * minute)).toEqual({
-			label: 'Server disconnected · Nexus outdated · updated 6m ago',
+		expect(updateHealthState(false, 0, 11 * minute)).toEqual({
+			label: 'Server disconnected · Nexus outdated · updated 11m ago',
 			hasProblem: true,
 		});
 		expect(updateHealthState(false, undefined, 0)).toEqual({

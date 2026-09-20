@@ -1,6 +1,6 @@
 import { formatRelativeTime } from './format-time';
 
-const nexusStaleAfter = 5 * 60_000;
+const nexusStaleAfter = 10 * 60_000;
 
 export function updateHealthState(
 	connected: boolean,
@@ -8,7 +8,7 @@ export function updateHealthState(
 	now: number,
 ): { label: string; hasProblem: boolean } {
 	const updateAge = receivedAt === undefined ? null : formatRelativeTime(receivedAt, now, 'in ');
-	const nexusIsStale = receivedAt === undefined || now - receivedAt >= nexusStaleAfter;
+	const nexusIsStale = receivedAt === undefined || now - receivedAt > nexusStaleAfter;
 
 	if (connected && !nexusIsStale) return { label: `Nexus updated ${updateAge}`, hasProblem: false };
 
