@@ -3,6 +3,7 @@ import { ClientOnly } from '@tanstack/react-router';
 import { TextMorph } from 'torph/react';
 import type { Dashboard, UpcomingMatch } from '../dashboard';
 import { formatClock, formatRelativeTime } from '../format-time';
+import { DurationMorph } from './DurationMorph';
 import { breakStatusText, isBreakActive } from './elimination-break';
 import { MatchLabel } from './MatchLabel';
 import { panelStyles } from './Panel.stylex';
@@ -111,9 +112,9 @@ export function EliminationSchedule({
 										<div {...stylex.props(styles.primaryRow)}>
 											<MatchLabel displayLabel={row.displayLabel} {...stylex.props(styles.matchNumber)} />
 											<div {...stylex.props(styles.matchTime)}>
-												<TextMorph as="strong" {...stylex.props(styles.startTime)}>
+												<DurationMorph as="strong" {...stylex.props(styles.startTime)}>
 													{row.startTime === null ? 'Time TBD' : formatRelativeTime(row.startTime, now, 'in ')}
-												</TextMorph>
+												</DurationMorph>
 												{!row.break && row.startTime !== null && (
 													<ClientOnly
 														fallback={

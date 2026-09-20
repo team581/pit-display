@@ -1,9 +1,9 @@
 import * as stylex from '@stylexjs/stylex';
 import { ClientOnly } from '@tanstack/react-router';
-import { TextMorph } from 'torph/react';
 import type { Dashboard } from '../dashboard';
 import { formatMatchTiming, timingStatusMilestones } from '../dashboard-time';
 import { formatClock, formatRelativeTime } from '../format-time';
+import { DurationMorph } from './DurationMorph';
 import { FittedText } from './FittedText';
 import { MatchLabel } from './MatchLabel';
 import { styles } from './MatchSummary.stylex';
@@ -82,7 +82,11 @@ function CurrentActivityCard({
 				{state.statusText && (
 					<div {...stylex.props(styles.matchDetailSlot)}>
 						<div {...stylex.props(styles.matchDetail, styles.matchStartTime)} data-testid="current-activity-status">
-							<FittedText className={stylex.props(styles.matchTimeValue).className} maxFontSize="4.1875rem">
+							<FittedText
+								className={stylex.props(styles.matchTimeValue).className}
+								maxFontSize="4.1875rem"
+								morphDuration
+							>
 								{state.statusText}
 							</FittedText>
 						</div>
@@ -123,6 +127,7 @@ function OurMatchCard({
 						<FittedText
 							className={stylex.props(styles.matchCountdownValue).className}
 							maxFontSize={countdownMaxFontSize}
+							morphDuration
 						>
 							{countdown}
 						</FittedText>
@@ -131,9 +136,9 @@ function OurMatchCard({
 						{statuses.map((status) => (
 							<div {...stylex.props(styles.timingRow)} key={status.label}>
 								<span {...stylex.props(styles.timingLabel)}>{status.label}</span>
-								<TextMorph as="strong" {...stylex.props(styles.timingValue)}>
+								<DurationMorph as="strong" {...stylex.props(styles.timingValue)}>
 									{formatMatchTiming(status, now)}
-								</TextMorph>
+								</DurationMorph>
 							</div>
 						))}
 					</div>

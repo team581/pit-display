@@ -1,6 +1,7 @@
 import * as stylex from '@stylexjs/stylex';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { TextMorph } from 'torph/react';
+import { DurationMorph } from './DurationMorph';
 
 const styles = stylex.create({
 	root: {
@@ -27,11 +28,13 @@ export function FittedText({
 	children,
 	className,
 	maxFontSize,
+	morphDuration = false,
 }: {
 	align?: 'center' | 'start';
 	children: string;
 	className?: string;
 	maxFontSize?: string;
+	morphDuration?: boolean;
 }) {
 	const rootRef = useRef<HTMLSpanElement>(null);
 	const measurementRef = useRef<HTMLElement>(null);
@@ -71,9 +74,15 @@ export function FittedText({
 
 	return (
 		<span {...stylex.props(styles.root, align === 'start' && styles.startAligned)} ref={rootRef}>
-			<TextMorph as="strong" className={className} style={fontSize ? { fontSize } : undefined}>
-				{children}
-			</TextMorph>
+			{morphDuration ? (
+				<DurationMorph as="strong" className={className} style={fontSize ? { fontSize } : undefined}>
+					{children}
+				</DurationMorph>
+			) : (
+				<TextMorph as="strong" className={className} style={fontSize ? { fontSize } : undefined}>
+					{children}
+				</TextMorph>
+			)}
 			<strong
 				aria-hidden="true"
 				className={measurementClassName}
