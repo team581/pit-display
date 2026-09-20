@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex';
 import { convexQuery } from '@convex-dev/react-query';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { ClientOnly } from '@tanstack/react-router';
 import { useConvexConnectionState } from 'convex/react';
 import { useEffect, useState } from 'react';
@@ -19,7 +19,6 @@ import { TEAM_NUMBER } from './team';
 
 function App({ loadedAt }: { loadedAt: number }) {
 	const [now, setNow] = useState(loadedAt);
-	const { data: dashboard } = useSuspenseQuery(convexQuery(api.dashboard.get, {}));
 
 	useEffect(() => {
 		const updateNow = () => setNow(Date.now());
@@ -65,8 +64,8 @@ function App({ loadedAt }: { loadedAt: number }) {
 	}, []);
 
 	return (
-		<ClientOnly fallback={<DashboardView connected={false} dashboard={dashboard} now={now} />}>
-			<ConnectedDashboardView dashboard={dashboard} now={now} />
+		<ClientOnly fallback={<DashboardView connected={false} dashboard={undefined} now={now} />}>
+			<ConnectedDashboardView now={now} />
 		</ClientOnly>
 	);
 }
@@ -129,7 +128,8 @@ export function DashboardView({
 	);
 }
 
-function ConnectedDashboardView({ dashboard, now }: { dashboard: DashboardData | null | undefined; now: number }) {
+function ConnectedDashboardView({ now }: { now: number }) {
+	const { data: dashboard } = useQuery(convexQuery(api.dashboard.get, {}));
 	const { isWebSocketConnected } = useConvexConnectionState();
 	return <DashboardView connected={isWebSocketConnected} dashboard={dashboard} now={now} />;
 }
