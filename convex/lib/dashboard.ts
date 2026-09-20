@@ -108,7 +108,7 @@ const ordinalSuffixes: Record<Intl.LDMLPluralRule, string> = {
 };
 
 function parseMatchLabel(label: string): ParsedMatch | null {
-	const match = /^(Practice|Qualification|Playoff|Final) (\d+)/.exec(label);
+	const match = /^(Practice|Qualification|Playoff|Final) (\d+)( Replay)?/.exec(label);
 	if (!match) return null;
 
 	const type =
@@ -121,7 +121,7 @@ function parseMatchLabel(label: string): ParsedMatch | null {
 					: 'final';
 	const prefix = type === 'qualification' ? 'Q' : type === 'elimination' ? 'M' : type === 'final' ? 'F' : 'P';
 	const number = Number(match[2]);
-	return { number, type, displayLabel: `${prefix}${number}` };
+	return { number, type, displayLabel: `${prefix}${number}${match[3] ? 'R' : ''}` };
 }
 
 function matchStart(match: NexusMatch): number | undefined {

@@ -73,6 +73,22 @@ describe('createDashboardData', () => {
 		});
 	});
 
+	it('marks qualification replays with an R suffix', () => {
+		const dashboard = createDashboardData({
+			eventKey: '2026test',
+			receivedAt: now,
+			matches: [
+				match('Qualification 98', { status: 'On field' }),
+				match('Qualification 99 Replay', { redTeams: ['581', '2', '3'] }),
+			],
+		});
+
+		expect(dashboard).toMatchObject({
+			nextMatch: { displayLabel: 'Q99R' },
+			upcomingMatches: [{ displayLabel: 'Q99R' }],
+		});
+	});
+
 	it('requires a bumper change when the next team match has a different alliance color', () => {
 		const dashboard = createDashboardData({
 			eventKey: '2026test',
