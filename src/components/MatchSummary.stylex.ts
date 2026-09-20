@@ -2,6 +2,7 @@ import * as stylex from '@stylexjs/stylex';
 import { colors, spacing } from '../theme.stylex';
 
 const portrait = '@media (max-width: 850px), (orientation: portrait)';
+const shortLandscape = '@media (max-height: 850px) and (min-width: 851px) and (orientation: landscape)';
 
 export const styles = stylex.create({
 	grid: {
@@ -158,8 +159,8 @@ export const styles = stylex.create({
 	},
 	timingBody: {
 		alignItems: 'stretch',
-		gap: spacing.lg,
-		padding: spacing.lg,
+		gap: { default: spacing.lg, [shortLandscape]: spacing.sm },
+		padding: { default: spacing.lg, [shortLandscape]: spacing.sm },
 		containerType: 'inline-size',
 	},
 	highlightedTimingBody: {
@@ -178,7 +179,7 @@ export const styles = stylex.create({
 	},
 	matchCountdownLabel: {
 		color: colors.onSurfaceVariant,
-		fontSize: { default: '3.25rem', [portrait]: '2rem' },
+		fontSize: { default: '3.25rem', [shortLandscape]: '2rem', [portrait]: '2rem' },
 		fontWeight: 700,
 		letterSpacing: '0.035em',
 	},
@@ -194,18 +195,18 @@ export const styles = stylex.create({
 	timingStatuses: {
 		display: 'flex',
 		width: '100%',
-		minHeight: { default: '9.5rem', [portrait]: '7.5rem' },
+		minHeight: { default: '9.5rem', [shortLandscape]: '6.5rem', [portrait]: '7.5rem' },
 		flexDirection: 'column',
 		justifyContent: 'flex-end',
-		gap: spacing.sm,
+		gap: { default: spacing.sm, [shortLandscape]: spacing.xs },
 	},
 	timingRow: {
 		display: 'flex',
-		minHeight: { default: '4.5rem', [portrait]: '3.5rem' },
+		minHeight: { default: '4.5rem', [shortLandscape]: '3rem', [portrait]: '3.5rem' },
 		alignItems: 'center',
 		justifyContent: 'space-between',
 		gap: spacing.md,
-		paddingBlock: spacing.sm,
+		paddingBlock: { default: spacing.sm, [shortLandscape]: spacing.xs },
 		paddingInline: spacing.lg,
 		borderWidth: '2px',
 		borderStyle: 'solid',
@@ -220,7 +221,7 @@ export const styles = stylex.create({
 	},
 	timingLabel: {
 		color: colors.onSurfaceVariant,
-		fontSize: { default: '1.75rem', [portrait]: '1.5rem' },
+		fontSize: { default: '1.75rem', [shortLandscape]: '1.25rem', [portrait]: '1.5rem' },
 		fontWeight: 700,
 		letterSpacing: '0.035em',
 		whiteSpace: 'nowrap',
@@ -229,7 +230,7 @@ export const styles = stylex.create({
 		color: colors.onQueueAlertContainer,
 	},
 	timingValue: {
-		fontSize: { default: '2.25rem', [portrait]: '1.75rem' },
+		fontSize: { default: '2.25rem', [shortLandscape]: '1.5rem', [portrait]: '1.75rem' },
 		fontVariantNumeric: 'tabular-nums',
 		whiteSpace: 'nowrap',
 	},

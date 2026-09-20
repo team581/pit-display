@@ -23,16 +23,44 @@ const styles = stylex.create({
 	},
 });
 
+function pixels(value: string) {
+	return Number.parseFloat(value) || 0;
+}
+
+function availableHeight(root: HTMLElement) {
+	const parent = root.parentElement;
+	if (!parent) return root.clientHeight;
+
+	const parentStyle = getComputedStyle(parent);
+	let height = parent.clientHeight - pixels(parentStyle.paddingTop) - pixels(parentStyle.paddingBottom);
+	const siblings = [...parent.children].filter((child) => child !== root);
+	for (const sibling of siblings) {
+		const siblingStyle = getComputedStyle(sibling);
+		height -=
+			sibling.getBoundingClientRect().height + pixels(siblingStyle.marginTop) + pixels(siblingStyle.marginBottom);
+	}
+	if (
+		(parentStyle.display === 'flex' || parentStyle.display === 'inline-flex') &&
+		parentStyle.flexDirection.startsWith('column')
+	) {
+		height -= pixels(parentStyle.rowGap) * siblings.length;
+	}
+
+	return Math.max(0, height);
+}
+
 export function FittedText({
 	align = 'center',
 	children,
 	className,
+	fitHeight = false,
 	maxFontSize,
 	morphDuration = false,
 }: {
 	align?: 'center' | 'start';
 	children: string;
 	className?: string;
+	fitHeight?: boolean;
 	maxFontSize?: string;
 	morphDuration?: boolean;
 }) {
@@ -46,12 +74,19 @@ export function FittedText({
 		if (!root || !measurement) return;
 
 		const fit = () => {
-			const measuredWidth = measurement.getBoundingClientRect().width;
+			const measurementBounds = measurement.getBoundingClientRect();
+			const measuredWidth = measurementBounds.width;
 			const maximum = Number.parseFloat(getComputedStyle(measurement).fontSize);
 			if (measuredWidth <= 0 || maximum <= 0) return;
 
 			const availableWidth = Math.max(0, root.clientWidth - 1);
-			const fontSize = Math.min(maximum, maximum * (availableWidth / measuredWidth));
+			const width = maximum * (availableWidth / measuredWidth);
+			const availableTextHeight = availableHeight(root);
+			const height =
+				fitHeight && measurementBounds.height > availableTextHeight + 1
+					? maximum * (availableTextHeight / measurementBounds.height)
+					: maximum;
+			const fontSize = Math.min(maximum, width, height);
 			setFontSize(`${Math.floor(fontSize * 100) / 100}px`);
 		};
 
@@ -68,7 +103,7 @@ export function FittedText({
 			disposed = true;
 			observer.disconnect();
 		};
-	}, [children, maxFontSize]);
+	}, [children, fitHeight, maxFontSize]);
 
 	const measurementClassName = `${stylex.props(styles.measurement).className} ${className ?? ''}`;
 

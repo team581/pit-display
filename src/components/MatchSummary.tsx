@@ -100,10 +100,12 @@ function CurrentActivityCard({
 
 function OurMatchCard({
 	countdownMaxFontSize,
+	fitCountdownHeight,
 	nextMatch,
 	now,
 }: {
 	countdownMaxFontSize: string;
+	fitCountdownHeight: boolean;
 	nextMatch: NonNullable<NextMatch>;
 	now: number;
 }) {
@@ -138,6 +140,7 @@ function OurMatchCard({
 						</span>
 						<FittedText
 							className={stylex.props(styles.matchCountdownValue).className}
+							fitHeight={fitCountdownHeight}
 							maxFontSize={countdownMaxFontSize}
 							morphDuration
 						>
@@ -262,6 +265,7 @@ export function MatchSummary({
 			{nextMatch ? (
 				<OurMatchCard
 					countdownMaxFontSize={competitionPhase === 'qualification' ? '12.5rem' : '10rem'}
+					fitCountdownHeight={competitionPhase === 'qualification'}
 					nextMatch={nextMatch}
 					now={now}
 				/>

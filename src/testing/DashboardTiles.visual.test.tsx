@@ -194,6 +194,33 @@ test('match summary status text fills its panels without overflowing as values a
 	expectFillsWithoutOverflow('our-match-start-time');
 });
 
+test('match countdown fits vertically in a short landscape summary', async () => {
+	await page.viewport(1376, 768);
+	await render(
+		<div style={{ width: '100%', height: '21rem' }}>
+			<MatchSummary
+				competitionPhase={qualification.competitionPhase}
+				currentActivity={qualification.currentActivity}
+				nextMatch={qualification.nextMatch}
+				now={SCENARIO_NOW}
+			/>
+		</div>,
+	);
+	await waitForAssets();
+
+	const container = document.querySelector<HTMLElement>('[data-testid="our-match-countdown"]');
+	const value = container?.querySelector<HTMLElement>('strong:not([aria-hidden="true"])');
+	expect(container).not.toBeNull();
+	expect(value).not.toBeNull();
+	const containerBounds = container!.getBoundingClientRect();
+	const valueBounds = value!.getBoundingClientRect();
+	const fontSize = Number.parseFloat(getComputedStyle(value!).fontSize);
+	await page.viewport(1376, 1032);
+	expect(valueBounds.top).toBeGreaterThanOrEqual(containerBounds.top);
+	expect(valueBounds.bottom).toBeLessThanOrEqual(containerBounds.bottom);
+	expect(fontSize).toBeGreaterThan(24);
+});
+
 test('replay match labels morph and fit at wide and compact viewport sizes', async () => {
 	const replayMatch = { ...qualification.nextMatch!, displayLabel: 'Q99R' };
 	const replaySchedule = [{ ...qualification.upcomingMatches[0], displayLabel: 'Q99R' }];
