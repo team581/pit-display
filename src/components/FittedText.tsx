@@ -33,16 +33,16 @@ function availableHeight(root: HTMLElement) {
 
 	const parentStyle = getComputedStyle(parent);
 	let height = parent.clientHeight - pixels(parentStyle.paddingTop) - pixels(parentStyle.paddingBottom);
-	const isColumnFlex =
+	const siblings = [...parent.children].filter((child) => child !== root);
+	for (const sibling of siblings) {
+		const siblingStyle = getComputedStyle(sibling);
+		height -=
+			sibling.getBoundingClientRect().height + pixels(siblingStyle.marginTop) + pixels(siblingStyle.marginBottom);
+	}
+	if (
 		(parentStyle.display === 'flex' || parentStyle.display === 'inline-flex') &&
-		parentStyle.flexDirection.startsWith('column');
-	if (isColumnFlex) {
-		const siblings = [...parent.children].filter((child) => child !== root);
-		for (const sibling of siblings) {
-			const siblingStyle = getComputedStyle(sibling);
-			height -=
-				sibling.getBoundingClientRect().height + pixels(siblingStyle.marginTop) + pixels(siblingStyle.marginBottom);
-		}
+		parentStyle.flexDirection.startsWith('column')
+	) {
 		height -= pixels(parentStyle.rowGap) * siblings.length;
 	}
 

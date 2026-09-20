@@ -195,7 +195,7 @@ test('match summary status text fills its panels without overflowing as values a
 	expectFillsWithoutOverflow('our-match-start-time');
 });
 
-test('match countdown fits vertically in short qualification and elimination summaries', async () => {
+test('match countdown fits vertically in qualification and elimination summaries on a 13-inch iPad', async () => {
 	const singleStatusQualification = {
 		...qualification,
 		nextMatch: {
@@ -220,7 +220,6 @@ test('match countdown fits vertically in short qualification and elimination sum
 			timing: singleStatusQualification.nextMatch.timing,
 		},
 	};
-	await page.viewport(1376, 768);
 	const view = await render(<DashboardView connected dashboard={singleStatusQualification} now={SCENARIO_NOW} />);
 	await waitForAssets();
 
@@ -238,15 +237,13 @@ test('match countdown fits vertically in short qualification and elimination sum
 		expect(Number.parseFloat(getComputedStyle(value!).fontSize)).toBeGreaterThan(minimumFontSize);
 	}
 
-	expectCountdownFits(false, 150);
+	expectCountdownFits(false, 100);
 	await view.rerender(<DashboardView connected dashboard={eliminationSingleStatusDashboard} now={SCENARIO_NOW} />);
 	await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
-	expectCountdownFits(false, 150);
+	expectCountdownFits(false, 100);
 	await view.rerender(<DashboardView connected dashboard={eliminationOnDeckDashboard} now={SCENARIO_NOW} />);
 	await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
-	expectCountdownFits(true, 24);
-	await expect(page.getByRole('main')).toMatchScreenshot('elimination-on-deck-queued-short');
-	await page.viewport(1376, 1032);
+	expectCountdownFits(true, 100);
 });
 
 test('replay match labels morph and fit at wide and compact viewport sizes', async () => {

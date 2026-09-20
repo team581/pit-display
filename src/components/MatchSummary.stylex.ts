@@ -177,19 +177,11 @@ export const styles = stylex.create({
 		gap: spacing.xs,
 		textAlign: 'center',
 	},
-	singleStatusMatchCountdown: {
-		flexDirection: { [shortLandscape]: 'row' },
-		gap: { [shortLandscape]: spacing.md },
-	},
 	matchCountdownLabel: {
 		color: colors.onSurfaceVariant,
 		fontSize: { default: '3.25rem', [shortLandscape]: '2rem', [portrait]: '2rem' },
 		fontWeight: 700,
 		letterSpacing: '0.035em',
-		whiteSpace: 'nowrap',
-	},
-	singleStatusMatchCountdownLabel: {
-		flexShrink: { [shortLandscape]: 0 },
 	},
 	highlightedMatchCountdownLabel: {
 		color: colors.onQueueAlert,
@@ -207,9 +199,6 @@ export const styles = stylex.create({
 		flexDirection: 'column',
 		justifyContent: 'flex-end',
 		gap: { default: spacing.sm, [shortLandscape]: spacing.xs },
-	},
-	singleTimingStatus: {
-		minHeight: { [shortLandscape]: '3rem' },
 	},
 	timingRow: {
 		display: 'flex',
