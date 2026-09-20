@@ -32,4 +32,15 @@ describe('breakStatusText', () => {
 			),
 		).toBe('Ends in <1m');
 	});
+
+	it('stays active after the estimated end until the next match reaches the field', () => {
+		const breakStatus = { durationMinutes: 10, endTime: 20 * minute, hasStarted: true, hasEnded: false };
+
+		expect(isBreakActive(breakStatus, 25 * minute)).toBe(true);
+		expect(breakStatusText(breakStatus, 25 * minute)).toBe('Ends soon');
+
+		breakStatus.hasEnded = true;
+		expect(isBreakActive(breakStatus, 25 * minute)).toBe(false);
+		expect(breakStatusText(breakStatus, 25 * minute)).toBe('10m');
+	});
 });

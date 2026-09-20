@@ -327,8 +327,8 @@ describe('createDashboardData', () => {
 		});
 	});
 
-	it('shows an active awards break as the current field activity', () => {
-		const awardsEnd = now + 15 * minute;
+	it('keeps an active awards break on field after its estimate passes while the next match is on deck', () => {
+		const awardsEnd = now - minute;
 		const dashboard = createDashboardData({
 			eventKey: '2026test',
 			receivedAt: now,
