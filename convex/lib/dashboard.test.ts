@@ -352,6 +352,29 @@ describe('createDashboardData', () => {
 		});
 	});
 
+	it('times an active break from the previous match commit instead of a stale on-field estimate', () => {
+		const committedAt = now - 2 * minute;
+		const dashboard = createDashboardData({
+			eventKey: '2026test',
+			receivedAt: now,
+			competitionPhase: 'elimination',
+			matches: [
+				match('Final 1', { status: 'On field', times: { actualCommitTime: committedAt } }),
+				match('Final 2', {
+					status: 'On deck',
+					blueTeams: ['581', '254', '1678'],
+					afterBreak: { breakLabel: 'an awards break', durationMinutes: 15, position: 1 },
+					times: { estimatedOnFieldTime: now - minute, estimatedStartTime: now + 2 * minute },
+				}),
+			],
+		});
+
+		expect(dashboard).toMatchObject({
+			currentActivity: { type: 'awards', endsAt: committedAt + 15 * minute },
+			upcomingMatches: [{ break: { endTime: committedAt + 15 * minute } }],
+		});
+	});
+
 	it('shows both possible next playoff matches with bumper colors, timing, and breaks', () => {
 		const dashboard = createDashboardData({
 			eventKey: '2026test',

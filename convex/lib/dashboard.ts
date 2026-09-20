@@ -158,6 +158,10 @@ function eliminationBreakForMatch(
 	const firstMatchAfterBreak = matches[previousMatchIndex + 1];
 	const parsedPreviousMatch = previousMatch ? parseMatchLabel(previousMatch.label) : null;
 	if (!previousMatch || !parsedPreviousMatch) return null;
+	const endTimeFromCommit =
+		previousMatch.times.actualCommitTime !== undefined && match.afterBreak.durationMinutes !== undefined
+			? previousMatch.times.actualCommitTime + match.afterBreak.durationMinutes * 60_000
+			: undefined;
 
 	return {
 		label: breakTitle(match.afterBreak.breakLabel),
@@ -165,6 +169,7 @@ function eliminationBreakForMatch(
 		hasStarted: previousMatch.status === 'On field',
 		hasEnded: firstMatchAfterBreak?.status === 'On field',
 		endTime:
+			endTimeFromCommit ??
 			firstMatchAfterBreak?.times.estimatedOnFieldTime ??
 			(firstMatchAfterBreak ? (matchStart(firstMatchAfterBreak) ?? null) : null),
 		previousMatch: {
