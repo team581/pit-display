@@ -6,6 +6,7 @@ import { themeColors } from '../../theme-colors';
 import { AllianceBadge } from '../components/AllianceBadge';
 import { AlliancePartners } from '../components/AlliancePartners';
 import { EliminationSchedule } from '../components/EliminationSchedule';
+import { MatchLabel } from '../components/MatchLabel';
 import { MatchSchedule } from '../components/MatchSchedule';
 import { MatchSummary } from '../components/MatchSummary';
 import { MatchWarning } from '../components/MatchWarning';
@@ -191,4 +192,72 @@ test('match summary status text fills its panels without overflowing as values a
 	await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
 	expectFillsWithoutOverflow('current-activity-status');
 	expectFillsWithoutOverflow('our-match-start-time');
+});
+
+test('replay match labels morph and fit at wide and compact viewport sizes', async () => {
+	const replayMatch = { ...qualification.nextMatch!, displayLabel: 'Q99R' };
+	const replaySchedule = [{ ...qualification.upcomingMatches[0], displayLabel: 'Q99R' }];
+	const view = await render(
+		<div>
+			<div data-testid="morph-label">
+				<MatchLabel displayLabel="Q99" style={{ fontSize: '10rem' }} />
+			</div>
+			<MatchSummary
+				competitionPhase="qualification"
+				currentActivity={{ type: 'match', displayLabel: 'Q99R', endsAt: null }}
+				nextMatch={replayMatch}
+				now={SCENARIO_NOW}
+			/>
+			<MatchSchedule eventKey={qualification.eventKey} matches={replaySchedule} now={SCENARIO_NOW} />
+		</div>,
+	);
+	await waitForAssets();
+	const initialMorphLabel = document.querySelector<HTMLElement>(
+		'[data-testid="morph-label"] strong:not([aria-hidden="true"])',
+	);
+	expect(initialMorphLabel?.textContent).toContain('Q99');
+	expect(initialMorphLabel?.getBoundingClientRect().width).toBeGreaterThan(0);
+	await view.rerender(
+		<div>
+			<div data-testid="morph-label">
+				<MatchLabel displayLabel="Q99R" style={{ fontSize: '10rem' }} />
+			</div>
+			<MatchSummary
+				competitionPhase="qualification"
+				currentActivity={{ type: 'match', displayLabel: 'Q99R', endsAt: null }}
+				nextMatch={replayMatch}
+				now={SCENARIO_NOW}
+			/>
+			<MatchSchedule eventKey={qualification.eventKey} matches={replaySchedule} now={SCENARIO_NOW} />
+		</div>,
+	);
+
+	function expectReplayLabelsFit() {
+		const labels = [...document.querySelectorAll<HTMLElement>('strong:not([aria-hidden="true"])')].filter((label) =>
+			label.textContent?.includes('Q99R'),
+		);
+		expect(labels).toHaveLength(4);
+		expect(labels[0].getBoundingClientRect().width).toBeGreaterThan(0);
+		for (const label of labels.slice(1)) {
+			const containerBounds = label.parentElement!.getBoundingClientRect();
+			const labelBounds = label.getBoundingClientRect();
+			expect(labelBounds.left).toBeGreaterThanOrEqual(containerBounds.left);
+			expect(labelBounds.right).toBeLessThanOrEqual(containerBounds.right);
+			expect(Number.parseFloat(getComputedStyle(label).fontSize)).toBeGreaterThan(24);
+		}
+
+		const scheduleLabel = labels.at(-1)!;
+		const scheduleDetails = scheduleLabel.nextElementSibling!;
+		expect(scheduleLabel.getBoundingClientRect().right).toBeLessThanOrEqual(
+			scheduleDetails.getBoundingClientRect().left,
+		);
+		expect(Number.parseFloat(getComputedStyle(scheduleLabel).fontSize)).toBeLessThan(64);
+	}
+
+	await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+	expectReplayLabelsFit();
+
+	await page.viewport(1000, 884);
+	await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+	expectReplayLabelsFit();
 });
