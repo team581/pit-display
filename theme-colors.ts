@@ -12,6 +12,11 @@ export const themeColors = {
 	onError: '#690005',
 	tertiary: '#EABF88',
 	onTertiary: '#452B01',
+	// Material dark-scheme roles generated from the logo yellow, #FABC3C.
+	queueAlert: '#EDC06C',
+	onQueueAlert: '#412D00',
+	queueAlertContainer: '#5E4200',
+	onQueueAlertContainer: '#FFDEA7',
 	background: '#191111',
 	onBackground: '#EFDFDD',
 	onSurface: '#EFDFDD',

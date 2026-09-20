@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { formatMatchTiming, timingStatusMilestones } from './dashboard-time';
+import { formatMatchTiming, isBetweenQueueAndMatch, timingStatusMilestones } from './dashboard-time';
 
 const minute = 60_000;
 
@@ -31,5 +31,14 @@ describe('dashboard time state', () => {
 
 		timing.isActual = true;
 		expect(formatMatchTiming(timing, 6 * minute)).toBe('1m 0s ago');
+	});
+
+	it('identifies the time between queue and match countdowns reaching zero', () => {
+		expect(isBetweenQueueAndMatch(5 * minute, 10 * minute, 4 * minute)).toBe(false);
+		expect(isBetweenQueueAndMatch(5 * minute, 10 * minute, 5 * minute)).toBe(true);
+		expect(isBetweenQueueAndMatch(5 * minute, 10 * minute, 9 * minute)).toBe(true);
+		expect(isBetweenQueueAndMatch(5 * minute, 10 * minute, 10 * minute)).toBe(false);
+		expect(isBetweenQueueAndMatch(null, 10 * minute, 6 * minute)).toBe(false);
+		expect(isBetweenQueueAndMatch(5 * minute, null, 6 * minute)).toBe(false);
 	});
 });

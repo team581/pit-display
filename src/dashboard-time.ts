@@ -18,3 +18,7 @@ export function formatMatchTiming(timing: MatchTiming, now: number, futurePrefix
 	if (!timing.isActual && timing.time !== null && timing.time <= now) return 'Soon';
 	return formatRelativeTime(timing.time, now, futurePrefix, 'seconds');
 }
+
+export function isBetweenQueueAndMatch(queuedAt: number | null, startsAt: number | null, now: number): boolean {
+	return queuedAt !== null && startsAt !== null && queuedAt <= now && now < startsAt;
+}

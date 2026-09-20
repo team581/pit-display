@@ -162,6 +162,10 @@ export const styles = stylex.create({
 		padding: spacing.lg,
 		containerType: 'inline-size',
 	},
+	highlightedTimingBody: {
+		backgroundColor: colors.queueAlert,
+		color: colors.onQueueAlert,
+	},
 	matchCountdown: {
 		display: 'flex',
 		minHeight: 0,
@@ -177,6 +181,9 @@ export const styles = stylex.create({
 		fontSize: { default: '3.25rem', [portrait]: '2rem' },
 		fontWeight: 700,
 		letterSpacing: '0.035em',
+	},
+	highlightedMatchCountdownLabel: {
+		color: colors.onQueueAlert,
 	},
 	matchCountdownValue: {
 		fontVariantNumeric: 'tabular-nums',
@@ -206,12 +213,20 @@ export const styles = stylex.create({
 		borderRadius: spacing.sm,
 		backgroundColor: colors.surfaceContainerHigh,
 	},
+	highlightedTimingRow: {
+		borderColor: colors.queueAlertContainer,
+		backgroundColor: colors.queueAlertContainer,
+		color: colors.onQueueAlertContainer,
+	},
 	timingLabel: {
 		color: colors.onSurfaceVariant,
 		fontSize: { default: '1.75rem', [portrait]: '1.5rem' },
 		fontWeight: 700,
 		letterSpacing: '0.035em',
 		whiteSpace: 'nowrap',
+	},
+	highlightedTimingLabel: {
+		color: colors.onQueueAlertContainer,
 	},
 	timingValue: {
 		fontSize: { default: '2.25rem', [portrait]: '1.75rem' },

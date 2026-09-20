@@ -1,7 +1,7 @@
 import * as stylex from '@stylexjs/stylex';
 import { ClientOnly } from '@tanstack/react-router';
 import type { Dashboard } from '../dashboard';
-import { formatMatchTiming, timingStatusMilestones } from '../dashboard-time';
+import { formatMatchTiming, isBetweenQueueAndMatch, timingStatusMilestones } from '../dashboard-time';
 import { formatClock, formatRelativeTime } from '../format-time';
 import { DurationMorph } from './DurationMorph';
 import { FittedText } from './FittedText';
@@ -113,6 +113,7 @@ function OurMatchCard({
 		nextMatch.startTime === null ? 'TBD' : formatMatchTiming({ time: nextMatch.startTime, isActual: false }, now, '');
 	const statuses = timingStatusMilestones(nextMatch.timing);
 	const startTimeMaxFontSize = nextMatch.requiresBumperChange ? '2.5rem' : '5rem';
+	const highlightCountdown = isBetweenQueueAndMatch(nextMatch.timing.queued.time, nextMatch.startTime, now);
 
 	return (
 		<article {...stylex.props(styles.card, styles.ourMatchCard)}>
@@ -120,9 +121,19 @@ function OurMatchCard({
 				<h2 {...stylex.props(panelStyles.heading)}>Our match</h2>
 			</div>
 			<div {...stylex.props(styles.ourMatchBody)}>
-				<div {...stylex.props(styles.cardBody, styles.ourMatchPane, styles.leadingPane, styles.timingBody)}>
+				<div
+					{...stylex.props(
+						styles.cardBody,
+						styles.ourMatchPane,
+						styles.leadingPane,
+						styles.timingBody,
+						highlightCountdown && styles.highlightedTimingBody,
+					)}
+				>
 					<div {...stylex.props(styles.matchCountdown)} data-testid="our-match-countdown">
-						<span {...stylex.props(styles.matchCountdownLabel)}>
+						<span
+							{...stylex.props(styles.matchCountdownLabel, highlightCountdown && styles.highlightedMatchCountdownLabel)}
+						>
 							{countdown === 'Soon' || countdown === 'TBD' ? 'Starts' : 'Starts in'}
 						</span>
 						<FittedText
@@ -135,8 +146,13 @@ function OurMatchCard({
 					</div>
 					<div {...stylex.props(styles.timingStatuses)}>
 						{statuses.map((status) => (
-							<div {...stylex.props(styles.timingRow)} key={status.label}>
-								<span {...stylex.props(styles.timingLabel)}>{status.label}</span>
+							<div
+								{...stylex.props(styles.timingRow, highlightCountdown && styles.highlightedTimingRow)}
+								key={status.label}
+							>
+								<span {...stylex.props(styles.timingLabel, highlightCountdown && styles.highlightedTimingLabel)}>
+									{status.label}
+								</span>
 								<DurationMorph as="strong" {...stylex.props(styles.timingValue)}>
 									{formatMatchTiming(status, now)}
 								</DurationMorph>
