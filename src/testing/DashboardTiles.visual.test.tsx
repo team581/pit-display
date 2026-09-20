@@ -1,6 +1,6 @@
 import { expect, test } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser/context';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { render } from 'vitest-browser-react';
 import { themeColors } from '../../theme-colors';
 import { DashboardView } from '../App';
@@ -19,6 +19,7 @@ setupVisualTests();
 
 const qualification = requireDashboard('qualification-normal');
 const elimination = requireDashboard('elimination-paths');
+const awardsBreak = requireDashboard('awards-break');
 const allianceSelection = requireDashboard('alliance-selection-assigned');
 const longStartTime = SCENARIO_NOW + (12 * 60 + 53) * 60_000;
 const longNextMatch = { ...qualification.nextMatch!, startTime: longStartTime };
@@ -244,6 +245,40 @@ test('match countdown fits vertically in qualification and elimination summaries
 	await view.rerender(<DashboardView connected dashboard={eliminationOnDeckDashboard} now={SCENARIO_NOW} />);
 	await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
 	expectCountdownFits(true, 100);
+});
+
+test('elimination dashboard fits an installed 13-inch iPad PWA safe area', async () => {
+	await page.viewport(1366, 1024);
+	const pwaSafeArea = {
+		'--safe-area-inset-top': '32px',
+		'--safe-area-inset-bottom': '20px',
+	} as CSSProperties;
+	await render(
+		<div style={pwaSafeArea}>
+			<DashboardView connected dashboard={awardsBreak} now={SCENARIO_NOW} />
+		</div>,
+	);
+	await waitForAssets();
+
+	const main = document.querySelector<HTMLElement>('main');
+	const topbar = main?.querySelector<HTMLElement>('header');
+	const schedule = document.querySelector<HTMLElement>('section[aria-label="Next matches"]');
+	const articles = [...document.querySelectorAll<HTMLElement>('section[aria-label="Next matches"] article')];
+	const timeline = document.querySelector<HTMLElement>('[aria-label^="Awards break after"]');
+	const timelineBody = timeline?.parentElement;
+	const lastTimelineRow = timeline?.lastElementChild as HTMLElement | null;
+
+	expect(topbar?.getBoundingClientRect().height).toBe(132);
+	expect(main?.getBoundingClientRect().bottom).toBeLessThanOrEqual(window.innerHeight);
+	expect(schedule?.getBoundingClientRect().bottom).toBeLessThanOrEqual(window.innerHeight);
+	expect(schedule?.scrollHeight).toBeLessThanOrEqual(schedule!.clientHeight);
+	for (const article of articles) expect(article.scrollHeight).toBeLessThanOrEqual(article.clientHeight);
+	expect(lastTimelineRow?.getBoundingClientRect().bottom).toBeLessThanOrEqual(
+		timelineBody!.getBoundingClientRect().bottom - 20,
+	);
+	expect(document.documentElement.scrollHeight).toBe(window.innerHeight);
+	await expect(page.getByRole('main')).toMatchScreenshot('elimination-pwa-safe-areas');
+	await page.viewport(1376, 1032);
 });
 
 test('replay match labels morph and fit at wide and compact viewport sizes', async () => {

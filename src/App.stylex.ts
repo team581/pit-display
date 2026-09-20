@@ -5,6 +5,7 @@ const portrait = '@media (max-width: 850px), (orientation: portrait)';
 const narrow = '@media (max-width: 620px)';
 // Measured in PWA running on 13" iPad
 const statusBarClearance = '1.25rem';
+const safeAreaTop = 'var(--safe-area-inset-top, env(safe-area-inset-top, 0px))';
 
 export const styles = stylex.create({
 	dashboard: {
@@ -19,11 +20,11 @@ export const styles = stylex.create({
 	},
 	topbar: {
 		display: 'grid',
-		height: `calc(5rem + env(safe-area-inset-top, 0px) + min(${statusBarClearance}, env(safe-area-inset-top, 0px)))`,
+		height: `calc(5rem + ${safeAreaTop} + min(${statusBarClearance}, ${safeAreaTop}))`,
 		alignItems: 'center',
 		fontFamily: typefaces.display,
 		gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)',
-		paddingTop: `calc(0.5rem + env(safe-area-inset-top, 0px) + min(${statusBarClearance}, env(safe-area-inset-top, 0px)))`,
+		paddingTop: `calc(0.5rem + ${safeAreaTop} + min(${statusBarClearance}, ${safeAreaTop}))`,
 		paddingBottom: spacing.sm,
 		paddingInline: {
 			default: spacing['2xl'],
@@ -49,7 +50,7 @@ export const styles = stylex.create({
 	dashboardContent: {
 		display: { default: 'grid', [portrait]: 'flex' },
 		height: {
-			default: `calc(100svh - 5rem - env(safe-area-inset-top, 0px) - min(${statusBarClearance}, env(safe-area-inset-top, 0px)))`,
+			default: `calc(100svh - 5rem - ${safeAreaTop} - min(${statusBarClearance}, ${safeAreaTop}))`,
 			[portrait]: 'auto',
 		},
 		gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
@@ -62,11 +63,11 @@ export const styles = stylex.create({
 		gridTemplateRows: 'minmax(0, 1fr) 22rem',
 	},
 	eliminationContent: {
-		gridTemplateRows: 'minmax(0, 65fr) minmax(0, 35fr)',
+		gridTemplateRows: 'minmax(0, 62fr) minmax(0, 38fr)',
 	},
 	emptyState: {
 		display: 'grid',
-		minHeight: `calc(100svh - 5rem - env(safe-area-inset-top, 0px) - min(${statusBarClearance}, env(safe-area-inset-top, 0px)))`,
+		minHeight: `calc(100svh - 5rem - ${safeAreaTop} - min(${statusBarClearance}, ${safeAreaTop}))`,
 		placeContent: 'center',
 		padding: spacing['2xl'],
 		textAlign: 'center',

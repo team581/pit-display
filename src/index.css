@@ -24,6 +24,7 @@ body {
 	min-width: 320px;
 	min-height: 100%;
 	margin: 0;
+	background: var(--theme-surface-container);
 }
 body {
 	min-height: 100svh;

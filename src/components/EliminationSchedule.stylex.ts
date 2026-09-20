@@ -41,7 +41,7 @@ export const styles = stylex.create({
 		justifyContent: 'flex-start',
 		gap: spacing.xs,
 		paddingBlockStart: spacing.sm,
-		paddingBlockEnd: spacing.sm,
+		paddingBlockEnd: 'max(0.5rem, var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))',
 		paddingInline: { default: spacing.xl, [compact]: spacing.lg, [narrow]: spacing.md },
 	},
 	cardBodyWithTimeline: {
