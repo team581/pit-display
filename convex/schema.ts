@@ -17,6 +17,8 @@ export const MatchTimes = v.object({
 	actualQueueTime: v.optional(v.number()),
 	actualOnDeckTime: v.optional(v.number()),
 	actualOnFieldTime: v.optional(v.number()),
+	actualStartTime: v.optional(v.number()),
+	actualCommitTime: v.optional(v.number()),
 });
 
 export const NexusMatch = v.object({

@@ -15,7 +15,13 @@ describe('extractEventStatus', () => {
 				match('Qualification 3'),
 				match('Qualification 4', {
 					blueTeams: ['581', '5', '6'],
-					times: { scheduledStartTime: 200, estimatedOnFieldTime: 190, actualOnFieldTime: 195 },
+					times: {
+						scheduledStartTime: 200,
+						estimatedOnFieldTime: 190,
+						actualOnFieldTime: 195,
+						actualStartTime: 205,
+						actualCommitTime: 370,
+					},
 				}),
 			],
 		});
@@ -39,7 +45,13 @@ describe('extractEventStatus', () => {
 					status: 'Queuing soon',
 					redTeams: ['1', '2', '3'],
 					blueTeams: ['581', '5', '6'],
-					times: { scheduledStartTime: 200, estimatedOnFieldTime: 190, actualOnFieldTime: 195 },
+					times: {
+						scheduledStartTime: 200,
+						estimatedOnFieldTime: 190,
+						actualOnFieldTime: 195,
+						actualStartTime: 205,
+						actualCommitTime: 370,
+					},
 				},
 			],
 		});

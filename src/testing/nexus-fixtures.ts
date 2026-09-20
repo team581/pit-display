@@ -17,7 +17,11 @@ export const nexusScenarios = {
 			matches: [
 				nexusMatch('Qualification 10', {
 					status: 'On field',
-					times: { actualOnFieldTime: minutesFromNow(-2), estimatedStartTime: minutesFromNow(-1) },
+					times: {
+						actualOnFieldTime: minutesFromNow(-2),
+						estimatedStartTime: minutesFromNow(-1),
+						actualStartTime: minutesFromNow(-1),
+					},
 				}),
 				nexusMatch('Qualification 12', {
 					redTeams: ['581', '254', '1678'],

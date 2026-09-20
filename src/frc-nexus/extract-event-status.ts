@@ -29,6 +29,8 @@ function withoutNullTimes(times: Match['times']) {
 		...(times?.actualQueueTime != null ? { actualQueueTime: times.actualQueueTime } : {}),
 		...(times?.actualOnDeckTime != null ? { actualOnDeckTime: times.actualOnDeckTime } : {}),
 		...(times?.actualOnFieldTime != null ? { actualOnFieldTime: times.actualOnFieldTime } : {}),
+		...(times?.actualStartTime != null ? { actualStartTime: times.actualStartTime } : {}),
+		...(times?.actualCommitTime != null ? { actualCommitTime: times.actualCommitTime } : {}),
 	};
 }
 

@@ -123,14 +123,14 @@ describe('createDashboardData', () => {
 		expect(dashboard?.upcomingMatches[0]?.warning).toBe('15m turnaround');
 	});
 
-	it('estimates the current match end from its live start estimate', () => {
+	it('calculates the current match end from its actual start time', () => {
 		const dashboard = createDashboardData({
 			eventKey: '2026test',
 			receivedAt: now,
 			matches: [
 				match('Qualification 17', {
 					status: 'On field',
-					times: { estimatedStartTime: now + minute },
+					times: { estimatedStartTime: now + minute, actualStartTime: now },
 				}),
 				match('Qualification 23', {
 					redTeams: ['581', '2', '3'],
@@ -142,7 +142,26 @@ describe('createDashboardData', () => {
 		expect(dashboard?.currentActivity).toEqual({
 			type: 'match',
 			displayLabel: 'Q17',
-			endsAt: now + 3.5 * minute,
+			endsAt: now + 163_000,
+		});
+	});
+
+	it('does not estimate a match end when the actual start time is unavailable', () => {
+		const dashboard = createDashboardData({
+			eventKey: '2026test',
+			receivedAt: now,
+			matches: [
+				match('Qualification 17', {
+					status: 'On field',
+					times: { estimatedStartTime: now - minute },
+				}),
+			],
+		});
+
+		expect(dashboard?.currentActivity).toEqual({
+			type: 'match',
+			displayLabel: 'Q17',
+			endsAt: null,
 		});
 	});
 

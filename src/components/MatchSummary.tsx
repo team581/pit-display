@@ -19,9 +19,10 @@ function awardsEndText(endsAt: number, now: number): string {
 }
 
 function matchEndText(endsAt: number | null, now: number): string {
-	if (endsAt === null) return 'End unknown';
-	if (endsAt <= now) return 'Ends soon';
-	return `Ends ${formatRelativeTime(endsAt, now, '')}`;
+	if (endsAt === null) return 'On field';
+	if (endsAt <= now) return 'Awaiting scores';
+	const remaining = formatRelativeTime(endsAt, now, '', 'seconds');
+	return `Ends ${remaining === 'now' ? '<1s' : remaining}`;
 }
 
 function currentActivityState(

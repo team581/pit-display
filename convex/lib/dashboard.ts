@@ -76,7 +76,8 @@ type CurrentActivity = DashboardData['currentActivity'];
 type NextMatch = NonNullable<DashboardData['nextMatch']>;
 type UpcomingMatch = DashboardData['upcomingMatches'][number];
 
-const matchDuration = 2.5 * 60_000;
+// 20 seconds of auto, a 3-second transition, and 140 seconds of teleop.
+const matchDuration = 163_000;
 
 // Nexus's public API omits advancement routes, so keep the official eight-alliance
 // double-elimination bracket destinations here and use Nexus for their live timing.
@@ -313,9 +314,7 @@ function createCurrentActivity(
 		type: 'match',
 		displayLabel: parsedCurrentMatch.displayLabel,
 		endsAt:
-			currentMatch.times.estimatedStartTime === undefined
-				? null
-				: currentMatch.times.estimatedStartTime + matchDuration,
+			currentMatch.times.actualStartTime === undefined ? null : currentMatch.times.actualStartTime + matchDuration,
 	};
 }
 
