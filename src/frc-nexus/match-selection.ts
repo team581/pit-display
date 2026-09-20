@@ -20,7 +20,7 @@ export function matchIndexes(matches: readonly Match[], phase: CompetitionPhase)
 		(match) => match.status === 'On deck' && isEliminationMatch(match.label),
 	);
 	return {
-		currentMatchIndex: Math.max(eliminationOnFieldIndex, eliminationOnDeckIndex),
+		currentMatchIndex: eliminationOnFieldIndex === -1 ? eliminationOnDeckIndex : eliminationOnFieldIndex,
 		lastOnFieldIndex,
 	};
 }

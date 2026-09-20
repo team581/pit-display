@@ -310,6 +310,23 @@ describe('createDashboardData', () => {
 		});
 	});
 
+	it('keeps the on-field elimination match active while the next match is on deck', () => {
+		const dashboard = createDashboardData({
+			eventKey: '2026test',
+			receivedAt: now,
+			competitionPhase: 'elimination',
+			matches: [
+				match('Playoff 9', { status: 'On field', times: { actualStartTime: now - minute } }),
+				match('Playoff 10', { status: 'On deck', times: { actualOnDeckTime: now - 2 * minute } }),
+			],
+		});
+
+		expect(dashboard?.currentActivity).toMatchObject({
+			type: 'match',
+			displayLabel: 'M9',
+		});
+	});
+
 	it('shows an active awards break as the current field activity', () => {
 		const awardsEnd = now + 15 * minute;
 		const dashboard = createDashboardData({
