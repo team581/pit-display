@@ -46,5 +46,6 @@ export default defineSchema({
 		matches: v.array(NexusMatch),
 		competitionPhase: CompetitionPhase,
 		alliancePartners: v.array(v.string()),
+		reconcilingMatch: v.optional(v.string()),
 	}).index('by_dataAsOfTime', ['dataAsOfTime']),
 });
