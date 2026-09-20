@@ -3,6 +3,7 @@ import { page } from 'vite-plus/test/browser/context';
 import type { ReactNode } from 'react';
 import { render } from 'vitest-browser-react';
 import { themeColors } from '../../theme-colors';
+import { DashboardView } from '../App';
 import { AllianceBadge } from '../components/AllianceBadge';
 import { AlliancePartners } from '../components/AlliancePartners';
 import { EliminationSchedule } from '../components/EliminationSchedule';
@@ -194,31 +195,36 @@ test('match summary status text fills its panels without overflowing as values a
 	expectFillsWithoutOverflow('our-match-start-time');
 });
 
-test('match countdown fits vertically in a short landscape summary', async () => {
+test('match countdown fits vertically in short qualification and elimination summaries', async () => {
+	const eliminationOnDeck = {
+		...elimination.nextMatch!,
+		timing: qualification.nextMatch!.timing,
+	};
+	const eliminationOnDeckDashboard = { ...elimination, nextMatch: eliminationOnDeck };
 	await page.viewport(1376, 768);
-	await render(
-		<div style={{ width: '100%', height: '21rem' }}>
-			<MatchSummary
-				competitionPhase={qualification.competitionPhase}
-				currentActivity={qualification.currentActivity}
-				nextMatch={qualification.nextMatch}
-				now={SCENARIO_NOW}
-			/>
-		</div>,
-	);
+	const view = await render(<DashboardView connected dashboard={qualification} now={SCENARIO_NOW} />);
 	await waitForAssets();
 
-	const container = document.querySelector<HTMLElement>('[data-testid="our-match-countdown"]');
-	const value = container?.querySelector<HTMLElement>('strong:not([aria-hidden="true"])');
-	expect(container).not.toBeNull();
-	expect(value).not.toBeNull();
-	const containerBounds = container!.getBoundingClientRect();
-	const valueBounds = value!.getBoundingClientRect();
-	const fontSize = Number.parseFloat(getComputedStyle(value!).fontSize);
+	function expectCountdownFits() {
+		const container = document.querySelector<HTMLElement>('[data-testid="our-match-countdown"]');
+		const value = container?.querySelector<HTMLElement>('strong:not([aria-hidden="true"])');
+		expect(container).not.toBeNull();
+		expect(value).not.toBeNull();
+		expect(container!.parentElement!.textContent).toContain('On deck');
+		expect(container!.parentElement!.textContent).toContain('Queued');
+		const containerBounds = container!.getBoundingClientRect();
+		const valueBounds = value!.getBoundingClientRect();
+		expect(valueBounds.top).toBeGreaterThanOrEqual(containerBounds.top);
+		expect(valueBounds.bottom).toBeLessThanOrEqual(containerBounds.bottom);
+		expect(Number.parseFloat(getComputedStyle(value!).fontSize)).toBeGreaterThan(24);
+	}
+
+	expectCountdownFits();
+	await view.rerender(<DashboardView connected dashboard={eliminationOnDeckDashboard} now={SCENARIO_NOW} />);
+	await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+	expectCountdownFits();
+	await expect(page.getByRole('main')).toMatchScreenshot('elimination-on-deck-queued-short');
 	await page.viewport(1376, 1032);
-	expect(valueBounds.top).toBeGreaterThanOrEqual(containerBounds.top);
-	expect(valueBounds.bottom).toBeLessThanOrEqual(containerBounds.bottom);
-	expect(fontSize).toBeGreaterThan(24);
 });
 
 test('replay match labels morph and fit at wide and compact viewport sizes', async () => {
