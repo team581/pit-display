@@ -138,7 +138,7 @@ function OurMatchCard({
 						</span>
 						<FittedText
 							className={stylex.props(styles.matchCountdownValue).className}
-							fitHeight={statuses.length > 1}
+							fitHeight
 							maxFontSize={countdownMaxFontSize}
 							morphDuration
 						>

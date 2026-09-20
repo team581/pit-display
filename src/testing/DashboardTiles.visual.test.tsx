@@ -196,22 +196,41 @@ test('match summary status text fills its panels without overflowing as values a
 });
 
 test('match countdown fits vertically in short qualification and elimination summaries', async () => {
-	const eliminationOnDeck = {
-		...elimination.nextMatch!,
-		timing: qualification.nextMatch!.timing,
+	const singleStatusQualification = {
+		...qualification,
+		nextMatch: {
+			...qualification.nextMatch!,
+			timing: {
+				queued: { time: SCENARIO_NOW + 5 * 60_000, isActual: false },
+				onDeck: { time: SCENARIO_NOW + 10 * 60_000, isActual: false },
+			},
+		},
 	};
-	const eliminationOnDeckDashboard = { ...elimination, nextMatch: eliminationOnDeck };
+	const eliminationOnDeckDashboard = {
+		...elimination,
+		nextMatch: {
+			...elimination.nextMatch!,
+			timing: qualification.nextMatch!.timing,
+		},
+	};
+	const eliminationSingleStatusDashboard = {
+		...elimination,
+		nextMatch: {
+			...elimination.nextMatch!,
+			timing: singleStatusQualification.nextMatch.timing,
+		},
+	};
 	await page.viewport(1376, 768);
-	const view = await render(<DashboardView connected dashboard={qualification} now={SCENARIO_NOW} />);
+	const view = await render(<DashboardView connected dashboard={singleStatusQualification} now={SCENARIO_NOW} />);
 	await waitForAssets();
 
-	function expectCountdownFits() {
+	function expectCountdownFits(onDeckVisible: boolean) {
 		const container = document.querySelector<HTMLElement>('[data-testid="our-match-countdown"]');
 		const value = container?.querySelector<HTMLElement>('strong:not([aria-hidden="true"])');
 		expect(container).not.toBeNull();
 		expect(value).not.toBeNull();
-		expect(container!.parentElement!.textContent).toContain('On deck');
 		expect(container!.parentElement!.textContent).toContain('Queued');
+		expect(container!.parentElement!.textContent.includes('On deck')).toBe(onDeckVisible);
 		const containerBounds = container!.getBoundingClientRect();
 		const valueBounds = value!.getBoundingClientRect();
 		expect(valueBounds.top).toBeGreaterThanOrEqual(containerBounds.top);
@@ -219,10 +238,13 @@ test('match countdown fits vertically in short qualification and elimination sum
 		expect(Number.parseFloat(getComputedStyle(value!).fontSize)).toBeGreaterThan(24);
 	}
 
-	expectCountdownFits();
+	expectCountdownFits(false);
+	await view.rerender(<DashboardView connected dashboard={eliminationSingleStatusDashboard} now={SCENARIO_NOW} />);
+	await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+	expectCountdownFits(false);
 	await view.rerender(<DashboardView connected dashboard={eliminationOnDeckDashboard} now={SCENARIO_NOW} />);
 	await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
-	expectCountdownFits();
+	expectCountdownFits(true);
 	await expect(page.getByRole('main')).toMatchScreenshot('elimination-on-deck-queued-short');
 	await page.viewport(1376, 1032);
 });
