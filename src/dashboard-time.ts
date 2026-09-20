@@ -10,7 +10,7 @@ export function timingStatusMilestones(timing: NextMatch['timing']): TimingStatu
 	const onDeck = { label: 'On deck', ...timing.onDeck } as const;
 
 	if (onDeck.isActual) return [onDeck, ...(queued.isActual ? [queued] : [])];
-	if (queued.isActual) return [onDeck];
+	if (queued.isActual) return [onDeck, queued];
 	return [queued];
 }
 

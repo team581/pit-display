@@ -11,7 +11,10 @@ describe('dashboard time state', () => {
 		};
 		expect(timingStatusMilestones(timing)).toEqual([{ label: 'Queued', ...timing.queued }]);
 		timing.queued.isActual = true;
-		expect(timingStatusMilestones(timing)).toEqual([{ label: 'On deck', ...timing.onDeck }]);
+		expect(timingStatusMilestones(timing)).toEqual([
+			{ label: 'On deck', ...timing.onDeck },
+			{ label: 'Queued', ...timing.queued },
+		]);
 		timing.onDeck.isActual = true;
 		expect(timingStatusMilestones(timing)).toEqual([
 			{ label: 'On deck', ...timing.onDeck },
