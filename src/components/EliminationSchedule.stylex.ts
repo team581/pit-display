@@ -38,16 +38,14 @@ export const styles = stylex.create({
 		minHeight: 0,
 		flex: 1,
 		flexDirection: 'column',
-		justifyContent: 'center',
+		justifyContent: 'flex-start',
 		gap: spacing.xs,
-		paddingBlockStart: spacing.xs,
-		paddingBlockEnd: spacing.xs,
+		paddingBlockStart: spacing.sm,
+		paddingBlockEnd: spacing.sm,
 		paddingInline: { default: spacing.xl, [compact]: spacing.lg, [narrow]: spacing.md },
 	},
 	cardBodyWithTimeline: {
 		gap: 0,
-		paddingBlockStart: spacing.md,
-		paddingBlockEnd: 0,
 	},
 	primaryRow: {
 		display: 'flex',
@@ -108,7 +106,7 @@ export const styles = stylex.create({
 		width: '100%',
 		minWidth: 0,
 		flexDirection: 'column',
-		gap: spacing.xs,
+		gap: 0,
 		paddingBlock: 0,
 		paddingInlineStart: spacing['2xl'],
 	},
@@ -119,7 +117,7 @@ export const styles = stylex.create({
 		gridTemplateColumns: 'minmax(0, 1fr) auto',
 		alignItems: 'center',
 		gap: spacing.md,
-		paddingBlock: spacing.sm,
+		paddingBlock: spacing.xs,
 		paddingInline: spacing.sm,
 	},
 	timelineStart: {
@@ -149,7 +147,7 @@ export const styles = stylex.create({
 	},
 	timelineLabel: {
 		fontSize: { default: '2.3rem', [compact]: '2rem' },
-		lineHeight: 1.1,
+		lineHeight: 1,
 	},
 	timelineTime: {
 		fontSize: { default: '2.05rem', [compact]: '1.8rem' },

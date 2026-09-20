@@ -96,6 +96,7 @@ export function DashboardView({
 					{...stylex.props(
 						styles.dashboardContent,
 						dashboard.competitionPhase === 'qualification' ? styles.qualificationContent : undefined,
+						dashboard.competitionPhase === 'elimination' ? styles.eliminationContent : undefined,
 					)}
 				>
 					<MatchSummary
