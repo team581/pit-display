@@ -120,6 +120,10 @@ export type PitMap = {
              * Whether this arrow points in a single direction or in both directions. At an angle of 0°, a single arrow points up and a double arrow points up & down.
              */
             type?: 'single' | 'double';
+            /**
+             * Whether this arrow is red or blue. Blue is the default.
+             */
+            color?: 'red' | 'blue' | 'purple' | 'gray';
         };
     } | null;
     /**
@@ -248,6 +252,14 @@ export type Match = {
          * The timestamp (Unix time in milliseconds) at which the status of this match was set to `On field`. If the status of this match is not `On field`, then this is null.
          */
         actualOnFieldTime?: number | null;
+        /**
+         * The timestamp (Unix time in milliseconds) at which the match started. If the match has not yet started, or if the event is not using Nexus AutoQueue, then this is null.
+         */
+        actualStartTime?: number | null;
+        /**
+         * The timestamp (Unix time in milliseconds) at which the scores for this match were committed. If scores have not yet been committed, or if the event is not using Nexus AutoQueue, then this is null.
+         */
+        actualCommitTime?: number | null;
     };
     /**
      * The label for a break that begins after this match is played. Null if there is no break after this match.
@@ -457,6 +469,86 @@ export type GetInspectionStatusResponses = {
 };
 
 export type GetInspectionStatusResponse = GetInspectionStatusResponses[keyof GetInspectionStatusResponses];
+
+export type PullTeamsData = {
+    body?: never;
+    path: {
+        /**
+         * The event you want to fetch teams for.
+         */
+        eventKey: EventKey;
+    };
+    query?: never;
+    url: '/event/{eventKey}/teams';
+};
+
+export type PullTeamsErrors = {
+    /**
+     * Missing API key. Get your API key from [frc.nexus/api](https://frc.nexus/api) and include it in the `Nexus-Api-Key` header.
+     */
+    401: unknown;
+    /**
+     * Invalid API key. Ensure the key you're using matches your key at [frc.nexus/api](https://frc.nexus/api). If abuse was detected, your API key may have been disabled. Email contact@frc.nexus for support.
+     */
+    403: unknown;
+    /**
+     * `eventKey` does not exist.
+     */
+    404: unknown;
+    /**
+     * An unknown server error occurred. Try again later or email contact@frc.nexus for support.
+     */
+    500: unknown;
+};
+
+export type PullTeamsResponses = {
+    /**
+     * Array of team numbers
+     */
+    200: Array<string>;
+};
+
+export type PullTeamsResponse = PullTeamsResponses[keyof PullTeamsResponses];
+
+export type PullAlliancesData = {
+    body?: never;
+    path: {
+        /**
+         * The event you want to fetch alliances for.
+         */
+        eventKey: EventKey;
+    };
+    query?: never;
+    url: '/event/{eventKey}/alliances';
+};
+
+export type PullAlliancesErrors = {
+    /**
+     * Missing API key. Get your API key from [frc.nexus/api](https://frc.nexus/api) and include it in the `Nexus-Api-Key` header.
+     */
+    401: unknown;
+    /**
+     * Invalid API key. Ensure the key you're using matches your key at [frc.nexus/api](https://frc.nexus/api). If abuse was detected, your API key may have been disabled. Email contact@frc.nexus for support.
+     */
+    403: unknown;
+    /**
+     * `eventKey` does not exist.
+     */
+    404: unknown;
+    /**
+     * An unknown server error occurred. Try again later or email contact@frc.nexus for support.
+     */
+    500: unknown;
+};
+
+export type PullAlliancesResponses = {
+    /**
+     * Array of alliances
+     */
+    200: Array<Array<string | null> | null>;
+};
+
+export type PullAlliancesResponse = PullAlliancesResponses[keyof PullAlliancesResponses];
 
 export type PullEventsData = {
     body?: never;

@@ -4,8 +4,8 @@ import * as z from 'zod';
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetInspectionStatusData, GetInspectionStatusErrors, GetInspectionStatusResponses, PullEventsData, PullEventsErrors, PullEventsResponses, PullLiveEventStatusData, PullLiveEventStatusErrors, PullLiveEventStatusResponses, PullPitAddressesData, PullPitAddressesErrors, PullPitAddressesResponses, PullPitMapData, PullPitMapErrors, PullPitMapResponses } from './types.gen';
-import { zGetInspectionStatusPath, zGetInspectionStatusResponse, zPullEventsResponse, zPullLiveEventStatusPath, zPullLiveEventStatusResponse, zPullPitAddressesPath, zPullPitAddressesResponse, zPullPitMapPath, zPullPitMapResponse } from './zod.gen';
+import type { GetInspectionStatusData, GetInspectionStatusErrors, GetInspectionStatusResponses, PullAlliancesData, PullAlliancesErrors, PullAlliancesResponses, PullEventsData, PullEventsErrors, PullEventsResponses, PullLiveEventStatusData, PullLiveEventStatusErrors, PullLiveEventStatusResponses, PullPitAddressesData, PullPitAddressesErrors, PullPitAddressesResponses, PullPitMapData, PullPitMapErrors, PullPitMapResponses, PullTeamsData, PullTeamsErrors, PullTeamsResponses } from './types.gen';
+import { zGetInspectionStatusPath, zGetInspectionStatusResponse, zPullAlliancesPath, zPullAlliancesResponse, zPullEventsResponse, zPullLiveEventStatusPath, zPullLiveEventStatusResponse, zPullPitAddressesPath, zPullPitAddressesResponse, zPullPitMapPath, zPullPitMapResponse, zPullTeamsPath, zPullTeamsResponse } from './zod.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -61,7 +61,7 @@ export class FrcNexus extends HeyApiClient {
     }
     
     /**
-     * Live event status (pull)
+     * Live event status
      */
     public pullLiveEventStatus<ThrowOnError extends boolean = true>(options: Options<PullLiveEventStatusData, ThrowOnError>): RequestResult<PullLiveEventStatusResponses, PullLiveEventStatusErrors, ThrowOnError, 'data'> {
         return (options.client ?? this.client).get<PullLiveEventStatusResponses, PullLiveEventStatusErrors, ThrowOnError, 'data'>({
@@ -79,7 +79,7 @@ export class FrcNexus extends HeyApiClient {
     }
     
     /**
-     * Pit addresses (pull)
+     * Pit addresses
      *
      * Get the mapping from team number to pit addresses.
      */
@@ -99,7 +99,7 @@ export class FrcNexus extends HeyApiClient {
     }
     
     /**
-     * Pit map (pull)
+     * Pit map
      *
      * Get raw map data that can be used to render your own version of a pit map.
      */
@@ -119,7 +119,7 @@ export class FrcNexus extends HeyApiClient {
     }
     
     /**
-     * Inspection status (pull)
+     * Inspection status
      *
      * Get the mapping from team number to inspection status.
      */
@@ -139,7 +139,47 @@ export class FrcNexus extends HeyApiClient {
     }
     
     /**
-     * Events (pull)
+     * Teams
+     *
+     * Get the list of teams attending the event.
+     */
+    public pullTeams<ThrowOnError extends boolean = true>(options: Options<PullTeamsData, ThrowOnError>): RequestResult<PullTeamsResponses, PullTeamsErrors, ThrowOnError, 'data'> {
+        return (options.client ?? this.client).get<PullTeamsResponses, PullTeamsErrors, ThrowOnError, 'data'>({
+            requestValidator: async (data) => await z.object({
+                body: z.never().optional(),
+                path: zPullTeamsPath,
+                query: z.never().optional()
+            }).parseAsync(data),
+            responseValidator: async (data) => await zPullTeamsResponse.parseAsync(data),
+            responseStyle: 'data',
+            security: [{ name: 'Nexus-Api-Key', type: 'apiKey' }],
+            url: '/event/{eventKey}/teams',
+            ...options
+        });
+    }
+    
+    /**
+     * Alliances
+     *
+     * Get the playoff alliances as a two-dimensional array. Each alliance member is listed in order (captain, 1st pick, 2nd pick). Partial alliances (with missing alliances or teams as null) may be returned if alliance selection is still in progress.
+     */
+    public pullAlliances<ThrowOnError extends boolean = true>(options: Options<PullAlliancesData, ThrowOnError>): RequestResult<PullAlliancesResponses, PullAlliancesErrors, ThrowOnError, 'data'> {
+        return (options.client ?? this.client).get<PullAlliancesResponses, PullAlliancesErrors, ThrowOnError, 'data'>({
+            requestValidator: async (data) => await z.object({
+                body: z.never().optional(),
+                path: zPullAlliancesPath,
+                query: z.never().optional()
+            }).parseAsync(data),
+            responseValidator: async (data) => await zPullAlliancesResponse.parseAsync(data),
+            responseStyle: 'data',
+            security: [{ name: 'Nexus-Api-Key', type: 'apiKey' }],
+            url: '/event/{eventKey}/alliances',
+            ...options
+        });
+    }
+    
+    /**
+     * Events
      */
     public pullEvents<ThrowOnError extends boolean = true>(options?: Options<PullEventsData, ThrowOnError>): RequestResult<PullEventsResponses, PullEventsErrors, ThrowOnError, 'data'> {
         return (options?.client ?? this.client).get<PullEventsResponses, PullEventsErrors, ThrowOnError, 'data'>({

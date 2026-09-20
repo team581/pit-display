@@ -70,7 +70,13 @@ export const zPitMap = z.object({
         label: z.string().optional()
     }))).nullish(),
     arrows: z.record(z.string(), zMapElement.and(z.object({
-        type: z.enum(['single', 'double']).optional()
+        type: z.enum(['single', 'double']).optional(),
+        color: z.enum([
+            'red',
+            'blue',
+            'purple',
+            'gray'
+        ]).optional()
     }))).nullish(),
     walls: z.record(z.string(), zMapElement.and(z.record(z.string(), z.unknown()))).nullish()
 });
@@ -98,7 +104,9 @@ export const zMatch = z.object({
         estimatedStartTime: z.number().nullish(),
         actualQueueTime: z.number().nullish(),
         actualOnDeckTime: z.number().nullish(),
-        actualOnFieldTime: z.number().nullish()
+        actualOnFieldTime: z.number().nullish(),
+        actualStartTime: z.number().nullish(),
+        actualCommitTime: z.number().nullish()
     }).optional(),
     breakAfter: z.enum([
         'Break',
@@ -173,6 +181,24 @@ export const zGetInspectionStatusPath = z.object({
  * Team number to inspection status map
  */
 export const zGetInspectionStatusResponse = zInspectionStatuses;
+
+export const zPullTeamsPath = z.object({
+    eventKey: zEventKey
+});
+
+/**
+ * Array of team numbers
+ */
+export const zPullTeamsResponse = z.array(z.string());
+
+export const zPullAlliancesPath = z.object({
+    eventKey: zEventKey
+});
+
+/**
+ * Array of alliances
+ */
+export const zPullAlliancesResponse = z.array(z.array(z.string().nullable()).nullable());
 
 /**
  * Event object

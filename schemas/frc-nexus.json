@@ -1,7 +1,7 @@
 {
 	"openapi": "3.1.0",
 	"info": {
-		"version": "v1.5.0",
+		"version": "v1.8.0",
 		"title": "Nexus API",
 		"description": "Get live event data with accurate match timing estimates. Visit [frc.nexus/api](https://frc.nexus/api) to get your API key or to register your webhook URLs.<br /><br />**Availability**<br />Live event status is only available for events that are using Nexus to manage queuing. Match status and times will not be accurate for events not using Nexus for queuing.<br /><br />**Timestamps**<br />All timestamps are represented using [Unix time in milliseconds](https://currentmillis.com). Most timestamps are computed dynamically and could change every time you receive a new status.<br /><br />**Attribution**<br />Include a link back to [frc.nexus](https://frc.nexus) in any projects in which you utilize Nexus data.",
 		"x-logo": {
@@ -38,7 +38,7 @@
 			],
 			"get": {
 				"operationId": "pullLiveEventStatus",
-				"summary": "Live event status (pull)",
+				"summary": "Live event status",
 				"responses": {
 					"200": {
 						"description": "Live event status",
@@ -133,7 +133,7 @@
 			],
 			"get": {
 				"operationId": "pullPitAddresses",
-				"summary": "Pit addresses (pull)",
+				"summary": "Pit addresses",
 				"description": "Get the mapping from team number to pit addresses.",
 				"responses": {
 					"200": {
@@ -193,7 +193,7 @@
 			],
 			"get": {
 				"operationId": "pullPitMap",
-				"summary": "Pit map (pull)",
+				"summary": "Pit map",
 				"description": "Get raw map data that can be used to render your own version of a pit map.",
 				"responses": {
 					"200": {
@@ -253,7 +253,7 @@
 			],
 			"get": {
 				"operationId": "getInspectionStatus",
-				"summary": "Inspection status (pull)",
+				"summary": "Inspection status",
 				"description": "Get the mapping from team number to inspection status.",
 				"responses": {
 					"200": {
@@ -289,11 +289,139 @@
 				}
 			}
 		},
+		"/event/{eventKey}/teams": {
+			"parameters": [
+				{
+					"name": "eventKey",
+					"description": "The event you want to fetch teams for.",
+					"in": "path",
+					"required": true,
+					"schema": {
+						"$ref": "#/components/schemas/EventKey"
+					},
+					"examples": {
+						"realEvent": {
+							"value": "2024casf",
+							"summary": "The year & event code of a real event. Get event codes from frc.events or thebluealliance.com."
+						},
+						"demoEvent": {
+							"value": "demo1234",
+							"summary": "Your demo event key for testing. Get your demo event key from frc.nexus/api."
+						}
+					}
+				}
+			],
+			"get": {
+				"operationId": "pullTeams",
+				"summary": "Teams",
+				"description": "Get the list of teams attending the event.",
+				"responses": {
+					"200": {
+						"description": "Team list",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"type": "string",
+										"description": "Team number"
+									},
+									"description": "Array of team numbers"
+								},
+								"examples": {
+									"Teams": {
+										"$ref": "#/components/examples/Teams"
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Missing API key. Get your API key from [frc.nexus/api](https://frc.nexus/api) and include it in the `Nexus-Api-Key` header."
+					},
+					"403": {
+						"description": "Invalid API key. Ensure the key you're using matches your key at [frc.nexus/api](https://frc.nexus/api). If abuse was detected, your API key may have been disabled. Email contact@frc.nexus for support."
+					},
+					"404": {
+						"description": "`eventKey` does not exist."
+					},
+					"500": {
+						"description": "An unknown server error occurred. Try again later or email contact@frc.nexus for support."
+					}
+				}
+			}
+		},
+		"/event/{eventKey}/alliances": {
+			"parameters": [
+				{
+					"name": "eventKey",
+					"description": "The event you want to fetch alliances for.",
+					"in": "path",
+					"required": true,
+					"schema": {
+						"$ref": "#/components/schemas/EventKey"
+					},
+					"examples": {
+						"realEvent": {
+							"value": "2024casf",
+							"summary": "The year & event code of a real event. Get event codes from frc.events or thebluealliance.com."
+						},
+						"demoEvent": {
+							"value": "demo1234",
+							"summary": "Your demo event key for testing. Get your demo event key from frc.nexus/api."
+						}
+					}
+				}
+			],
+			"get": {
+				"operationId": "pullAlliances",
+				"summary": "Alliances",
+				"description": "Get the playoff alliances as a two-dimensional array. Each alliance member is listed in order (captain, 1st pick, 2nd pick). Partial alliances (with missing alliances or teams as null) may be returned if alliance selection is still in progress.",
+				"responses": {
+					"200": {
+						"description": "Playoff alliances",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"type": ["array", "null"],
+										"description": "Alliance",
+										"items": {
+											"type": ["string", "null"],
+											"description": "Team number"
+										}
+									},
+									"description": "Array of alliances"
+								},
+								"examples": {
+									"Alliances": {
+										"$ref": "#/components/examples/Alliances"
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Missing API key. Get your API key from [frc.nexus/api](https://frc.nexus/api) and include it in the `Nexus-Api-Key` header."
+					},
+					"403": {
+						"description": "Invalid API key. Ensure the key you're using matches your key at [frc.nexus/api](https://frc.nexus/api). If abuse was detected, your API key may have been disabled. Email contact@frc.nexus for support."
+					},
+					"404": {
+						"description": "`eventKey` does not exist."
+					},
+					"500": {
+						"description": "An unknown server error occurred. Try again later or email contact@frc.nexus for support."
+					}
+				}
+			}
+		},
 		"/events": {
 			"parameters": [],
 			"get": {
 				"operationId": "pullEvents",
-				"summary": "Events (pull)",
+				"summary": "Events",
 				"responses": {
 					"200": {
 						"description": "Event object",
@@ -600,12 +728,17 @@
 								},
 								{
 									"type": "object",
-									"description": "A single label.",
+									"description": "A single arrow.",
 									"properties": {
 										"type": {
 											"type": "string",
 											"enum": ["single", "double"],
 											"description": "Whether this arrow points in a single direction or in both directions. At an angle of 0°, a single arrow points up and a double arrow points up & down."
+										},
+										"color": {
+											"type": ["string", "null"],
+											"enum": ["red", "blue", "purple", "gray"],
+											"description": "Whether this arrow is red or blue. Blue is the default."
 										}
 									}
 								}
@@ -773,6 +906,14 @@
 							"actualOnFieldTime": {
 								"type": ["number", "null"],
 								"description": "The timestamp (Unix time in milliseconds) at which the status of this match was set to `On field`. If the status of this match is not `On field`, then this is null."
+							},
+							"actualStartTime": {
+								"type": ["number", "null"],
+								"description": "The timestamp (Unix time in milliseconds) at which the match started. If the match has not yet started, or if the event is not using Nexus AutoQueue, then this is null."
+							},
+							"actualCommitTime": {
+								"type": ["number", "null"],
+								"description": "The timestamp (Unix time in milliseconds) at which the scores for this match were committed. If scores have not yet been committed, or if the event is not using Nexus AutoQueue, then this is null."
 							}
 						}
 					},
@@ -854,12 +995,29 @@
 					"400": "B2"
 				}
 			},
+			"Teams": {
+				"summary": "Event with teams",
+				"value": ["100", "200", "300", "400"]
+			},
+			"Alliances": {
+				"summary": "Event with playoff alliances",
+				"value": [
+					["3400", "1900", "200"],
+					["2000", "2400", "900"],
+					["100", "3000", "3300"],
+					["1400", "1100", "2300"],
+					["1300", "2800", "1600"],
+					["2100", "3500", "800"],
+					["3200", "1000", "300"],
+					["400", "700", "2500"]
+				]
+			},
 			"InspectionStatus": {
 				"summary": "Inspections status for a small event",
 				"value": {
 					"100": {
 						"inspected": true,
-						"status": "inspected"
+						"status": "complete"
 					},
 					"200": {
 						"inspected": false,
