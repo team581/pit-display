@@ -2,5 +2,5 @@
 idiomatic_version_file_enable_tools = ["node", "pnpm"]
 
 [tools]
-hk = "2.0.1"
+hk = "2.1.0"
 pitchfork = "latest"
