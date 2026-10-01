@@ -44,7 +44,7 @@
 	},
 	"devDependencies": {
 		"@hey-api/openapi-ts": "0.99.0",
-		"@storybook/react-vite": "10.6.0",
+		"@storybook/react-vite": "10.6.1",
 		"@stylexjs/unplugin": "0.19.1",
 		"@types/node": "24.19.0",
 		"@types/react": "19.3.0",
@@ -57,7 +57,7 @@
 		"knip": "6.38.0",
 		"playwright": "1.63.0",
 		"portless": "0.15.6",
-		"storybook": "10.6.0",
+		"storybook": "10.6.1",
 		"typescript": "7.0.2",
 		"vite": "catalog:",
 		"vite-plus": "catalog:",
