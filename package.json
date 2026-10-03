@@ -56,7 +56,7 @@
 		"envalid": "8.2.0",
 		"knip": "6.39.0",
 		"playwright": "1.63.0",
-		"portless": "0.15.6",
+		"portless": "0.15.7",
 		"storybook": "10.6.1",
 		"typescript": "7.0.2",
 		"vite": "catalog:",
