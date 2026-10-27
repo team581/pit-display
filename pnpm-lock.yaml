@@ -276,8 +276,8 @@ importers:
         specifier: 1.64.1
         version: 1.64.1
       portless:
-        specifier: 0.15.11
-        version: 0.15.11
+        specifier: 0.15.12
+        version: 0.15.12
       storybook:
         specifier: 10.6.3
         version: 10.6.3(@types/react@19.3.0)(prettier@3.9.6)(react@19.3.1)(vite-plus@0.3.3(@types/node@24.19.2)(@vitest/browser-playwright@4.1.12)(@vitest/ui@4.1.12)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.0.2)(yaml@2.9.1))
@@ -4532,8 +4532,8 @@ packages:
     resolution: {integrity: sha512-LKWqWJRhstyYo9pGvgor/ivk2w94eSjE3RGVuzLGlr3NmD8bf7RcYGze1mNdEHRP6TRP6rMuDHk5t44hnTRyow==}
     engines: {node: '>=14.19.0'}
 
-  portless@0.15.11:
-    resolution: {integrity: sha512-2qjRJ0CG3zPOJ3mUVPdEZjivd7KV/ldiUwhYGI0fdxPVKDjv77GFVmioLQFWoDqNz5paG+4yk+Tibmgtil3Otg==}
+  portless@0.15.12:
+    resolution: {integrity: sha512-Lbz85zLboOMkvq2unXYfJ/YMpsvFZYQgrwGEbinZErp045y9fLm4obm7E77V2BI2Om0Mh6tX/2w2ftFqRs5kfQ==}
     engines: {node: '>=24'}
     os: [darwin, linux, win32]
     hasBin: true
@@ -9182,7 +9182,7 @@ snapshots:
 
   pngjs@7.0.0: {}
 
-  portless@0.15.11: {}
+  portless@0.15.12: {}
 
   possible-typed-array-names@1.1.0: {}
 
