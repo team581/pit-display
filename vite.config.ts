@@ -33,7 +33,6 @@ export default defineConfig(({ command, mode }) => {
 				include: ['src/**/*.visual.test.tsx'],
 				setupFiles: ['./src/testing/visual-setup.ts'],
 				browser: {
-					api: { port: 0 },
 					enabled: true,
 					expect: {
 						toMatchScreenshot: {
@@ -121,6 +120,7 @@ export default defineConfig(({ command, mode }) => {
 		},
 		test: {
 			attachmentsDir: '.vitest/attachments',
+			...(process.env.VISUAL_TESTS === 'true' ? { api: { port: 0 } } : {}),
 			...(process.env.PLAYWRIGHT_WS_ENDPOINT ? { teardownTimeout: 1_000 } : {}),
 			projects: testProjects,
 		},
