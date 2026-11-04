@@ -4,3 +4,7 @@ args = ["exec", "convex", "mcp", "start"]
 
 [mcp_servers.sentry]
 url = "https://mcp.sentry.dev/mcp/team581/pit-display"
+
+[mcp_servers.safari]
+command = "/usr/bin/safaridriver"
+args = ["--mcp"]
