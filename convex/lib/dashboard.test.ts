@@ -352,28 +352,52 @@ describe('createDashboardData', () => {
 		});
 	});
 
-	it('times an active break from the previous match commit instead of a stale on-field estimate', () => {
-		const committedAt = now - 2 * minute;
-		const dashboard = createDashboardData({
-			eventKey: '2026test',
-			receivedAt: now,
-			competitionPhase: 'elimination',
-			matches: [
-				match('Final 1', { status: 'On field', times: { actualCommitTime: committedAt } }),
-				match('Final 2', {
-					status: 'On deck',
-					blueTeams: ['581', '254', '1678'],
-					afterBreak: { breakLabel: 'an awards break', durationMinutes: 15, position: 1 },
-					times: { estimatedOnFieldTime: now - minute, estimatedStartTime: now + 2 * minute },
-				}),
-			],
-		});
+	it.each([
+		{ estimatedStart: now + 2 * minute, actualQueue: undefined, actualOnDeck: undefined, delay: 11 * minute },
+		{ estimatedStart: now + 2 * minute, actualQueue: now - minute, actualOnDeck: now, delay: 11 * minute },
+		{ estimatedStart: now + 16 * minute, actualQueue: undefined, actualOnDeck: undefined, delay: 0 },
+	])(
+		'adjusts only conflicting match and queue estimates during an active break (%#)',
+		({ estimatedStart, actualQueue, actualOnDeck, delay }) => {
+			const committedAt = now - 2 * minute;
+			const breakEnd = committedAt + 15 * minute;
+			const estimatedQueue = estimatedStart - 4 * minute;
+			const estimatedOnDeck = estimatedStart - 3 * minute;
+			const dashboard = createDashboardData({
+				eventKey: '2026test',
+				receivedAt: now,
+				competitionPhase: 'elimination',
+				matches: [
+					match('Final 1', { status: 'On field', times: { actualCommitTime: committedAt } }),
+					match('Final 2', {
+						status: actualOnDeck === undefined ? 'Queuing soon' : 'On deck',
+						blueTeams: ['581', '254', '1678'],
+						afterBreak: { breakLabel: 'an awards break', durationMinutes: 15, position: 1 },
+						times: {
+							estimatedQueueTime: estimatedQueue,
+							estimatedOnDeckTime: estimatedOnDeck,
+							estimatedOnFieldTime: now - minute,
+							estimatedStartTime: estimatedStart,
+							actualQueueTime: actualQueue,
+							actualOnDeckTime: actualOnDeck,
+						},
+					}),
+				],
+			});
 
-		expect(dashboard).toMatchObject({
-			currentActivity: { type: 'awards', endsAt: committedAt + 15 * minute },
-			upcomingMatches: [{ break: { endTime: committedAt + 15 * minute } }],
-		});
-	});
+			expect(dashboard).toMatchObject({
+				currentActivity: { type: 'awards', endsAt: breakEnd },
+				nextMatch: {
+					startTime: estimatedStart + delay,
+					timing: {
+						queued: { time: actualQueue ?? estimatedQueue + delay, isActual: actualQueue !== undefined },
+						onDeck: { time: actualOnDeck ?? estimatedOnDeck + delay, isActual: actualOnDeck !== undefined },
+					},
+				},
+				upcomingMatches: [{ startTime: estimatedStart + delay, break: { endTime: breakEnd } }],
+			});
+		},
+	);
 
 	it('shows both possible next playoff matches with bumper colors, timing, and breaks', () => {
 		const dashboard = createDashboardData({

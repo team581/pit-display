@@ -75,6 +75,7 @@ type EliminationDestination = { label: string; alliance: AllianceColor };
 type CurrentActivity = DashboardData['currentActivity'];
 type NextMatch = NonNullable<DashboardData['nextMatch']>;
 type UpcomingMatch = DashboardData['upcomingMatches'][number];
+type FieldBreak = UpcomingMatch['break'];
 
 // 20 seconds of auto, a 3-second transition, and 140 seconds of teleop.
 const matchDuration = 163_000;
@@ -124,8 +125,16 @@ function parseMatchLabel(label: string): ParsedMatch | null {
 	return { number, type, displayLabel: `${prefix}${number}${match[3] ? 'R' : ''}` };
 }
 
-function matchStart(match: NexusMatch): number | undefined {
-	return match.times.estimatedStartTime ?? match.times.scheduledStartTime;
+function activeBreakEndTime(fieldBreak?: FieldBreak): number | null {
+	return fieldBreak?.hasStarted && !fieldBreak.hasEnded && fieldBreak.durationMinutes !== null
+		? fieldBreak.endTime
+		: null;
+}
+
+function matchStart(match: NexusMatch, fieldBreak?: FieldBreak): number | undefined {
+	const start = match.times.estimatedStartTime ?? match.times.scheduledStartTime;
+	const breakEnd = activeBreakEndTime(fieldBreak);
+	return start !== undefined && breakEnd !== null ? Math.max(start, breakEnd) : start;
 }
 
 function includesTeam(match: NexusMatch): boolean {
@@ -146,10 +155,7 @@ function breakTitle(label: string): string {
 	return withoutArticle.charAt(0).toUpperCase() + withoutArticle.slice(1);
 }
 
-function eliminationBreakForMatch(
-	match: NexusMatch,
-	matches: NexusMatch[],
-): DashboardData['eliminationPaths'][number]['break'] {
+function eliminationBreakForMatch(match: NexusMatch, matches: NexusMatch[]): FieldBreak {
 	if (!match.afterBreak) return null;
 
 	const matchIndex = matches.indexOf(match);
@@ -179,8 +185,12 @@ function eliminationBreakForMatch(
 	};
 }
 
-function timing(estimated: number | undefined, actual: number | undefined): NextMatch['timing']['queued'] {
-	const time = actual ?? estimated ?? null;
+function timing(
+	estimated: number | undefined,
+	actual: number | undefined,
+	delay: number,
+): NextMatch['timing']['queued'] {
+	const time = actual ?? (estimated === undefined ? null : estimated + delay);
 	return { time, isActual: actual !== undefined };
 }
 
@@ -223,11 +233,12 @@ function eliminationPaths(match: NexusMatch | undefined, matches: NexusMatch[]):
 
 		const destinationMatch = matches.find((candidate) => candidate.label === destination.label);
 		const parsedDestination = parseMatchLabel(destination.label);
+		const fieldBreak = destinationMatch ? eliminationBreakForMatch(destinationMatch, matches) : null;
 		return {
 			outcome,
 			displayLabel: parsedDestination?.displayLabel ?? null,
-			startTime: destinationMatch ? (matchStart(destinationMatch) ?? null) : null,
-			break: destinationMatch ? eliminationBreakForMatch(destinationMatch, matches) : null,
+			startTime: destinationMatch ? (matchStart(destinationMatch, fieldBreak) ?? null) : null,
+			break: fieldBreak,
 			alliance: destination.alliance,
 		};
 	});
@@ -256,16 +267,17 @@ function createUpcomingMatch(
 	const previousMatch =
 		teamMatches[index - 1] ?? (lastOnFieldMatch && includesTeam(lastOnFieldMatch) ? lastOnFieldMatch : undefined);
 	const previousParsedMatch = previousMatch ? parseMatchLabel(previousMatch.label) : null;
+	const fieldBreak = eliminationBreakForMatch(match, allMatches);
 	return {
 		key: match.label,
 		displayLabel: parsedMatch.displayLabel,
-		startTime: matchStart(match) ?? null,
+		startTime: matchStart(match, fieldBreak) ?? null,
 		warning: match.afterBreak
 			? breakWarning(match.afterBreak)
 			: previousMatch && previousParsedMatch
 				? turnaroundWarningForMatch(match, parsedMatch, previousMatch, previousParsedMatch)
 				: null,
-		break: eliminationBreakForMatch(match, allMatches),
+		break: fieldBreak,
 		alliance,
 		teams,
 	};
@@ -295,18 +307,6 @@ function findActiveEliminationMatch(
 	return nextMatch ?? (currentMatch && includesTeam(currentMatch) ? currentMatch : mostRecentTeamMatch);
 }
 
-function activeAwardsEndTime(nextMatch: NexusMatch | undefined, matches: NexusMatch[]): number | null {
-	if (!nextMatch) return null;
-	const nextMatchBreak = eliminationBreakForMatch(nextMatch, matches);
-	return nextMatchBreak?.label === 'Awards break' &&
-		nextMatchBreak.hasStarted &&
-		!nextMatchBreak.hasEnded &&
-		nextMatchBreak.durationMinutes !== null &&
-		nextMatchBreak.endTime !== null
-		? nextMatchBreak.endTime
-		: null;
-}
-
 function createCurrentActivity(
 	currentMatch: NexusMatch | undefined,
 	parsedCurrentMatch: ParsedMatch | null,
@@ -327,17 +327,22 @@ function createNextMatch(
 	nextMatch: NexusMatch | undefined,
 	parsedNextMatch: ParsedMatch | null,
 	previousTeamMatch: NexusMatch | undefined,
+	fieldBreak: FieldBreak,
 ): NextMatch | null {
 	if (!nextMatch || !parsedNextMatch) return null;
 	const alliance = teamAlliance(nextMatch);
+	const startTime = matchStart(nextMatch, fieldBreak);
+	const { estimatedStartTime, estimatedQueueTime, estimatedOnDeckTime, actualQueueTime, actualOnDeckTime } =
+		nextMatch.times;
+	const delay = startTime !== undefined && estimatedStartTime !== undefined ? startTime - estimatedStartTime : 0;
 	return {
 		displayLabel: parsedNextMatch.displayLabel,
-		startTime: matchStart(nextMatch) ?? null,
+		startTime: startTime ?? null,
 		alliance,
 		requiresBumperChange: previousTeamMatch !== undefined && teamAlliance(previousTeamMatch) !== alliance,
 		timing: {
-			queued: timing(nextMatch.times.estimatedQueueTime, nextMatch.times.actualQueueTime),
-			onDeck: timing(nextMatch.times.estimatedOnDeckTime, nextMatch.times.actualOnDeckTime),
+			queued: timing(estimatedQueueTime, actualQueueTime, delay),
+			onDeck: timing(estimatedOnDeckTime, actualOnDeckTime, delay),
 		},
 	};
 }
@@ -361,7 +366,11 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 
 	const upcomingMatches = createUpcomingMatches(teamMatches, lastOnFieldMatch, status.matches);
 	const activeEliminationMatch = findActiveEliminationMatch(status.matches, currentMatchIndex, currentMatch, nextMatch);
-	const awardsEndsAt = competitionPhase === 'elimination' ? activeAwardsEndTime(nextMatch, status.matches) : null;
+	const nextMatchBreak = nextMatch ? eliminationBreakForMatch(nextMatch, status.matches) : null;
+	const awardsEndsAt =
+		competitionPhase === 'elimination' && nextMatchBreak?.label === 'Awards break'
+			? activeBreakEndTime(nextMatchBreak)
+			: null;
 
 	return {
 		eventKey: status.eventKey,
@@ -369,7 +378,7 @@ export function createDashboardData(status: EventStatusSnapshot): DashboardData 
 		competitionPhase,
 		alliancePartners: status.alliancePartners.map(Number).filter(Number.isInteger),
 		currentActivity: createCurrentActivity(currentMatch, parsedCurrentMatch, competitionPhase, awardsEndsAt),
-		nextMatch: createNextMatch(nextMatch, parsedNextMatch, previousTeamMatch),
+		nextMatch: createNextMatch(nextMatch, parsedNextMatch, previousTeamMatch, nextMatchBreak),
 		upcomingMatches,
 		eliminationPaths:
 			competitionPhase === 'elimination' ? eliminationPaths(activeEliminationMatch, status.matches) : [],
