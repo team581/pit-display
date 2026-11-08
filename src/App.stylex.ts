@@ -19,8 +19,14 @@ export const styles = stylex.create({
 		},
 	},
 	topbar: {
-		display: 'grid',
-		height: `calc(5rem + ${safeAreaTop} + min(${statusBarClearance}, ${safeAreaTop}))`,
+		display: { default: 'grid', [narrow]: 'flex' },
+		height: {
+			default: `calc(5rem + ${safeAreaTop} + min(${statusBarClearance}, ${safeAreaTop}))`,
+			[narrow]: 'auto',
+		},
+		flexWrap: 'wrap',
+		justifyContent: 'space-between',
+		gap: { default: 0, [narrow]: spacing.sm },
 		alignItems: 'center',
 		fontFamily: typefaces.display,
 		gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)',
@@ -36,6 +42,7 @@ export const styles = stylex.create({
 		borderBottomWidth: '1px',
 	},
 	clock: {
+		display: { default: 'block', [narrow]: 'none' },
 		color: colors.onSurface,
 		fontSize: {
 			default: '3.5rem',

@@ -6,6 +6,7 @@ const narrow = '@media (max-width: 620px)';
 export const styles = stylex.create({
 	container: {
 		display: 'flex',
+		whiteSpace: { default: 'pre', [narrow]: 'pre-wrap' },
 		maxWidth: '100%',
 		minWidth: {
 			default: '11rem',
