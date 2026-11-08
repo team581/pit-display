@@ -13,7 +13,7 @@ export function UpdateHealth({ connected, receivedAt, now }: { connected: boolea
 			role={hasProblem ? 'alert' : 'status'}
 		>
 			{hasProblem && <TriangleAlert {...stylex.props(styles.icon)} aria-hidden="true" strokeWidth={3} />}
-			<DurationMorph>{label}</DurationMorph>
+			<DurationMorph style={{ whiteSpace: 'inherit' }}>{label}</DurationMorph>
 		</div>
 	);
 }
