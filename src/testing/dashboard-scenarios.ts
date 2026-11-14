@@ -201,6 +201,42 @@ const awardsBreak = {
 	eliminationPaths: [],
 } satisfies Dashboard;
 
+const qualificationLongCountdown = {
+	...qualificationNormal,
+	nextMatch: { ...qualificationNormal.nextMatch, startTime: minutesFromNow(12 * 60 + 53) },
+	upcomingMatches: [
+		upcomingMatch('Q42', 12 * 60 + 53, 'red', [581, 254, 1678]),
+		...qualificationNormal.upcomingMatches.slice(1),
+	],
+} satisfies Dashboard;
+
+const qualificationReplay = {
+	...qualificationNormal,
+	currentActivity: { type: 'match', displayLabel: 'Q99R', endsAt: null },
+	nextMatch: { ...qualificationNormal.nextMatch, displayLabel: 'Q99R' },
+	upcomingMatches: [
+		upcomingMatch('Q99R', 14, 'red', [581, 254, 1678]),
+		...qualificationNormal.upcomingMatches.slice(1),
+	],
+} satisfies Dashboard;
+
+const estimatedTiming = { queued: timing(5), onDeck: timing(10) };
+
+const qualificationEstimatedTiming = {
+	...qualificationNormal,
+	nextMatch: { ...qualificationNormal.nextMatch, timing: estimatedTiming },
+} satisfies Dashboard;
+
+const eliminationEstimatedTiming = {
+	...eliminationPaths,
+	nextMatch: { ...eliminationPaths.nextMatch, timing: estimatedTiming },
+} satisfies Dashboard;
+
+const eliminationOnDeck = {
+	...eliminationPaths,
+	nextMatch: { ...eliminationPaths.nextMatch, timing: qualificationNormal.nextMatch.timing },
+} satisfies Dashboard;
+
 export type DashboardScenario = {
 	connected: boolean;
 	dashboard: Dashboard | null | undefined;
@@ -300,6 +336,41 @@ export const dashboardScenarios = [
 		description: 'Awards are active before the next finals match.',
 		connected: true,
 		dashboard: awardsBreak,
+	},
+	{
+		id: 'qualification-long-countdown',
+		name: 'Qualification long countdown',
+		description: 'Our next match is more than 12 hours away, such as overnight between event days.',
+		connected: true,
+		dashboard: qualificationLongCountdown,
+	},
+	{
+		id: 'qualification-replay',
+		name: 'Qualification replay',
+		description: 'A replayed match with a four-character label on the field, in our match, and in the schedule.',
+		connected: true,
+		dashboard: qualificationReplay,
+	},
+	{
+		id: 'qualification-estimated-timing',
+		name: 'Qualification estimated timing',
+		description: 'Neither queueing nor on deck has happened, so only the estimated queue time is shown.',
+		connected: true,
+		dashboard: qualificationEstimatedTiming,
+	},
+	{
+		id: 'elimination-estimated-timing',
+		name: 'Elimination estimated timing',
+		description: 'An elimination match where only the estimated queue time is shown.',
+		connected: true,
+		dashboard: eliminationEstimatedTiming,
+	},
+	{
+		id: 'elimination-on-deck',
+		name: 'Elimination on deck',
+		description: 'An elimination match with both on deck and queued timing rows.',
+		connected: true,
+		dashboard: eliminationOnDeck,
 	},
 ] as const satisfies readonly DashboardScenario[];
 

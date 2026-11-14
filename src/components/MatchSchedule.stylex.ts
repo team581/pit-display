@@ -1,13 +1,21 @@
 import * as stylex from '@stylexjs/stylex';
-import { colors, spacing } from '../theme.stylex';
+import { colors, spacing, type } from '../theme.stylex';
 
 const portrait = '@media (max-width: 850px), (orientation: portrait)';
 const narrow = '@media (max-width: 620px)';
-const compact = '@media (max-width: 1150px)';
 
 export const styles = stylex.create({
+	tile: {
+		gridColumn: '1 / -1',
+	},
 	rows: {
+		minHeight: 0,
 		maxHeight: { default: 'none', [portrait]: '16rem' },
+		flex: 1,
+		overflowY: 'auto',
+		overscrollBehavior: 'contain',
+		scrollbarColor: `${colors.tertiary} ${colors.surfaceContainer}`,
+		scrollbarWidth: 'thin',
 	},
 	matchRow: {
 		display: 'grid',
@@ -22,21 +30,21 @@ export const styles = stylex.create({
 		rowGap: { default: spacing.lg, [narrow]: spacing.sm },
 		paddingBlock: { default: spacing.sm, [narrow]: spacing.md },
 		paddingInline: { default: spacing['2xl'], [portrait]: spacing.lg, [narrow]: spacing.md },
+	},
+	divider: {
 		borderTopWidth: '1px',
 		borderTopStyle: 'solid',
 		borderTopColor: colors.outlineVariant,
 	},
-	matchNumber: {
-		fontSize: '4rem',
+	matchLabel: {
+		fontSize: type.matchLabel,
 		fontWeight: 700,
 		fontVariantNumeric: 'tabular-nums',
 		lineHeight: 1,
-		whiteSpace: 'nowrap',
 	},
-	matchTime: { lineHeight: 1.12 },
 	startTime: {
-		fontSize: { default: '2.25rem', [compact]: '1.75rem', [portrait]: '1.5rem' },
+		fontSize: type.time,
 		fontVariantNumeric: 'tabular-nums',
-		whiteSpace: { default: 'nowrap', [portrait]: 'normal' },
+		lineHeight: 1.12,
 	},
 });

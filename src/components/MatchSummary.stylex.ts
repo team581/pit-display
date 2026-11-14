@@ -1,34 +1,19 @@
 import * as stylex from '@stylexjs/stylex';
-import { colors, spacing } from '../theme.stylex';
+import { colors, spacing, type } from '../theme.stylex';
 
 const portrait = '@media (max-width: 850px), (orientation: portrait)';
 const shortLandscape = '@media (max-height: 850px) and (min-width: 851px) and (orientation: landscape)';
 
 export const styles = stylex.create({
 	grid: {
-		display: 'grid',
-		minHeight: 0,
 		height: { default: '100%', [portrait]: 'auto' },
 		gridTemplateColumns: { default: 'repeat(4, minmax(0, 1fr))', [portrait]: '1fr' },
 		gridColumn: '1 / -1',
-		gap: { default: 0, [portrait]: spacing.lg },
 	},
-	card: {
-		display: 'flex',
-		minWidth: 0,
-		height: { default: '100%', [portrait]: '23.5rem' },
-		flexDirection: 'column',
-		overflow: 'hidden',
-		borderRadius: { default: 0, [portrait]: spacing.md },
-		backgroundColor: colors.surfaceContainer,
+	onFieldTile: {
+		height: { default: 'auto', [portrait]: '23.5rem' },
 	},
-	dividedCard: {
-		borderInlineEndWidth: { default: '1px', [portrait]: 0 },
-		borderInlineEndStyle: 'solid',
-		borderInlineEndColor: colors.outlineVariant,
-	},
-	ourMatchCard: {
-		height: { default: '100%', [portrait]: 'auto' },
+	ourMatchTile: {
 		gridColumn: { default: 'span 3', [portrait]: 'auto' },
 	},
 	ourMatchBody: {
@@ -56,8 +41,7 @@ export const styles = stylex.create({
 		borderBottomStyle: 'solid',
 		borderBottomColor: colors.outlineVariant,
 	},
-	noNextCard: { gridColumn: { default: 'span 3', [portrait]: 'auto' } },
-	cardBody: {
+	tileBody: {
 		display: 'flex',
 		minHeight: 0,
 		flex: 1,
@@ -68,54 +52,38 @@ export const styles = stylex.create({
 		paddingInline: spacing.lg,
 		paddingBlockEnd: spacing.lg,
 	},
-	noNextMessage: {
-		maxWidth: '26rem',
-		fontSize: '3rem',
+	messageBody: {
+		minHeight: '10rem',
+		paddingBlockStart: spacing.lg,
+	},
+	message: {
+		display: 'flex',
+		maxWidth: '100%',
+		flexDirection: 'column',
+		fontSize: type.message,
+		fontWeight: 700,
 		lineHeight: 1.05,
 		textAlign: 'center',
 	},
-	matchNumberArea: {
+	heroArea: {
 		display: 'flex',
+		width: '100%',
 		minHeight: 0,
 		flex: 1,
+		flexDirection: 'column',
 		alignItems: 'center',
 		justifyContent: 'center',
 		padding: spacing.lg,
 	},
-	matchNumber: {
+	hero: {
+		fontSize: type.hero,
 		fontWeight: 700,
 		fontVariantNumeric: 'tabular-nums',
-		lineHeight: 0.82,
-		letterSpacing: '-0.045em',
-		whiteSpace: 'nowrap',
-	},
-	currentMatchNumber: {
-		fontSize: { default: 'clamp(7rem, 10.5vw, 10rem)', [portrait]: '7rem' },
-	},
-	currentHeading: {
-		fontSize: { default: '2rem', [portrait]: '2.625rem' },
-		whiteSpace: 'nowrap',
-	},
-	nextMatchNumber: {
-		fontSize: { default: 'clamp(7rem, 10.5vw, 10rem)', [portrait]: '7rem' },
-	},
-	currentStage: {
-		display: 'flex',
-		maxWidth: '100%',
-		flexDirection: 'column',
-		fontSize: { default: 'clamp(3rem, 4vw, 4rem)', [portrait]: '3.5rem' },
-		fontWeight: 700,
-		lineHeight: 0.95,
-		textAlign: 'center',
-	},
-	currentActivity: {
-		maxWidth: '100%',
-		fontSize: { default: 'clamp(4rem, 6.5vw, 6.5rem)', [portrait]: '4rem' },
-		fontWeight: 700,
+		// Leave room for descenders like Q's tail, so fitting to height keeps them inside the box.
 		lineHeight: 1,
-		textAlign: 'center',
+		letterSpacing: '-0.045em',
 	},
-	matchDetailSlot: {
+	pillSlot: {
 		display: 'flex',
 		width: '100%',
 		minHeight: { default: '8.5rem', [portrait]: '7.5rem' },
@@ -124,44 +92,45 @@ export const styles = stylex.create({
 		justifyContent: 'center',
 		gap: spacing.sm,
 	},
-	splitMatchDetailSlot: {
+	splitPillSlot: {
 		minHeight: { default: '9.5rem', [portrait]: '7.5rem' },
 	},
-	matchDetail: {
+	pill: {
 		display: 'flex',
 		width: '100%',
+		minHeight: { default: '8.5rem', [portrait]: '7.5rem' },
 		alignItems: 'center',
 		justifyContent: 'center',
 		overflow: 'hidden',
-		borderRadius: spacing.sm,
-	},
-	matchStartTime: {
-		minHeight: { default: '8.5rem', [portrait]: '7.5rem' },
 		paddingInline: spacing.lg,
+		borderRadius: spacing.sm,
 		backgroundColor: colors.surfaceContainerHigh,
-		containerType: 'inline-size',
 	},
-	compactMatchDetail: {
+	compactPill: {
 		minHeight: { default: '4.5rem', [portrait]: '3.5rem' },
 	},
-	redAllianceStartTime: {
+	redAlliancePill: {
 		backgroundColor: colors.redAlliance,
 		color: colors.onRedAlliance,
 	},
-	blueAllianceStartTime: {
+	blueAlliancePill: {
 		backgroundColor: colors.blueAlliance,
 		color: colors.onBlueAlliance,
 	},
-	matchTimeValue: {
+	pillText: {
+		fontSize: type.pill,
 		fontVariantNumeric: 'tabular-nums',
 		letterSpacing: '-0.03em',
-		whiteSpace: 'nowrap',
+	},
+	pillCompactText: {
+		fontSize: type.pillCompact,
+		fontVariantNumeric: 'tabular-nums',
+		letterSpacing: '-0.03em',
 	},
 	timingBody: {
 		alignItems: 'stretch',
 		gap: { default: spacing.lg, [shortLandscape]: spacing.sm },
 		padding: { default: spacing.lg, [shortLandscape]: spacing.sm },
-		containerType: 'inline-size',
 	},
 	highlightedTimingBody: {
 		backgroundColor: colors.queueAlert,
@@ -177,20 +146,20 @@ export const styles = stylex.create({
 		gap: spacing.xs,
 		textAlign: 'center',
 	},
-	matchCountdownLabel: {
+	countdownLabel: {
 		color: colors.onSurfaceVariant,
-		fontSize: { default: '3.25rem', [shortLandscape]: '2rem', [portrait]: '2rem' },
+		fontSize: type.countdownLabel,
 		fontWeight: 700,
 		letterSpacing: '0.035em',
 	},
-	highlightedMatchCountdownLabel: {
+	highlightedLabel: {
 		color: colors.onQueueAlert,
 	},
-	matchCountdownValue: {
+	countdownValue: {
+		fontSize: type.countdown,
 		fontVariantNumeric: 'tabular-nums',
 		lineHeight: 1,
 		letterSpacing: '-0.03em',
-		whiteSpace: 'nowrap',
 	},
 	timingStatuses: {
 		display: 'flex',
@@ -221,7 +190,7 @@ export const styles = stylex.create({
 	},
 	timingLabel: {
 		color: colors.onSurfaceVariant,
-		fontSize: { default: '1.75rem', [shortLandscape]: '1.25rem', [portrait]: '1.5rem' },
+		fontSize: type.statusLabel,
 		fontWeight: 700,
 		letterSpacing: '0.035em',
 		whiteSpace: 'nowrap',
@@ -230,7 +199,7 @@ export const styles = stylex.create({
 		color: colors.onQueueAlertContainer,
 	},
 	timingValue: {
-		fontSize: { default: '2.25rem', [shortLandscape]: '1.5rem', [portrait]: '1.75rem' },
+		fontSize: type.statusValue,
 		fontVariantNumeric: 'tabular-nums',
 		whiteSpace: 'nowrap',
 	},

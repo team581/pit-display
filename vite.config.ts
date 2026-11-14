@@ -77,8 +77,8 @@ export default defineConfig(({ command, mode }) => {
 							locale: 'en-US',
 							reducedMotion: 'reduce',
 							timezoneId: 'America/Los_Angeles',
-							// Leave room for Vitest's 320px controller so the test iframe remains at 1:1 scale.
-							viewport: { width: 1696, height: 1032 },
+							// Leave room for Vitest's 320px controller and full-page phone screenshots so the test iframe stays at 1:1 scale.
+							viewport: { width: 1696, height: 3200 },
 						},
 					}),
 					instances: [{ browser: 'webkit', viewport: { width: 1376, height: 1032 } }],

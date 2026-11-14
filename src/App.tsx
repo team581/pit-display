@@ -12,6 +12,7 @@ import { EliminationSchedule } from './components/EliminationSchedule';
 import { MatchSchedule } from './components/MatchSchedule';
 import { MatchSummary } from './components/MatchSummary';
 import { TeamIdentity } from './components/TeamIdentity';
+import { tileGrid } from './components/Tile';
 import { UpdateHealth } from './components/UpdateHealth';
 import type { Dashboard as DashboardData } from './dashboard';
 import { formatClockWithSeconds } from './format-time';
@@ -94,6 +95,7 @@ export function DashboardView({
 			{dashboard ? (
 				<div
 					{...stylex.props(
+						tileGrid.grid,
 						styles.dashboardContent,
 						dashboard.competitionPhase === 'qualification' ? styles.qualificationContent : undefined,
 						dashboard.competitionPhase === 'elimination' ? styles.eliminationContent : undefined,

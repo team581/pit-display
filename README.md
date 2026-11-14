@@ -23,15 +23,15 @@ Playwright server manually.
 
 ### Visual states
 
-Open the Storybook catalog to inspect complete dashboard states and focused tile variants without running Convex or
-FRC Nexus:
+Open the Storybook catalog to inspect complete dashboard states and chip variants without running Convex or FRC Nexus:
 
 ```sh
 vp run storybook
 ```
 
-The catalog uses deterministic dashboard fixtures from `src/testing/dashboard-scenarios.ts`. Raw Nexus fixtures in
-`src/testing/nexus-fixtures.ts` cover the separate Nexus-to-dashboard transformation boundary.
+The catalog uses deterministic dashboard fixtures from `src/testing/dashboard-scenarios.ts`. Add a scenario there to cover
+a new state: Storybook shows it, and the visual tests screenshot it on an iPad in landscape and on a phone, and check that all fitted text stays inside its box. Raw Nexus fixtures in `src/testing/nexus-fixtures.ts`
+cover the separate Nexus-to-dashboard transformation boundary.
 
 Local screenshot comparisons run Vitest on the host and connect to a Playwright server in a pinned Linux/AMD64
 container, so macOS can compare and update the Linux baselines directly:

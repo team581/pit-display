@@ -8,12 +8,21 @@ const styles = stylex.create({
 		display: 'flex',
 		position: 'relative',
 		width: '100%',
+		minWidth: 0,
 		alignItems: 'center',
 		justifyContent: 'center',
-		overflow: 'hidden',
+		// Keep the text out of the box's min-content width, or fitting feeds back into grid and flex track sizes.
+		contain: 'inline-size',
 	},
 	startAligned: {
 		justifyContent: 'flex-start',
+	},
+	// The parent must be a column flex container: the root takes the leftover height, so it can be measured without
+	// depending on the text inside it.
+	fillHeight: {
+		minHeight: 0,
+		flex: '1 1 0',
+		contain: 'size',
 	},
 	measurement: {
 		position: 'absolute',
@@ -23,46 +32,38 @@ const styles = stylex.create({
 	},
 });
 
-function pixels(value: string) {
-	return Number.parseFloat(value) || 0;
+function Morph({ morph, text }: { morph: 'duration' | 'label' | 'text'; text: string }) {
+	if (morph === 'duration') return <DurationMorph>{text}</DurationMorph>;
+	if (morph === 'label') {
+		// Morph the prefix separately so Q99 → Q99R keeps the Q in place.
+		return (
+			<>
+				<TextMorph>{text[0]}</TextMorph>
+				<TextMorph>{text.slice(1)}</TextMorph>
+			</>
+		);
+	}
+	return <TextMorph>{text}</TextMorph>;
 }
 
-function availableHeight(root: HTMLElement) {
-	const parent = root.parentElement;
-	if (!parent) return root.clientHeight;
-
-	const parentStyle = getComputedStyle(parent);
-	let height = parent.clientHeight - pixels(parentStyle.paddingTop) - pixels(parentStyle.paddingBottom);
-	const siblings = [...parent.children].filter((child) => child !== root);
-	for (const sibling of siblings) {
-		const siblingStyle = getComputedStyle(sibling);
-		height -=
-			sibling.getBoundingClientRect().height + pixels(siblingStyle.marginTop) + pixels(siblingStyle.marginBottom);
-	}
-	if (
-		(parentStyle.display === 'flex' || parentStyle.display === 'inline-flex') &&
-		parentStyle.flexDirection.startsWith('column')
-	) {
-		height -= pixels(parentStyle.rowGap) * siblings.length;
-	}
-
-	return Math.max(0, height);
-}
-
+/**
+ * Text that shrinks from its maximum size until it fits its own box. The box is sized by layout, never by the text.
+ * Without `maxFontSize`, the maximum is the font size from `className`.
+ */
 export function FittedText({
 	align = 'center',
 	children,
 	className,
 	fitHeight = false,
 	maxFontSize,
-	morphDuration = false,
+	morph = 'text',
 }: {
 	align?: 'center' | 'start';
 	children: string;
 	className?: string;
 	fitHeight?: boolean;
 	maxFontSize?: string;
-	morphDuration?: boolean;
+	morph?: 'duration' | 'label' | 'text';
 }) {
 	const rootRef = useRef<HTMLSpanElement>(null);
 	const measurementRef = useRef<HTMLElement>(null);
@@ -74,20 +75,13 @@ export function FittedText({
 		if (!root || !measurement) return;
 
 		const fit = () => {
-			const measurementBounds = measurement.getBoundingClientRect();
-			const measuredWidth = measurementBounds.width;
+			const measured = measurement.getBoundingClientRect();
 			const maximum = Number.parseFloat(getComputedStyle(measurement).fontSize);
-			if (measuredWidth <= 0 || maximum <= 0) return;
+			if (measured.width <= 0 || maximum <= 0) return;
 
-			const availableWidth = Math.max(0, root.clientWidth - 1);
-			const width = maximum * (availableWidth / measuredWidth);
-			const availableTextHeight = availableHeight(root);
-			const height =
-				fitHeight && measurementBounds.height > availableTextHeight + 1
-					? maximum * (availableTextHeight / measurementBounds.height)
-					: maximum;
-			const fontSize = Math.min(maximum, width, height);
-			setFontSize(`${Math.floor(fontSize * 100) / 100}px`);
+			const width = maximum * (Math.max(0, root.clientWidth - 1) / measured.width);
+			const height = fitHeight ? maximum * (root.clientHeight / measured.height) : maximum;
+			setFontSize(`${Math.floor(Math.min(maximum, width, height) * 100) / 100}px`);
 		};
 
 		fit();
@@ -105,22 +99,18 @@ export function FittedText({
 		};
 	}, [children, fitHeight, maxFontSize]);
 
-	const measurementClassName = `${stylex.props(styles.measurement).className} ${className ?? ''}`;
-
 	return (
-		<span {...stylex.props(styles.root, align === 'start' && styles.startAligned)} ref={rootRef}>
-			{morphDuration ? (
-				<DurationMorph as="strong" className={className} style={fontSize ? { fontSize } : undefined}>
-					{children}
-				</DurationMorph>
-			) : (
-				<TextMorph as="strong" className={className} style={fontSize ? { fontSize } : undefined}>
-					{children}
-				</TextMorph>
-			)}
+		<span
+			{...stylex.props(styles.root, align === 'start' && styles.startAligned, fitHeight && styles.fillHeight)}
+			data-fitted-text=""
+			ref={rootRef}
+		>
+			<strong className={className} style={{ display: 'inline-block', whiteSpace: 'pre', fontSize }}>
+				<Morph morph={morph} text={children} />
+			</strong>
 			<strong
 				aria-hidden="true"
-				className={measurementClassName}
+				className={`${stylex.props(styles.measurement).className} ${className ?? ''}`}
 				ref={measurementRef}
 				style={maxFontSize ? { fontSize: maxFontSize } : undefined}
 			>

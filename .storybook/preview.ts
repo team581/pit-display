@@ -10,7 +10,7 @@ document.head.append(themeStyle);
 const preview: Preview = {
 	parameters: {
 		layout: 'fullscreen',
-		options: { storySort: { order: ['Dashboard', 'Tiles'] } },
+		options: { storySort: { order: ['Dashboard', 'Chips'] } },
 		viewport: {
 			options: {
 				ipadPro13Landscape: {

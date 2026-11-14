@@ -1,9 +1,12 @@
 import * as stylex from '@stylexjs/stylex';
 import { colors, spacing, typefaces } from '../theme.stylex';
 
+const narrow = '@media (max-width: 620px)';
+
 export const styles = stylex.create({
 	container: {
-		display: 'flex',
+		// Phones only show update health in the top bar.
+		display: { default: 'flex', [narrow]: 'none' },
 		alignItems: 'center',
 		gap: spacing.md,
 	},

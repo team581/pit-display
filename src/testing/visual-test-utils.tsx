@@ -1,17 +1,4 @@
-import { beforeEach, expect, test } from 'vite-plus/test';
-import { page } from 'vite-plus/test/browser/context';
-import { render } from 'vitest-browser-react';
-import { DashboardView } from '../App';
-import type { Dashboard } from '../dashboard';
-import { dashboardScenario, SCENARIO_NOW } from './dashboard-scenarios';
-
-export function setupVisualTests() {
-	beforeEach(async () => {
-		await page.viewport(1376, 1032);
-		expect(window.innerWidth).toBe(1376);
-		expect(window.innerHeight).toBe(1032);
-	});
-}
+import { expect } from 'vite-plus/test';
 
 export async function waitForAssets() {
 	await document.fonts.ready;
@@ -29,30 +16,37 @@ export async function waitForAssets() {
 	);
 }
 
-export function requireDashboard(id: Parameters<typeof dashboardScenario>[0]): Dashboard {
-	const dashboard = dashboardScenario(id).dashboard;
-	if (!dashboard) throw new Error(`Scenario ${id} does not contain dashboard data`);
-	return dashboard;
+/** Waits for ResizeObserver-driven text fitting to settle after a render or resize. */
+export function nextFrame() {
+	return new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
 }
 
-export function testDashboardScenarios(ids: readonly Parameters<typeof dashboardScenario>[0][]) {
-	for (const id of ids) {
-		const scenario = dashboardScenario(id);
-		test(`dashboard: ${scenario.name}`, async () => {
-			await render(<DashboardView connected={scenario.connected} dashboard={scenario.dashboard} now={SCENARIO_NOW} />);
-			await waitForAssets();
-			expect(document.querySelector('main')?.getBoundingClientRect().width).toBe(1376);
-			expect(document.documentElement.scrollWidth).toBe(window.innerWidth);
-			expect(document.documentElement.scrollHeight).toBe(window.innerHeight);
-			if (scenario.dashboard === null || scenario.dashboard === undefined) {
-				expect(getComputedStyle(document.querySelector('main')!).backgroundColor).toBe('rgb(38, 30, 29)');
-				await expect(page.getByRole('main')).toMatchScreenshot(scenario.id, {
-					comparatorName: 'pixelmatch',
-					comparatorOptions: { threshold: 0.01 },
-				});
-			} else {
-				await expect(page.getByRole('main')).toMatchScreenshot(scenario.id);
-			}
-		});
+/** The visible text of each FittedText inside `container`. */
+export function fittedTexts(container: ParentNode = document): HTMLElement[] {
+	return [...container.querySelectorAll<HTMLElement>('[data-fitted-text]')].map(
+		(root) => root.firstElementChild as HTMLElement,
+	);
+}
+
+/**
+ * Asserts that every FittedText inside `container` stays inside its box. With `minFill`, also asserts that the text
+ * isn't fitted so small that it leaves its box mostly empty.
+ */
+export function expectTextFits(container: ParentNode = document, { minFill }: { minFill?: number } = {}) {
+	const texts = fittedTexts(container);
+	if (container !== document) expect(texts.length).toBeGreaterThan(0);
+	for (const text of texts) {
+		const box = text.parentElement!.getBoundingClientRect();
+		const bounds = text.getBoundingClientRect();
+		const label = `"${text.textContent}"`;
+		expect(bounds.left, label).toBeGreaterThanOrEqual(box.left - 0.5);
+		expect(bounds.right, label).toBeLessThanOrEqual(box.right + 0.5);
+		expect(bounds.top, label).toBeGreaterThanOrEqual(box.top - 0.5);
+		expect(bounds.bottom, label).toBeLessThanOrEqual(box.bottom + 0.5);
+		if (minFill !== undefined) expect(bounds.width / box.width, label).toBeGreaterThan(minFill);
 	}
+}
+
+export function fontSize(element: Element) {
+	return Number.parseFloat(getComputedStyle(element).fontSize);
 }

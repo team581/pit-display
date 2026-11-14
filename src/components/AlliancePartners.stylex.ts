@@ -1,21 +1,11 @@
 import * as stylex from '@stylexjs/stylex';
-import { colors, spacing, typefaces } from '../theme.stylex';
+import { colors, spacing, type, typefaces } from '../theme.stylex';
 
 const portrait = '@media (max-width: 850px), (orientation: portrait)';
 const narrow = '@media (max-width: 620px)';
 
 export const styles = stylex.create({
-	panel: {
-		display: 'flex',
-		minHeight: 0,
-		flexDirection: 'column',
-		borderTopWidth: '1px',
-		borderInlineWidth: { default: 0, [portrait]: '1px' },
-		borderBottomWidth: { default: 0, [portrait]: '1px' },
-		borderStyle: 'solid',
-		borderColor: colors.outlineVariant,
-		borderRadius: { default: 0, [portrait]: spacing.md },
-		backgroundColor: colors.surfaceContainer,
+	tile: {
 		gridColumn: '1 / -1',
 	},
 	body: {
@@ -24,9 +14,6 @@ export const styles = stylex.create({
 		flex: 1,
 		placeItems: 'center',
 		padding: spacing['2xl'],
-		borderTopWidth: '1px',
-		borderTopStyle: 'solid',
-		borderTopColor: colors.outlineVariant,
 	},
 	teams: {
 		display: 'flex',
@@ -47,7 +34,7 @@ export const styles = stylex.create({
 	},
 	waiting: {
 		color: colors.onSurfaceVariant,
-		fontSize: { default: '3rem', [portrait]: '2.25rem', [narrow]: '1.75rem' },
+		fontSize: type.message,
 		textAlign: 'center',
 	},
 });

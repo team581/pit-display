@@ -1,13 +1,12 @@
 import * as stylex from '@stylexjs/stylex';
-import { ClientOnly } from '@tanstack/react-router';
 import type { Dashboard } from '../dashboard';
-import { formatMatchStart } from '../format-time';
 import { AllianceBadge } from './AllianceBadge';
 import { FittedText } from './FittedText';
 import { MatchLabel } from './MatchLabel';
+import { MatchStart } from './MatchStart';
 import { styles } from './MatchSchedule.stylex';
 import { MatchWarning } from './MatchWarning';
-import { panelStyles } from './Panel.stylex';
+import { Tile } from './Tile';
 
 export function MatchSchedule({
 	eventKey,
@@ -19,35 +18,29 @@ export function MatchSchedule({
 	now: number;
 }) {
 	return (
-		<section {...stylex.props(panelStyles.schedule)} aria-label="Next matches">
-			<div {...stylex.props(panelStyles.scrollArea, styles.rows)}>
-				{matches.map((match) => (
-					<article {...stylex.props(styles.matchRow)} key={match.key}>
-						<MatchLabel displayLabel={match.displayLabel} {...stylex.props(styles.matchNumber)} />
-						<div {...stylex.props(styles.matchTime)} data-testid="schedule-match-start">
-							{match.startTime === null ? (
-								<FittedText align="start" className={stylex.props(styles.startTime).className}>
-									{formatMatchStart(match.startTime, now)}
-								</FittedText>
-							) : (
-								<ClientOnly
-									fallback={
-										<FittedText align="start" className={stylex.props(styles.startTime).className}>
-											Starts —
-										</FittedText>
-									}
-								>
+		<Tile aria-label="Next matches" as="section" xstyle={styles.tile}>
+			<div {...stylex.props(styles.rows)}>
+				{matches.map((match, index) => (
+					<article {...stylex.props(styles.matchRow, index > 0 && styles.divider)} key={match.key}>
+						<MatchLabel
+							align="start"
+							className={stylex.props(styles.matchLabel).className}
+							displayLabel={match.displayLabel}
+						/>
+						<div data-testid="schedule-match-start">
+							<MatchStart now={now} time={match.startTime} variant="row">
+								{(text) => (
 									<FittedText align="start" className={stylex.props(styles.startTime).className}>
-										{formatMatchStart(match.startTime, now)}
+										{text}
 									</FittedText>
-								</ClientOnly>
-							)}
+								)}
+							</MatchStart>
 						</div>
 						{match.warning && <MatchWarning warning={match.warning} />}
 						<AllianceBadge alliance={match.alliance} eventKey={eventKey} teams={match.teams} />
 					</article>
 				))}
 			</div>
-		</section>
+		</Tile>
 	);
 }

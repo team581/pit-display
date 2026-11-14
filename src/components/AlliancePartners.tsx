@@ -2,7 +2,7 @@ import * as stylex from '@stylexjs/stylex';
 import type { Dashboard } from '../dashboard';
 import { nexusTeamUrl } from '../nexus';
 import { styles } from './AlliancePartners.stylex';
-import { panelStyles } from './Panel.stylex';
+import { Tile } from './Tile';
 
 export function AlliancePartners({
 	eventKey,
@@ -12,12 +12,7 @@ export function AlliancePartners({
 	teams: Dashboard['alliancePartners'];
 }) {
 	return (
-		<section {...stylex.props(styles.panel)} aria-labelledby="alliance-partners-heading">
-			<div {...stylex.props(panelStyles.header)}>
-				<h2 {...stylex.props(panelStyles.heading)} id="alliance-partners-heading">
-					Alliance partners
-				</h2>
-			</div>
+		<Tile as="section" title="Alliance partners" xstyle={styles.tile}>
 			<div {...stylex.props(styles.body)}>
 				{teams.length > 0 ? (
 					<div {...stylex.props(styles.teams)}>
@@ -37,6 +32,6 @@ export function AlliancePartners({
 					<strong {...stylex.props(styles.waiting)}>Waiting for our alliance</strong>
 				)}
 			</div>
-		</section>
+		</Tile>
 	);
 }

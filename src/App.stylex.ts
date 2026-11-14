@@ -25,7 +25,7 @@ export const styles = stylex.create({
 			[narrow]: 'auto',
 		},
 		flexWrap: 'wrap',
-		justifyContent: 'space-between',
+		justifyContent: { default: 'space-between', [narrow]: 'center' },
 		gap: { default: 0, [narrow]: spacing.sm },
 		alignItems: 'center',
 		fontFamily: typefaces.display,
@@ -63,7 +63,6 @@ export const styles = stylex.create({
 		gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
 		gridTemplateRows: 'repeat(2, minmax(0, 1fr))',
 		flexDirection: 'column',
-		gap: { default: 0, [portrait]: spacing.lg },
 		padding: { default: 0, [portrait]: spacing.lg },
 	},
 	qualificationContent: {

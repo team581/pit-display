@@ -1,39 +1,23 @@
 import * as stylex from '@stylexjs/stylex';
-import { colors, spacing } from '../theme.stylex';
+import { colors, spacing, type } from '../theme.stylex';
 
-const portrait = '@media (max-width: 850px), (orientation: portrait)';
 const narrow = '@media (max-width: 620px)';
 const compact = '@media (max-width: 1150px)';
 
 export const styles = stylex.create({
-	rows: {
-		display: 'grid',
-		maxHeight: { default: 'none', [portrait]: '24rem' },
+	fullWidth: {
+		gridColumn: '1 / -1',
+	},
+	tiles: {
 		gridTemplateColumns: { default: 'repeat(2, minmax(0, 1fr))', [narrow]: '1fr' },
 	},
-	singleRow: {
+	singleTile: {
 		gridTemplateColumns: '1fr',
 	},
-	matchCard: {
-		display: 'flex',
-		minWidth: 0,
+	tile: {
 		minHeight: { default: '15rem', [narrow]: '18rem' },
-		flexDirection: 'column',
-		borderTopWidth: '1px',
-		borderTopStyle: 'solid',
-		borderTopColor: colors.outlineVariant,
-		containerType: 'inline-size',
 	},
-	divider: {
-		borderInlineStartWidth: { default: '1px', [narrow]: 0 },
-		borderInlineStartStyle: 'solid',
-		borderInlineStartColor: colors.outlineVariant,
-	},
-	cardHeader: {
-		justifyContent: 'space-between',
-		gap: spacing.lg,
-	},
-	cardBody: {
+	tileBody: {
 		display: 'flex',
 		minHeight: 0,
 		flex: 1,
@@ -44,7 +28,7 @@ export const styles = stylex.create({
 		paddingBlockEnd: 'max(0.5rem, var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))',
 		paddingInline: { default: spacing.xl, [compact]: spacing.lg, [narrow]: spacing.md },
 	},
-	cardBodyWithTimeline: {
+	tileBodyWithTimeline: {
 		gap: 0,
 	},
 	primaryRow: {
@@ -55,59 +39,45 @@ export const styles = stylex.create({
 		justifyContent: 'space-between',
 		gap: spacing.lg,
 	},
-	matchNumber: {
-		fontSize: 'clamp(4.5rem, 15cqw, 6rem)',
+	matchLabel: {
+		fontSize: type.matchLabel,
 		fontWeight: 700,
 		fontVariantNumeric: 'tabular-nums',
 		lineHeight: 1,
-		whiteSpace: 'nowrap',
 	},
 	eliminated: {
 		alignSelf: 'center',
-		fontSize: { default: '4rem', [compact]: '3.25rem' },
-		lineHeight: 1.1,
+		marginBlock: 'auto',
+		fontSize: type.message,
+		lineHeight: 1.05,
 	},
 	matchTime: {
 		display: 'flex',
-		minWidth: 0,
+		flexShrink: 0,
 		flexDirection: 'column',
 		alignItems: 'flex-end',
 		lineHeight: 1,
 	},
-	startTime: {
-		fontSize: 'clamp(2.5rem, 8cqw, 3.25rem)',
+	relativeStart: {
+		fontSize: type.timePrimary,
 		fontVariantNumeric: 'tabular-nums',
 		whiteSpace: 'nowrap',
 	},
-	relativeTime: {
+	clockStart: {
 		color: colors.onSurfaceVariant,
-		fontSize: { default: '1.65rem', [compact]: '1.4rem' },
+		fontSize: type.label,
 		fontWeight: 700,
 		fontVariantNumeric: 'tabular-nums',
 		whiteSpace: 'nowrap',
-	},
-	allianceLabel: {
-		fontSize: { default: '1.75rem', [portrait]: '1.5rem' },
-		fontWeight: 700,
-		letterSpacing: '0.02em',
-		whiteSpace: 'nowrap',
-	},
-	red: {
-		backgroundColor: colors.redAllianceContainer,
-		color: colors.onRedAllianceContainer,
-	},
-	blue: {
-		backgroundColor: colors.blueAllianceContainer,
-		color: colors.onBlueAllianceContainer,
 	},
 	breakTimeline: {
 		display: 'flex',
 		position: 'relative',
 		width: '100%',
 		minWidth: 0,
+		minHeight: 0,
+		flex: '1 1 auto',
 		flexDirection: 'column',
-		gap: 0,
-		paddingBlock: 0,
 		paddingInlineStart: spacing['2xl'],
 	},
 	timelineRow: {
@@ -116,12 +86,13 @@ export const styles = stylex.create({
 		minWidth: 0,
 		gridTemplateColumns: 'minmax(0, 1fr) auto',
 		alignItems: 'center',
+		// Rows grow into spare height, up to a cap, so the timeline isn't cramped on tall tiles.
+		maxHeight: '4rem',
+		flex: '1 1 auto',
 		gap: spacing.md,
 		paddingBlock: spacing.xs,
 		paddingInline: spacing.sm,
-	},
-	timelineStart: {
-		paddingBlockStart: 0,
+		borderRadius: spacing.sm,
 	},
 	timelineMarker: {
 		position: 'absolute',
@@ -142,20 +113,18 @@ export const styles = stylex.create({
 		insetBlockStart: '50%',
 		insetInlineStart: 'calc(-1.25rem - 2px)',
 		width: '4px',
-		height: 'calc(100% + 0.25rem)',
+		height: '100%',
 		backgroundColor: colors.onSurfaceVariant,
 	},
-	timelineLabel: {
-		fontSize: { default: '2.3rem', [compact]: '2rem' },
-		lineHeight: 1,
-	},
-	timelineTime: {
-		fontSize: { default: '2.05rem', [compact]: '1.8rem' },
+	timelineText: {
+		fontSize: type.time,
 		fontVariantNumeric: 'tabular-nums',
+		lineHeight: 1.1,
 		whiteSpace: 'nowrap',
 	},
-	timelineBreak: {
-		borderRadius: spacing.sm,
+	// Labels wrap rather than run into the time beside them.
+	timelineLabel: {
+		whiteSpace: 'normal',
 	},
 	activeBreak: {
 		backgroundColor: colors.tertiary,
@@ -169,12 +138,11 @@ export const styles = stylex.create({
 	},
 	empty: {
 		display: 'grid',
-		height: '100%',
-		gridColumn: '1 / -1',
+		flex: 1,
 		margin: 0,
 		placeItems: 'center',
 		padding: spacing['2xl'],
 		color: colors.onSurfaceVariant,
-		fontSize: '1.5rem',
+		fontSize: type.label,
 	},
 });

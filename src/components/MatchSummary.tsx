@@ -1,55 +1,33 @@
 import * as stylex from '@stylexjs/stylex';
-import { ClientOnly } from '@tanstack/react-router';
 import type { Dashboard } from '../dashboard';
-import { formatMatchTiming, isBetweenQueueAndMatch, timingStatusMilestones } from '../dashboard-time';
-import { formatClock, formatRelativeTime } from '../format-time';
+import { isBetweenQueueAndMatch, formatMatchTiming, timingStatusMilestones } from '../dashboard-time';
+import { formatRelativeTime } from '../format-time';
+import { matchStartText } from '../match-start';
 import { DurationMorph } from './DurationMorph';
 import { FittedText } from './FittedText';
 import { MatchLabel } from './MatchLabel';
+import { MatchStart } from './MatchStart';
 import { styles } from './MatchSummary.stylex';
-import { panelStyles } from './Panel.stylex';
+import { Tile, tileGrid } from './Tile';
 
 type CurrentActivity = Dashboard['currentActivity'];
 type NextMatch = Dashboard['nextMatch'];
 
-function awardsEndText(endsAt: number, now: number): string {
-	if (now >= endsAt) return 'Ends soon';
+function endsInText(endsAt: number, now: number): string {
 	const remaining = formatRelativeTime(endsAt, now, '', 'seconds');
 	return `Ends ${remaining === 'now' ? '<1s' : remaining}`;
 }
 
-function matchEndText(endsAt: number | null, now: number): string {
-	if (endsAt === null) return 'On field';
-	if (endsAt <= now) return 'Awaiting scores';
-	const remaining = formatRelativeTime(endsAt, now, '', 'seconds');
-	return `Ends ${remaining === 'now' ? '<1s' : remaining}`;
+function currentStatusText(currentActivity: CurrentActivity, now: number): string {
+	if (currentActivity?.type === 'awards')
+		return now >= currentActivity.endsAt ? 'Ends soon' : endsInText(currentActivity.endsAt, now);
+	if (currentActivity?.type !== 'match') return '';
+	if (currentActivity.endsAt === null) return 'In progress';
+	if (currentActivity.endsAt <= now) return 'Awaiting scores';
+	return endsInText(currentActivity.endsAt, now);
 }
 
-function currentActivityState(
-	competitionPhase: Dashboard['competitionPhase'],
-	currentActivity: CurrentActivity,
-	now: number,
-) {
-	if (competitionPhase === 'allianceSelection') {
-		return { kind: 'allianceSelection' as const, displayLabel: undefined, statusText: '' };
-	}
-	if (currentActivity?.type === 'awards') {
-		return {
-			kind: 'awards' as const,
-			displayLabel: undefined,
-			statusText: awardsEndText(currentActivity.endsAt, now),
-		};
-	}
-
-	const displayLabel = currentActivity?.displayLabel;
-	return {
-		kind: 'match' as const,
-		displayLabel,
-		statusText: currentActivity?.type === 'match' ? matchEndText(currentActivity.endsAt, now) : '',
-	};
-}
-
-function CurrentActivityCard({
+function OnFieldTile({
 	competitionPhase,
 	currentActivity,
 	now,
@@ -58,72 +36,55 @@ function CurrentActivityCard({
 	currentActivity: CurrentActivity;
 	now: number;
 }) {
-	const state = currentActivityState(competitionPhase, currentActivity, now);
+	const statusText = competitionPhase === 'allianceSelection' ? '' : currentStatusText(currentActivity, now);
+
 	return (
-		<article {...stylex.props(styles.card, styles.dividedCard)}>
-			<div {...stylex.props(panelStyles.header)}>
-				<h2 {...stylex.props(panelStyles.heading, styles.currentHeading)}>Currently on field</h2>
-			</div>
-			<div {...stylex.props(styles.cardBody)}>
-				<div {...stylex.props(styles.matchNumberArea)}>
-					{state.kind === 'allianceSelection' ? (
-						<strong {...stylex.props(styles.currentStage)} aria-label="Alliance selection">
+		<Tile title="On field" xstyle={styles.onFieldTile}>
+			<div {...stylex.props(styles.tileBody)}>
+				<div {...stylex.props(styles.heroArea)}>
+					{competitionPhase === 'allianceSelection' ? (
+						<strong {...stylex.props(styles.message)} aria-label="Alliance selection">
 							<span aria-hidden="true">Alliance</span>
 							<span aria-hidden="true">selection</span>
 						</strong>
-					) : state.kind === 'awards' ? (
-						<strong {...stylex.props(styles.currentActivity)}>Awards</strong>
+					) : currentActivity?.type === 'awards' ? (
+						<FittedText className={stylex.props(styles.hero).className} fitHeight>
+							Awards
+						</FittedText>
 					) : (
 						<MatchLabel
-							displayLabel={state.displayLabel}
-							{...stylex.props(styles.matchNumber, styles.currentMatchNumber)}
+							className={stylex.props(styles.hero).className}
+							fitHeight
+							displayLabel={currentActivity?.displayLabel}
 						/>
 					)}
 				</div>
-				{state.statusText && (
-					<div {...stylex.props(styles.matchDetailSlot)}>
-						<div {...stylex.props(styles.matchDetail, styles.matchStartTime)} data-testid="current-activity-status">
-							<FittedText
-								className={stylex.props(styles.matchTimeValue).className}
-								maxFontSize="4.1875rem"
-								morphDuration
-							>
-								{state.statusText}
+				{statusText && (
+					<div {...stylex.props(styles.pillSlot)}>
+						<div {...stylex.props(styles.pill)} data-testid="current-activity-status">
+							<FittedText className={stylex.props(styles.pillText).className} morph="duration">
+								{statusText}
 							</FittedText>
 						</div>
 					</div>
 				)}
 			</div>
-		</article>
+		</Tile>
 	);
 }
 
-function OurMatchCard({
-	countdownMaxFontSize,
-	nextMatch,
-	now,
-}: {
-	countdownMaxFontSize: string;
-	nextMatch: NonNullable<NextMatch>;
-	now: number;
-}) {
-	const startText =
-		nextMatch.startTime === null ? 'Start time unavailable' : `Starts ${formatClock(nextMatch.startTime)}`;
-	const countdown =
-		nextMatch.startTime === null ? 'TBD' : formatMatchTiming({ time: nextMatch.startTime, isActual: false }, now, '');
+function OurMatchTile({ nextMatch, now }: { nextMatch: NonNullable<NextMatch>; now: number }) {
+	const countdown = matchStartText(nextMatch.startTime, now, 'countdown');
 	const statuses = timingStatusMilestones(nextMatch.timing);
-	const startTimeMaxFontSize = nextMatch.requiresBumperChange ? '2.5rem' : '5rem';
 	const highlightCountdown = isBetweenQueueAndMatch(nextMatch.timing.queued.time, nextMatch.startTime, now);
+	const allianceStyle = nextMatch.alliance === 'red' ? styles.redAlliancePill : styles.blueAlliancePill;
 
 	return (
-		<article {...stylex.props(styles.card, styles.ourMatchCard)}>
-			<div {...stylex.props(panelStyles.header)}>
-				<h2 {...stylex.props(panelStyles.heading)}>Our match</h2>
-			</div>
+		<Tile title="Our match" xstyle={styles.ourMatchTile}>
 			<div {...stylex.props(styles.ourMatchBody)}>
 				<div
 					{...stylex.props(
-						styles.cardBody,
+						styles.tileBody,
 						styles.ourMatchPane,
 						styles.leadingPane,
 						styles.timingBody,
@@ -131,17 +92,12 @@ function OurMatchCard({
 					)}
 				>
 					<div {...stylex.props(styles.matchCountdown)} data-testid="our-match-countdown">
-						<span
-							{...stylex.props(styles.matchCountdownLabel, highlightCountdown && styles.highlightedMatchCountdownLabel)}
-						>
-							{countdown === 'Soon' || countdown === 'TBD' ? 'Starts' : 'Starts in'}
-						</span>
-						<FittedText
-							className={stylex.props(styles.matchCountdownValue).className}
-							fitHeight
-							maxFontSize={countdownMaxFontSize}
-							morphDuration
-						>
+						{nextMatch.startTime !== null && (
+							<span {...stylex.props(styles.countdownLabel, highlightCountdown && styles.highlightedLabel)}>
+								{countdown === 'Soon' ? 'Starts' : 'Starts in'}
+							</span>
+						)}
+						<FittedText className={stylex.props(styles.countdownValue).className} fitHeight morph="duration">
 							{countdown}
 						</FittedText>
 					</div>
@@ -163,86 +119,46 @@ function OurMatchCard({
 				</div>
 				<div
 					{...stylex.props(
-						styles.cardBody,
+						styles.tileBody,
 						styles.ourMatchPane,
 						nextMatch.alliance === 'red' ? styles.redAlliance : styles.blueAlliance,
 					)}
 				>
-					<div {...stylex.props(styles.matchNumberArea)}>
+					<div {...stylex.props(styles.heroArea)}>
 						<MatchLabel
+							className={stylex.props(styles.hero).className}
+							fitHeight
 							displayLabel={nextMatch.displayLabel}
-							{...stylex.props(styles.matchNumber, styles.nextMatchNumber)}
 						/>
 					</div>
-					<div {...stylex.props(styles.matchDetailSlot, nextMatch.requiresBumperChange && styles.splitMatchDetailSlot)}>
+					<div {...stylex.props(styles.pillSlot, nextMatch.requiresBumperChange && styles.splitPillSlot)}>
 						{nextMatch.requiresBumperChange && (
-							<div
-								{...stylex.props(
-									styles.matchDetail,
-									styles.matchStartTime,
-									styles.compactMatchDetail,
-									nextMatch.alliance === 'red' ? styles.redAllianceStartTime : styles.blueAllianceStartTime,
-								)}
-								data-testid="bumper-change"
-							>
-								<FittedText className={stylex.props(styles.matchTimeValue).className} maxFontSize="2.25rem">
+							<div {...stylex.props(styles.pill, styles.compactPill, allianceStyle)} data-testid="bumper-change">
+								<FittedText className={stylex.props(styles.pillCompactText).className}>
 									{`Swap to ${nextMatch.alliance}`}
 								</FittedText>
 							</div>
 						)}
 						<div
-							{...stylex.props(
-								styles.matchDetail,
-								styles.matchStartTime,
-								nextMatch.requiresBumperChange && styles.compactMatchDetail,
-								nextMatch.alliance === 'red' ? styles.redAllianceStartTime : styles.blueAllianceStartTime,
-							)}
+							{...stylex.props(styles.pill, nextMatch.requiresBumperChange && styles.compactPill, allianceStyle)}
 							data-testid="our-match-start-time"
 						>
-							{nextMatch.startTime === null ? (
-								<FittedText
-									className={stylex.props(styles.matchTimeValue).className}
-									maxFontSize={startTimeMaxFontSize}
-								>
-									{startText}
-								</FittedText>
-							) : (
-								<ClientOnly
-									fallback={
-										<FittedText
-											className={stylex.props(styles.matchTimeValue).className}
-											maxFontSize={startTimeMaxFontSize}
-										>
-											Starts —
-										</FittedText>
-									}
-								>
+							<MatchStart now={now} time={nextMatch.startTime} variant="clock">
+								{(text) => (
 									<FittedText
-										className={stylex.props(styles.matchTimeValue).className}
-										maxFontSize={startTimeMaxFontSize}
+										className={
+											stylex.props(nextMatch.requiresBumperChange ? styles.pillCompactText : styles.pillText).className
+										}
 									>
-										{startText}
+										{text}
 									</FittedText>
-								</ClientOnly>
-							)}
+								)}
+							</MatchStart>
 						</div>
 					</div>
 				</div>
 			</div>
-		</article>
-	);
-}
-
-function NoNextMatchCard() {
-	return (
-		<article {...stylex.props(styles.card, styles.noNextCard)}>
-			<div {...stylex.props(panelStyles.header)}>
-				<h2 {...stylex.props(panelStyles.heading)}>Our match</h2>
-			</div>
-			<div {...stylex.props(styles.cardBody)}>
-				<strong {...stylex.props(styles.noNextMessage)}>No matches scheduled</strong>
-			</div>
-		</article>
+		</Tile>
 	);
 }
 
@@ -258,16 +174,16 @@ export function MatchSummary({
 	now: number;
 }) {
 	return (
-		<section {...stylex.props(styles.grid)} aria-label="Match summary">
-			<CurrentActivityCard competitionPhase={competitionPhase} currentActivity={currentActivity} now={now} />
+		<section {...stylex.props(tileGrid.grid, styles.grid)} aria-label="Match summary">
+			<OnFieldTile competitionPhase={competitionPhase} currentActivity={currentActivity} now={now} />
 			{nextMatch ? (
-				<OurMatchCard
-					countdownMaxFontSize={competitionPhase === 'qualification' ? '12.5rem' : '10rem'}
-					nextMatch={nextMatch}
-					now={now}
-				/>
+				<OurMatchTile nextMatch={nextMatch} now={now} />
 			) : (
-				<NoNextMatchCard />
+				<Tile title="Our match" xstyle={styles.ourMatchTile}>
+					<div {...stylex.props(styles.tileBody, styles.messageBody)}>
+						<strong {...stylex.props(styles.message)}>No matches scheduled</strong>
+					</div>
+				</Tile>
 			)}
 		</section>
 	);

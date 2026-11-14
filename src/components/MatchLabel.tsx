@@ -1,23 +1,21 @@
-import type { CSSProperties } from 'react';
-import { TextMorph } from 'torph/react';
-import { useFittedText } from './use-fitted-text';
+import { FittedText } from './FittedText';
 
 export function MatchLabel({
+	align,
 	className,
 	displayLabel,
-	style,
+	fitHeight,
+	maxFontSize,
 }: {
+	align?: 'center' | 'start';
 	className?: string;
 	displayLabel?: string;
-	style?: CSSProperties;
+	fitHeight?: boolean;
+	maxFontSize?: string;
 }) {
-	const label = displayLabel ?? '—';
-	const ref = useFittedText(label, label.length > 3, style?.fontSize);
-
 	return (
-		<strong className={className} ref={ref} style={style}>
-			<TextMorph>{label[0]}</TextMorph>
-			<TextMorph>{label.slice(1)}</TextMorph>
-		</strong>
+		<FittedText align={align} className={className} fitHeight={fitHeight} maxFontSize={maxFontSize} morph="label">
+			{displayLabel ?? '—'}
+		</FittedText>
 	);
 }

@@ -1,13 +1,12 @@
 import * as stylex from '@stylexjs/stylex';
-import { ClientOnly } from '@tanstack/react-router';
 import { TextMorph } from 'torph/react';
 import type { Dashboard, UpcomingMatch } from '../dashboard';
-import { formatClock, formatRelativeTime } from '../format-time';
 import { DurationMorph } from './DurationMorph';
 import { breakStatusText, isBreakActive } from './elimination-break';
 import { MatchLabel } from './MatchLabel';
-import { panelStyles } from './Panel.stylex';
+import { MatchStart } from './MatchStart';
 import { styles } from './EliminationSchedule.stylex';
+import { Tile, tileGrid } from './Tile';
 
 type EliminationPath = Dashboard['eliminationPaths'][number];
 type EliminationRow = Pick<EliminationPath, 'alliance' | 'break' | 'displayLabel' | 'startTime'> & {
@@ -39,36 +38,80 @@ function BreakTimeline({ row, now }: { row: EliminationRow & { displayLabel: str
 			{...stylex.props(styles.breakTimeline)}
 			aria-label={`${row.break.label} after ${row.break.previousMatch.displayLabel} before ${row.displayLabel}`}
 		>
-			<div {...stylex.props(styles.timelineRow, styles.timelineStart)}>
+			<div {...stylex.props(styles.timelineRow)}>
 				<span {...stylex.props(styles.timelineMarker)} aria-hidden="true" />
 				<span {...stylex.props(styles.timelineConnector)} aria-hidden="true" />
-				<strong {...stylex.props(styles.timelineLabel)}>{row.break.previousMatch.displayLabel}</strong>
-				<span {...stylex.props(styles.timelineTime)}>
-					{row.break.previousMatch.startTime === null ? (
-						'Time TBD'
-					) : (
-						<ClientOnly fallback="Starts —">Starts {formatClock(row.break.previousMatch.startTime)}</ClientOnly>
-					)}
+				<strong {...stylex.props(styles.timelineText, styles.timelineLabel)}>
+					{row.break.previousMatch.displayLabel}
+				</strong>
+				<span {...stylex.props(styles.timelineText)}>
+					<MatchStart now={now} time={row.break.previousMatch.startTime} variant="clock">
+						{(text) => text}
+					</MatchStart>
 				</span>
 			</div>
-			<div {...stylex.props(styles.timelineRow, styles.timelineBreak, isActive && styles.activeBreak)}>
+			<div {...stylex.props(styles.timelineRow, isActive && styles.activeBreak)}>
 				<span {...stylex.props(styles.timelineMarker, isActive && styles.activeBreakMarker)} aria-hidden="true" />
 				<span {...stylex.props(styles.timelineConnector)} aria-hidden="true" />
-				<strong {...stylex.props(styles.timelineLabel)}>{row.break.label}</strong>
-				<strong {...stylex.props(styles.timelineTime)}>{breakStatusText(row.break, now)}</strong>
+				<strong {...stylex.props(styles.timelineText, styles.timelineLabel)}>{row.break.label}</strong>
+				<strong {...stylex.props(styles.timelineText)}>{breakStatusText(row.break, now)}</strong>
 			</div>
 			<div {...stylex.props(styles.timelineRow, styles.timelineDestination)}>
 				<span {...stylex.props(styles.timelineMarker)} aria-hidden="true" />
-				<strong {...stylex.props(styles.timelineLabel)}>{row.displayLabel}</strong>
-				<span {...stylex.props(styles.timelineTime)}>
-					{row.startTime === null ? (
-						'Time TBD'
-					) : (
-						<ClientOnly fallback="Starts —">Starts {formatClock(row.startTime)}</ClientOnly>
-					)}
+				<strong {...stylex.props(styles.timelineText, styles.timelineLabel)}>{row.displayLabel}</strong>
+				<span {...stylex.props(styles.timelineText)}>
+					<MatchStart now={now} time={row.startTime} variant="clock">
+						{(text) => text}
+					</MatchStart>
 				</span>
 			</div>
 		</div>
+	);
+}
+
+function EliminationTile({ row, now }: { row: EliminationRow; now: number }) {
+	return (
+		<Tile
+			title={row.context}
+			tone={row.alliance ?? 'neutral'}
+			trailing={row.displayLabel && row.alliance ? (row.alliance === 'red' ? 'Red' : 'Blue') : undefined}
+			xstyle={styles.tile}
+		>
+			<div {...stylex.props(styles.tileBody, row.break && styles.tileBodyWithTimeline)}>
+				{row.displayLabel ? (
+					<>
+						<div {...stylex.props(styles.primaryRow)}>
+							<MatchLabel
+								align="start"
+								className={stylex.props(styles.matchLabel).className}
+								displayLabel={row.displayLabel}
+							/>
+							<div {...stylex.props(styles.matchTime)}>
+								<MatchStart now={now} time={row.startTime} variant="relative">
+									{(text) => (
+										<DurationMorph as="strong" {...stylex.props(styles.relativeStart)}>
+											{text}
+										</DurationMorph>
+									)}
+								</MatchStart>
+								{!row.break && row.startTime !== null && (
+									<MatchStart now={now} time={row.startTime} variant="clock">
+										{(text) => (
+											<TextMorph as="span" {...stylex.props(styles.clockStart)}>
+												{text}
+											</TextMorph>
+										)}
+									</MatchStart>
+								)}
+							</div>
+						</div>
+						<BreakTimeline now={now} row={{ ...row, displayLabel: row.displayLabel }} />
+					</>
+				) : (
+					<strong {...stylex.props(styles.eliminated)}>Eliminated</strong>
+				)}
+			</div>
+		</Tile>
 	);
 }
 
@@ -83,63 +126,22 @@ export function EliminationSchedule({
 }) {
 	const rows = paths.length > 0 ? paths.map(rowFromPath) : matches.slice(0, 2).map(rowFromMatch);
 
+	if (rows.length === 0) {
+		return (
+			<Tile aria-label="Next matches" as="section" xstyle={styles.fullWidth}>
+				<p {...stylex.props(styles.empty)}>Waiting for the playoff bracket to update</p>
+			</Tile>
+		);
+	}
+
 	return (
-		<section {...stylex.props(panelStyles.schedule)} aria-label="Next matches">
-			<div {...stylex.props(panelStyles.scrollArea, styles.rows, rows.length === 1 && styles.singleRow)}>
-				{rows.length === 0 ? (
-					<p {...stylex.props(styles.empty)}>Waiting for the playoff bracket to update.</p>
-				) : (
-					rows.map((row, index) => (
-						<article {...stylex.props(styles.matchCard, index > 0 && styles.divider)} key={row.key}>
-							<div
-								{...stylex.props(
-									panelStyles.header,
-									styles.cardHeader,
-									row.alliance === 'red' && styles.red,
-									row.alliance === 'blue' && styles.blue,
-								)}
-							>
-								<TextMorph as="h2" {...stylex.props(panelStyles.heading)}>
-									{row.context}
-								</TextMorph>
-								{row.displayLabel && row.alliance && (
-									<strong {...stylex.props(styles.allianceLabel)}>{row.alliance === 'red' ? 'Red' : 'Blue'}</strong>
-								)}
-							</div>
-							<div {...stylex.props(styles.cardBody, row.break && styles.cardBodyWithTimeline)}>
-								{row.displayLabel ? (
-									<>
-										<div {...stylex.props(styles.primaryRow)}>
-											<MatchLabel displayLabel={row.displayLabel} {...stylex.props(styles.matchNumber)} />
-											<div {...stylex.props(styles.matchTime)}>
-												<DurationMorph as="strong" {...stylex.props(styles.startTime)}>
-													{row.startTime === null ? 'Time TBD' : formatRelativeTime(row.startTime, now, 'in ')}
-												</DurationMorph>
-												{!row.break && row.startTime !== null && (
-													<ClientOnly
-														fallback={
-															<TextMorph as="span" {...stylex.props(styles.relativeTime)}>
-																Starts —
-															</TextMorph>
-														}
-													>
-														<TextMorph as="span" {...stylex.props(styles.relativeTime)}>
-															Starts {formatClock(row.startTime)}
-														</TextMorph>
-													</ClientOnly>
-												)}
-											</div>
-										</div>
-										<BreakTimeline now={now} row={{ ...row, displayLabel: row.displayLabel }} />
-									</>
-								) : (
-									<strong {...stylex.props(styles.eliminated)}>Eliminated</strong>
-								)}
-							</div>
-						</article>
-					))
-				)}
-			</div>
+		<section
+			{...stylex.props(tileGrid.grid, styles.fullWidth, styles.tiles, rows.length === 1 && styles.singleTile)}
+			aria-label="Next matches"
+		>
+			{rows.map((row) => (
+				<EliminationTile key={row.key} now={now} row={row} />
+			))}
 		</section>
 	);
 }
