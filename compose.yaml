@@ -7,6 +7,8 @@ services:
         PNPM_VERSION: ${PNPM_VERSION:?Set PNPM_VERSION from package.json}
         PLAYWRIGHT_VERSION: ${PLAYWRIGHT_VERSION:?Set PLAYWRIGHT_VERSION from package.json}
     init: true
+    # WebKit under amd64 emulation freezes with the 1 GiB default some runtimes apply
+    mem_limit: 4g
     platform: linux/amd64
     ports:
       - '127.0.0.1:30781:3000'
