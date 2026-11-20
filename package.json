@@ -54,7 +54,7 @@
 		"@vitest/browser-playwright": "5.1.1",
 		"@vitest/ui": "5.1.1",
 		"envalid": "9.0.0",
-		"knip": "6.45.1",
+		"knip": "6.46.1",
 		"playwright": "1.65.1",
 		"portless": "0.18.1",
 		"storybook": "10.6.7",
