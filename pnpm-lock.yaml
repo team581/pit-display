@@ -198,7 +198,7 @@ importers:
         version: 5.3.1
       '@hono/zod-openapi':
         specifier: 1.6.3
-        version: 1.6.3(hono@4.13.22)(zod@4.6.7)
+        version: 1.6.3(hono@4.13.23)(zod@4.6.7)
       '@stylexjs/stylex':
         specifier: 0.19.2
         version: 0.19.2
@@ -219,13 +219,13 @@ importers:
         version: 1.51.0(react@19.3.1)
       convex-helpers:
         specifier: 0.1.137
-        version: 0.1.137(@standard-schema/spec@1.1.0)(convex@1.51.0(react@19.3.1))(hono@4.13.22)(prettier@3.9.6)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
+        version: 0.1.137(@standard-schema/spec@1.1.0)(convex@1.51.0(react@19.3.1))(hono@4.13.23)(prettier@3.9.6)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
       fetch-extras:
         specifier: 3.2.1
         version: 3.2.1
       hono:
-        specifier: 4.13.22
-        version: 4.13.22
+        specifier: 4.13.23
+        version: 4.13.23
       lucide-react:
         specifier: ^1.45.0
         version: 1.81.0(@types/react@19.3.3)(react@19.3.1)
@@ -4042,8 +4042,8 @@ packages:
     resolution: {integrity: sha512-T2UbfbBEF32wiepXIsMlTW9+dDYC6wMh/t/vYA4tuOMKqWz/n3vr1NFSxQiyP+zk2mXsoMA/i/7qV6LKut1t1A==}
     engines: {node: '>= 0.4'}
 
-  hono@4.13.22:
-    resolution: {integrity: sha512-wncKd5/40Pj8grx0RZ2fgNIicFEmVFwIHT5UFLTnphR8I6AQWFf9c2JoM6ZJ9g8y4pMzg3sNlCVNe0m2Yclg0Q==}
+  hono@4.13.23:
+    resolution: {integrity: sha512-OS90dj7dcsftEEWCOef8jRbnHE5lbrOq0hNRqjSyPsOnaGZvvfof1KS05hQNb4kUOCfDq1mG3PmHoX37DMnHQg==}
     engines: {node: '>=16.9.0'}
 
   humanize-ms@1.2.1:
@@ -6416,17 +6416,17 @@ snapshots:
 
   '@hey-api/types@0.1.4': {}
 
-  '@hono/zod-openapi@1.6.3(hono@4.13.22)(zod@4.6.7)':
+  '@hono/zod-openapi@1.6.3(hono@4.13.23)(zod@4.6.7)':
     dependencies:
       '@asteasolutions/zod-to-openapi': 9.1.0(zod@4.6.7)
-      '@hono/zod-validator': 0.9.1(hono@4.13.22)(zod@4.6.7)
-      hono: 4.13.22
+      '@hono/zod-validator': 0.9.1(hono@4.13.23)(zod@4.6.7)
+      hono: 4.13.23
       openapi3-ts: 4.6.1
       zod: 4.6.7
 
-  '@hono/zod-validator@0.9.1(hono@4.13.22)(zod@4.6.7)':
+  '@hono/zod-validator@0.9.1(hono@4.13.23)(zod@4.6.7)':
     dependencies:
-      hono: 4.13.22
+      hono: 4.13.23
       zod: 4.6.7
 
   '@img/colour@1.1.0': {}
@@ -8220,12 +8220,12 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  convex-helpers@0.1.137(@standard-schema/spec@1.1.0)(convex@1.51.0(react@19.3.1))(hono@4.13.22)(prettier@3.9.6)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7):
+  convex-helpers@0.1.137(@standard-schema/spec@1.1.0)(convex@1.51.0(react@19.3.1))(hono@4.13.23)(prettier@3.9.6)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7):
     dependencies:
       convex: 1.51.0(react@19.3.1)
     optionalDependencies:
       '@standard-schema/spec': 1.1.0
-      hono: 4.13.22
+      hono: 4.13.23
       prettier: 3.9.6
       react: 19.3.1
       typescript: 7.0.2
@@ -8701,7 +8701,7 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hono@4.13.22: {}
+  hono@4.13.23: {}
 
   humanize-ms@1.2.1:
     dependencies:
